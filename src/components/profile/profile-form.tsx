@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ImageUp, Link2, Sparkles, ShieldCheck } from "lucide-react";
+import { ImageUp, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,6 @@ function ProfileFormBody({
 }) {
   const isEdit = Boolean(profile);
   const router = useRouter();
-  const { data: me } = useMe();
   const { data: bubbles } = useBubbles();
   const create = useCreateProfile();
   const update = useUpdateProfile(profile?.id ?? "");
@@ -77,7 +76,6 @@ function ProfileFormBody({
   const [affiliation, setAffiliation] = useState(profile?.affiliation ?? "");
   const [bio, setBio] = useState(profile?.bio ?? "");
   const [photoUrl, setPhotoUrl] = useState(profile?.photoUrl ?? "");
-  const [urlDraft, setUrlDraft] = useState("");
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -177,11 +175,7 @@ function ProfileFormBody({
         </div>
 
         <div className="space-y-3">
-          <Field
-            label="Photo *"
-            error={errors.photoUrl}
-            hint="Upload a photo of yourself — we crop it to 2:3 and strip location data."
-          >
+          <Field label="Photo *" error={errors.photoUrl}>
             <div className="flex flex-wrap gap-2">
               <input
                 ref={fileRef}
@@ -198,30 +192,6 @@ function ProfileFormBody({
                 disabled={upload.isPending}
               >
                 <ImageUp className="h-4 w-4" strokeWidth={2.5} /> Upload photo
-              </Button>
-              {me && (
-                <Button type="button" variant="ghost" size="sm" onClick={() => setPhotoUrl(`/api/avatar/${me.handle}`)}>
-                  <Sparkles className="h-4 w-4" strokeWidth={2.5} /> Use an illustrated avatar
-                </Button>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={urlDraft}
-                onChange={(e) => setUrlDraft(e.target.value)}
-                placeholder="…or paste an https:// image URL"
-                aria-label="Photo URL"
-                inputMode="url"
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                size="md"
-                disabled={!urlDraft.trim()}
-                onClick={() => setPhotoUrl(urlDraft.trim())}
-                aria-label="Use URL"
-              >
-                <Link2 className="h-4 w-4" strokeWidth={2.5} />
               </Button>
             </div>
           </Field>
