@@ -137,7 +137,7 @@ export async function getProfileDetail(profileId: string, viewer: SessionUser | 
   const [rank, stickers, myRating] = await Promise.all([
     nationalRank(card.auraScore, card.voteCount),
     bubbleStickers(row.bubbleId, card.id),
-    viewer && !isOwner ? getMyRating(viewer.id, card.id) : Promise.resolve(null),
+    viewer ? getMyRating(viewer.id, card.id) : Promise.resolve(null),
   ]);
   const badge = rank.rank ? percentileBadge(rank.rank, rank.total) : null;
   if (badge) stickers.push({ ...badge, tone: badge.id === "bottom-10" ? "low" : "high" });

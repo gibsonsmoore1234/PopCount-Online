@@ -1,13 +1,13 @@
 import { and, eq, gt, sql } from "drizzle-orm";
 import { db, type Tx } from "@/lib/db";
 import { creditTransactions, profiles, ratings, users, voteEvents } from "@/lib/db/schema";
-import { badRequest, forbidden, notFound, paymentRequired, tooMany } from "@/lib/errors";
+import { badRequest, notFound, paymentRequired, tooMany } from "@/lib/errors";
 import { BOOST_COST_CENTS, BOOST_DAILY_CAP, UP_THRESHOLD, computeAura } from "@/lib/aura";
 import type { SessionUser } from "@/lib/auth/session";
 import type { VoteResult } from "@/types/api";
 
 /** Lock the profile row so concurrent votes on the same profile serialise their aggregate updates. */
-async function lockProfile(tx: Tx, profileId: string, raterId: string) {
+async function lockProfile(tx: Tx, profileId: string) {
   const [p] = await tx
     .select({ id: profiles.id, userId: profiles.userId, bubbleId: profiles.bubbleId, isHidden: profiles.isHidden })
     .from(profiles)
@@ -15,7 +15,6 @@ async function lockProfile(tx: Tx, profileId: string, raterId: string) {
     .for("update")
     .limit(1);
   if (!p || p.isHidden) throw notFound("Profile not found.");
-  if (p.userId === raterId) throw forbidden("You can't rate your own profile.");
   return p;
 }
 
@@ -78,7 +77,7 @@ async function balanceOf(tx: Tx, userId: string) {
  */
 export async function rateProfile(user: SessionUser, profileId: string, value: number): Promise<VoteResult> {
   return db.transaction(async (tx) => {
-    const p = await lockProfile(tx, profileId, user.id);
+    const p = await lockProfile(tx, profileId);
     const [row] = await tx
       .insert(ratings)
       .values({ profileId, raterId: user.id, value, weight: 1 })
@@ -110,7 +109,7 @@ export async function rateProfile(user: SessionUser, profileId: string, value: n
  */
 export async function boostProfile(user: SessionUser, profileId: string, clicks: number): Promise<VoteResult> {
   return db.transaction(async (tx) => {
-    const p = await lockProfile(tx, profileId, user.id);
+    const p = await lockProfile(tx, profileId);
     const [rating] = await tx
       .select({ value: ratings.value, weight: ratings.weight })
       .from(ratings)

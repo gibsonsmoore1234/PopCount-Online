@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DropdownMenu } from "radix-ui";
-import { Trophy, Search, UserRound, LogOut, Shield, ScrollText, X, ChevronDown, Map as MapIcon } from "lucide-react";
+import { Trophy, Search, LogOut, Shield, ScrollText, X, ChevronDown, Map as MapIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useLogout, useMe } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
@@ -51,14 +51,6 @@ export function AppHeader() {
             <Trophy className="h-4 w-4" strokeWidth={2.5} />
             <span className="hidden lg:inline">National Rankings</span>
           </Button>
-
-          {me?.profile ? (
-            <Button asChild variant="aura" size="sm" className="hidden sm:inline-flex">
-              <Link href={`/p/${me.profile.id}`}>
-                <UserRound className="h-4 w-4" strokeWidth={2.5} /> My Profile
-              </Link>
-            </Button>
-          ) : null}
 
           {me && !me.isAnonymous && <AccountMenu />}
         </nav>
@@ -107,16 +99,6 @@ function AccountMenu() {
             <p className="text-muted truncate text-[11px] font-semibold">{me.email}</p>
           </div>
           <DropdownMenu.Separator className="bg-line my-1 h-0.5" />
-          {me.profile ? (
-            <DropdownMenu.Item className={item} onSelect={() => router.push(`/p/${me.profile!.id}`)}>
-              <UserRound className="h-4 w-4" /> My profile
-            </DropdownMenu.Item>
-          ) : null}
-          {me.profile && (
-            <DropdownMenu.Item className={item} onSelect={() => router.push(`/b/${me.profile!.bubbleSlug}`)}>
-              <MapIcon className="h-4 w-4" /> {me.profile.bubbleName}
-            </DropdownMenu.Item>
-          )}
           {me.role === "ADMIN" && (
             <DropdownMenu.Item className={item} onSelect={() => router.push("/admin")}>
               <Shield className="h-4 w-4" /> Moderation queue

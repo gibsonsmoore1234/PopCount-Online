@@ -115,10 +115,13 @@ describe("Aura rating engine", () => {
     expect(p.raterCount).toBe(5);
   });
 
-  it("forbids rating yourself", async () => {
+  it("lets you rate your own profile once", async () => {
     const owner = await makeUser();
     const pid = await makeProfile(owner, duke);
-    await expectApiError(rateProfile(owner, pid, 100), 403);
+    await rateProfile(owner, pid, 100);
+    await rateProfile(owner, pid, 90);
+    const p = (await getProfileDetail(pid, null))!;
+    expect(p.voteCount).toBe(1);
   });
 });
 
