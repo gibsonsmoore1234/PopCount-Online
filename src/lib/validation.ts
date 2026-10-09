@@ -72,6 +72,7 @@ export const createProfileSchema = z.object({
   affiliation: optionalTrimmed(40, "Affiliation"),
   bio: z.string().trim().max(280, "Bio must be at most 280 characters.").default(""),
   photoUrl: imageUrlSchema,
+  extraPhotos: z.array(imageUrlSchema).max(2, "Up to 3 photos.").default([]),
   consent: z.literal(true, { error: "Confirm this profile and photo are of you." }),
 });
 export type CreateProfileInput = z.infer<typeof createProfileSchema>;
@@ -84,6 +85,7 @@ export const updateProfileSchema = z
     affiliation: z.string().trim().max(40, "Affiliation must be at most 40 characters.").nullable(),
     bio: z.string().trim().max(280, "Bio must be at most 280 characters."),
     photoUrl: imageUrlSchema,
+    extraPhotos: z.array(imageUrlSchema).max(2, "Up to 3 photos."),
   })
   .partial();
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

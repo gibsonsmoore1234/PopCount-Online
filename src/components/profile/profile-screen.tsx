@@ -21,6 +21,9 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
   const { data: profile = initial } = useProfile(initial.id, initial);
   const [reporting, setReporting] = useState(false);
   const tier = auraTier(profile.auraScore);
+  const photos = profile.photos?.length ? profile.photos : [profile.photoUrl];
+  const [shown, setShown] = useState(0);
+  const current = photos[Math.min(shown, photos.length - 1)];
 
   const share = async () => {
     const url = window.location.href;
@@ -83,7 +86,32 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
           >
             <AuraFrame score={profile.auraScore} thickness="lg" className="shadow-hard-lg">
               <div className="border-ink [container-type:inline-size] relative aspect-[2/3] w-full overflow-hidden rounded-xl border-2 bg-white">
-                <Photo src={profile.photoUrl} alt={profile.displayName} eager />
+                <Photo key={current} src={current} alt={profile.displayName} eager />
+                {photos.length > 1 && (
+                  <>
+                    {/* Tap the left/right half to flip through photos. */}
+                    <button
+                      type="button"
+                      aria-label="Previous photo"
+                      className="absolute inset-y-0 left-0 w-1/2"
+                      onClick={() => setShown((i) => (i - 1 + photos.length) % photos.length)}
+                    />
+                    <button
+                      type="button"
+                      aria-label="Next photo"
+                      className="absolute inset-y-0 right-0 w-1/2"
+                      onClick={() => setShown((i) => (i + 1) % photos.length)}
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+                      {photos.map((u, i) => (
+                        <span
+                          key={u}
+                          className={`h-2 w-2 rounded-full border border-black/40 ${i === shown ? "bg-white" : "bg-white/40"}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
                 <div className="absolute inset-x-3 top-3 flex items-start justify-end">
                   <div
                     className="border-ink shadow-hard-sm rounded-2xl border-2 px-3 py-1.5 text-right"

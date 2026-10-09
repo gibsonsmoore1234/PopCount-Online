@@ -51,6 +51,7 @@ async function makeProfile(user: SessionUser, bubbleId: string, gender: "MALE" |
     gender,
     bio: "",
     photoUrl: `/api/avatar/${user.handle}`,
+    extraPhotos: [],
     consent: true,
   });
   return p.id;

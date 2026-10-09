@@ -73,9 +73,10 @@ function ProfileFormBody({
   const [displayName, setDisplayName] = useState(profile?.displayName ?? "");
   const [chosenBubble, setBubbleId] = useState("");
   const [gender, setGender] = useState<Gender>(profile?.gender ?? "FEMALE");
-  const [affiliation, setAffiliation] = useState(profile?.affiliation ?? "");
+  const affiliation = profile?.affiliation ?? "";
   const bio = profile?.bio ?? "";
-  const [photoUrl, setPhotoUrl] = useState(profile?.photoUrl ?? "");
+  const [photos, setPhotos] = useState<string[]>(profile?.photos ?? (profile?.photoUrl ? [profile.photoUrl] : []));
+  const photoUrl = photos[0] ?? "";
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -90,7 +91,7 @@ function ProfileFormBody({
     try {
       const blob = await prepareImage(file, { aspect: 2 / 3, maxWidth: 900 });
       const res = await upload.mutateAsync(blob);
-      setPhotoUrl(res.url);
+      setPhotos((p) => [...p, res.url].slice(0, 3));
       setErrors((e) => ({ ...e, photoUrl: undefined }));
     } catch (e) {
       toast.error(errorMessage(e));
@@ -108,6 +109,7 @@ function ProfileFormBody({
       affiliation: affiliation.trim() || undefined,
       bio,
       photoUrl,
+      extraPhotos: photos.slice(1),
     };
     const parsed = isEdit
       ? updateProfileSchema.safeParse({ ...payload, affiliation: affiliation.trim() || null })
@@ -189,11 +191,28 @@ function ProfileFormBody({
                 variant="secondary"
                 size="sm"
                 onClick={() => fileRef.current?.click()}
-                disabled={upload.isPending}
+                disabled={upload.isPending || photos.length >= 3}
               >
-                <ImageUp className="h-4 w-4" strokeWidth={2.5} /> Upload photo
+                <ImageUp className="h-4 w-4" strokeWidth={2.5} /> Upload photo ({photos.length}/3)
               </Button>
             </div>
+            {photos.length > 0 && (
+              <div className="flex gap-2">
+                {photos.map((url, i) => (
+                  <div key={url} className="border-ink relative h-20 w-14 overflow-hidden rounded-lg border-2">
+                    <Photo src={url} alt={`Photo ${i + 1}`} />
+                    <button
+                      type="button"
+                      aria-label={`Remove photo ${i + 1}`}
+                      onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))}
+                      className="absolute top-0.5 right-0.5 grid h-5 w-5 place-items-center rounded-full bg-black/75 text-xs font-black text-white"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </Field>
 
           <Field label="Display name *" htmlFor={`${uid}-name`} error={errors.displayName}>
@@ -218,15 +237,6 @@ function ProfileFormBody({
               </option>
             ))}
           </Select>
-        </Field>
-        <Field label="Affiliation / Greek / org" htmlFor={`${uid}-aff`} error={errors.affiliation}>
-          <Input
-            id={`${uid}-aff`}
-            value={affiliation}
-            onChange={(e) => setAffiliation(e.target.value)}
-            maxLength={40}
-            placeholder="e.g. Chi Omega, Club Soccer"
-          />
         </Field>
       </div>
 

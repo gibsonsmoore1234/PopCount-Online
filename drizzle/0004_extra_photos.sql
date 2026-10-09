@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "extra_photos" text[] DEFAULT '{}'::text[] NOT NULL;

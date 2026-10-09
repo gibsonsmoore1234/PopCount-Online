@@ -31,7 +31,7 @@ export async function createProfile(user: SessionUser, input: CreateProfileInput
     .where(and(eq(bubbles.id, input.bubbleId), eq(bubbles.isHidden, false)))
     .limit(1);
   if (!bubble) throw badRequest("Choose an existing campus or town bubble.");
-  await assertOwnImage(user.id, input.photoUrl);
+  for (const url of [input.photoUrl, ...(input.extraPhotos ?? [])]) await assertOwnImage(user.id, url);
 
   try {
     return await db.transaction(async (tx) => {
@@ -45,6 +45,7 @@ export async function createProfile(user: SessionUser, input: CreateProfileInput
           affiliation: input.affiliation ? cleanUserText(input.affiliation) : null,
           bio: cleanUserText(input.bio ?? ""),
           photoUrl: input.photoUrl,
+          extraPhotos: input.extraPhotos ?? [],
         })
         .returning({ id: profiles.id });
       await addMember(tx, bubble.id, user.id);
@@ -70,7 +71,7 @@ export async function updateProfile(user: SessionUser, profileId: string, input:
   if (input.displayName && containsBlockedLanguage(input.displayName)) {
     throw badRequest("Pick a display name without profanity.");
   }
-  if (input.photoUrl) await assertOwnImage(existing.userId, input.photoUrl);
+  for (const url of [input.photoUrl, ...(input.extraPhotos ?? [])]) if (url) await assertOwnImage(existing.userId, url);
   if (input.bubbleId && input.bubbleId !== existing.bubbleId) {
     const [b] = await db
       .select({ id: bubbles.id })
@@ -91,6 +92,7 @@ export async function updateProfile(user: SessionUser, profileId: string, input:
         }),
         ...(input.bio !== undefined && { bio: cleanUserText(input.bio) }),
         ...(input.photoUrl !== undefined && { photoUrl: input.photoUrl }),
+        ...(input.extraPhotos !== undefined && { extraPhotos: input.extraPhotos }),
         ...(input.bubbleId !== undefined && { bubbleId: input.bubbleId }),
         updatedAt: new Date(),
       })
@@ -115,6 +117,7 @@ export async function getProfileDetail(profileId: string, viewer: SessionUser | 
       userId: profiles.userId,
       bubbleId: profiles.bubbleId,
       bio: profiles.bio,
+      extraPhotos: profiles.extraPhotos,
       raterCount: profiles.raterCount,
       generalCount: profiles.commentCount,
       adviceCount: profiles.adviceCount,
@@ -146,6 +149,7 @@ export async function getProfileDetail(profileId: string, viewer: SessionUser | 
     ...card,
     userId: row.userId,
     bio: row.bio,
+    photos: [card.photoUrl, ...row.extraPhotos],
     raterCount: row.raterCount,
     generalCount: row.generalCount,
     adviceCount: row.adviceCount,
