@@ -12,7 +12,6 @@ import {
   Search,
   LayoutGrid,
   Trophy,
-  MessagesSquare,
   Flag,
 } from "lucide-react";
 import { useBubble, useFeed, useMe } from "@/hooks/api";
@@ -27,7 +26,6 @@ import type { FeedSort } from "@/lib/validation";
 import type { BubbleSummary, Page, ProfileCard as Card } from "@/types/api";
 import { ProfileCard, ProfileCardSkeleton } from "./profile-card";
 import { ProfileBoards } from "@/components/rankings/rankings";
-import { GroupsPanel } from "./groups-panel";
 import { ReportDialog } from "@/components/profile/report-dialog";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +38,7 @@ const SORTS: { value: FeedSort; label: string }[] = [
   { value: "least_votes", label: "Least Votes" },
 ];
 
-type Tab = "roster" | "leaderboards" | "groups";
+type Tab = "people" | "leaderboards";
 
 /** Layer 2 — full-screen campus feed that completely replaces the map. */
 export function BubbleScreen({
@@ -53,14 +51,12 @@ export function BubbleScreen({
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
-  const tab = (
-    ["roster", "leaderboards", "groups"].includes(params.get("tab") ?? "") ? params.get("tab") : "roster"
-  ) as Tab;
+  const tab = (["people", "leaderboards"].includes(params.get("tab") ?? "") ? params.get("tab") : "people") as Tab;
   const { data: bubble = initialBubble } = useBubble(initialBubble.slug, initialBubble);
 
   const setTab = (t: Tab) => {
     const sp = new URLSearchParams(params);
-    if (t === "roster") sp.delete("tab");
+    if (t === "people") sp.delete("tab");
     else sp.set("tab", t);
     sp.delete("g");
     const qs = sp.toString();
@@ -79,9 +75,8 @@ export function BubbleScreen({
         >
           {(
             [
-              ["roster", "Roster", LayoutGrid],
+              ["people", "People", LayoutGrid],
               ["leaderboards", "Leaderboards", Trophy],
-              ["groups", "Groups", MessagesSquare],
             ] as const
           ).map(([id, label, Icon]) => (
             <button
@@ -101,14 +96,13 @@ export function BubbleScreen({
       </div>
 
       <div className="mx-auto max-w-[1400px] px-3 py-5 sm:px-6">
-        {tab === "roster" && <Roster bubble={bubble} initialFeed={initialFeed} />}
+        {tab === "people" && <Roster bubble={bubble} initialFeed={initialFeed} />}
         {tab === "leaderboards" && (
           <div className="mx-auto max-w-3xl">
             <h2 className="mb-3 text-lg font-black tracking-tight uppercase">{bubble.name} leaderboards</h2>
             <ProfileBoards scope="bubble" bubbleSlug={bubble.slug} />
           </div>
         )}
-        {tab === "groups" && <GroupsPanel bubble={bubble} />}
       </div>
     </div>
   );
@@ -229,7 +223,7 @@ function Roster({ bubble, initialFeed }: { bubble: BubbleSummary; initialFeed: P
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <Pills ariaLabel="Sort roster" value={sort} onChange={setSort} options={SORTS} />
+        <Pills ariaLabel="Sort people" value={sort} onChange={setSort} options={SORTS} />
         <label className="border-ink focus-within:shadow-hard-sm flex h-9 w-full items-center gap-2 rounded-xl border-2 bg-white px-3 lg:w-72">
           <Search className="h-4 w-4 shrink-0" strokeWidth={3} />
           <input

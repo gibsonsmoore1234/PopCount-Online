@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Share2, Flag, Pencil, Trash2, MapPin, EyeOff, Users } from "lucide-react";
+import { ArrowLeft, Share2, Flag, Pencil, Trash2, MapPin, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { useDeleteProfile, useMe, useProfile } from "@/hooks/api";
 import { Button } from "@/components/ui/button";
@@ -185,11 +185,6 @@ function OwnerPanel({
       <div className="flex flex-wrap gap-2">
         <Button variant="secondary" size="sm" onClick={onEdit}>
           <Pencil className="h-4 w-4" strokeWidth={2.5} /> Edit profile
-        </Button>
-        <Button asChild variant="secondary" size="sm">
-          <Link href={`/b/${profile.bubble.slug}?tab=groups`}>
-            <Users className="h-4 w-4" strokeWidth={2.5} /> Bubble groups
-          </Link>
         </Button>
         <Button variant="danger" size="sm" onClick={onDelete}>
           <Trash2 className="h-4 w-4" strokeWidth={2.5} /> Delete profile
