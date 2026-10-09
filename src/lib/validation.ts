@@ -61,7 +61,7 @@ export const imageUrlSchema = z
     }
   }, "Use an uploaded photo or an https:// image URL.");
 
-export const genderSchema = z.enum(["MALE", "FEMALE", "NON_BINARY"]);
+export const genderSchema = z.enum(["MALE", "FEMALE"]);
 export const bubbleKindSchema = z.enum(["CAMPUS", "TOWN"]);
 export const commentKindSchema = z.enum(["COMMENT", "ADVICE"]);
 

@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils";
 const GENDERS: { value: Gender; label: string }[] = [
   { value: "FEMALE", label: "Female" },
   { value: "MALE", label: "Male" },
-  { value: "NON_BINARY", label: "Non-binary" },
 ];
 
 type Errors = Partial<Record<"displayName" | "bubbleId" | "photoUrl" | "affiliation" | "bio" | "consent", string>>;
@@ -262,7 +261,7 @@ function ProfileFormBody({
       </div>
 
       <Field label="Gender tag *">
-        <div role="radiogroup" aria-label="Gender" className="grid grid-cols-3 gap-2">
+        <div role="radiogroup" aria-label="Gender" className="grid grid-cols-2 gap-2">
           {GENDERS.map((g) => (
             <button
               key={g.value}

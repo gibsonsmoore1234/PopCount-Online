@@ -483,7 +483,7 @@ async function seed(db: Db) {
 
     // Profile owners — each demo person opted in by creating their own profile.
     for (let i = 0; i < c.profiles; i++) {
-      const g = i % 7 === 6 ? "NON_BINARY" : i % 2 === 0 ? "FEMALE" : "MALE";
+      const g = i % 2 === 0 ? "FEMALE" : "MALE";
       const first = g === "FEMALE" ? pick(FEMALE) : g === "MALE" ? pick(MALE) : pick(NB);
       let last = pick(LAST);
       while (last === first) last = pick(LAST);
