@@ -76,7 +76,10 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
           onClose();
           router.push(`/b/${bubble.slug}`);
         },
-        onError: (err) => setError(errorMessage(err)),
+        onError: (err) => {
+          setError(errorMessage(err));
+          toast.error(errorMessage(err));
+        },
       },
     );
   };
@@ -86,7 +89,6 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
       <div className="border-ink bg-surface flex items-center gap-2 rounded-xl border-2 px-3 py-2 text-xs font-bold">
         <MapPin className="h-4 w-4" strokeWidth={2.5} />
         Pinned at {pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}
-        <span className="text-muted ml-auto text-[10px] font-extrabold uppercase">Max 100 per county</span>
       </div>
 
       <div role="radiogroup" aria-label="Bubble type" className="grid grid-cols-2 gap-2">
