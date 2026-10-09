@@ -79,19 +79,19 @@ export async function login(input: LoginInput) {
 }
 
 export async function getMe(user: SessionUser): Promise<Me> {
-  const [[profile], memberships] = await Promise.all([
+  const [mine, memberships] = await Promise.all([
     db
       .select({
         id: profiles.id,
         displayName: profiles.displayName,
         photoUrl: profiles.photoUrl,
+        bubbleId: profiles.bubbleId,
         bubbleSlug: bubbles.slug,
         bubbleName: bubbles.name,
       })
       .from(profiles)
       .innerJoin(bubbles, eq(bubbles.id, profiles.bubbleId))
-      .where(eq(profiles.userId, user.id))
-      .limit(1),
+      .where(eq(profiles.userId, user.id)),
     db.select({ bubbleId: bubbleMembers.bubbleId }).from(bubbleMembers).where(eq(bubbleMembers.userId, user.id)),
   ]);
   return {
@@ -102,7 +102,16 @@ export async function getMe(user: SessionUser): Promise<Me> {
     isAnonymous: user.isAnonymous,
     creditBalance: user.creditBalance,
     termsAccepted: Boolean(user.termsAcceptedAt),
-    profile: profile ?? null,
+    profile: mine[0]
+      ? {
+          id: mine[0].id,
+          displayName: mine[0].displayName,
+          photoUrl: mine[0].photoUrl,
+          bubbleSlug: mine[0].bubbleSlug,
+          bubbleName: mine[0].bubbleName,
+        }
+      : null,
+    profileBubbleIds: mine.map((p) => p.bubbleId),
     memberships: memberships.map((m) => m.bubbleId),
   };
 }

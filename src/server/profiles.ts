@@ -52,8 +52,8 @@ export async function createProfile(user: SessionUser, input: CreateProfileInput
       return { id: profile.id, bubbleSlug: bubble.slug };
     });
   } catch (err) {
-    if (isUniqueViolation(err, "profiles_user_key")) {
-      throw conflict("You already have a profile — edit it instead.");
+    if (isUniqueViolation(err, "profiles_user_bubble_key")) {
+      throw conflict("You already have a profile in this bubble.");
     }
     throw err;
   }

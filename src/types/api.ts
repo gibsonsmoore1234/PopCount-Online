@@ -14,6 +14,8 @@ export interface Me {
   creditBalance: number;
   termsAccepted: boolean;
   profile: { id: string; displayName: string; photoUrl: string; bubbleSlug: string; bubbleName: string } | null;
+  /** Bubbles this device already has a profile in (one profile per bubble). */
+  profileBubbleIds: string[];
   memberships: string[];
 }
 
