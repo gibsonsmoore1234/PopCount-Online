@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DropdownMenu } from "radix-ui";
-import { Trophy, Search, LogOut, Shield, ScrollText, X, ChevronDown, Map as MapIcon } from "lucide-react";
+import { Trophy, Search, LogOut, Shield, ScrollText, X, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { useLogout, useMe } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
