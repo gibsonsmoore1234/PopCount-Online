@@ -33,7 +33,7 @@ const escapeHtml = (s: string) =>
  * Bubble diameter: area grows with membership (√members), and the whole layer shrinks when zoomed
  * out to the national view so neighbouring campuses don't pile on top of each other.
  */
-export function bubbleDiameter(members: number, zoom: number, maxMembers = members, bubbleCount = 1) {
+export function bubbleDiameter(members: number, zoom: number, maxMembers = members, bubbleCount = 1, fit = 1) {
   // Area ∝ members, relative to the biggest bubble: the largest is 150px, a near-empty one 56px.
   const share = Math.sqrt(Math.max(0, members) / Math.max(1, maxMembers));
   const base = 56 + (150 - 56) * share;
@@ -41,11 +41,11 @@ export function bubbleDiameter(members: number, zoom: number, maxMembers = membe
   // The more bubbles on the map, the smaller each one gets (full size up to 6 bubbles).
   const crowd = Math.max(0.35, Math.min(1, Math.sqrt(6 / Math.max(1, bubbleCount))));
   // Never smaller than a 30px tap target.
-  return Math.round(Math.max(30, base * scale * crowd));
+  return Math.round(Math.max(24, base * scale * crowd * fit));
 }
 
-function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number, count: number) {
-  const d = bubbleDiameter(b.profileCount, zoom, maxMembers, count);
+function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number, count: number, fit: number) {
+  const d = bubbleDiameter(b.profileCount, zoom, maxMembers, count, fit);
   const nameSize = Math.max(9, Math.min(13, d / 6));
   // Just the picture filling the circle, the ring in the score colour, and the name underneath.
   const html = `
@@ -160,6 +160,78 @@ function PinPicker({ active, onPick }: { active: boolean; onPick: (lat: number, 
   return null;
 }
 
+/**
+ * Keep bubbles from overlapping: at the current zoom, push any circles (plus their name label) that
+ * collide apart in screen space, then convert back to map coordinates. Re-runs on every zoom change.
+ */
+function SpreadBubbles({
+  bubbles,
+  zoom,
+  maxMembers,
+  onLayout,
+}: {
+  bubbles: BubbleSummary[];
+  zoom: number;
+  maxMembers: number;
+  onLayout: (layout: { pos: Record<string, [number, number]>; fit: number }) => void;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    const z = map.getZoom();
+    const pts = bubbles.map((b) => ({ b, p: map.project([b.lat, b.lng], z) }));
+    const radius = (b: BubbleSummary, f: number) =>
+      bubbleDiameter(b.profileCount, zoom, maxMembers, bubbles.length, f) / 2;
+    // 1) Crowded? Shrink every bubble until the tightest pair no longer touches (down to 40%).
+    let fit = 1;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const d = Math.hypot(pts[i].p.x - pts[j].p.x, pts[i].p.y - pts[j].p.y);
+        const need = radius(pts[i].b, 1) + radius(pts[j].b, 1) + 32;
+        if (d < need) fit = Math.min(fit, d / need);
+      }
+    }
+    fit = Math.max(0.4, fit);
+    // 2) Anything still touching (e.g. same spot) gets nudged apart. Radius includes the name label.
+    const nodes = pts.map(({ b, p }) => ({ id: b.id, x: p.x, y: p.y, r: radius(b, fit) + 14 }));
+    for (let iter = 0; iter < 120; iter++) {
+      let moved = false;
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i];
+          const b = nodes[j];
+          let dx = b.x - a.x;
+          let dy = b.y - a.y;
+          let d = Math.hypot(dx, dy);
+          const min = a.r + b.r + 4;
+          if (d >= min) continue;
+          if (d < 0.01) {
+            // Identical spots: nudge apart in a fixed direction per pair so the result is stable.
+            dx = Math.cos(i + j);
+            dy = Math.sin(i + j);
+            d = 1;
+          }
+          const push = (min - d) / 2;
+          const ux = dx / d;
+          const uy = dy / d;
+          a.x -= ux * push;
+          a.y -= uy * push;
+          b.x += ux * push;
+          b.y += uy * push;
+          moved = true;
+        }
+      }
+      if (!moved) break;
+    }
+    const out: Record<string, [number, number]> = {};
+    for (const n of nodes) {
+      const ll = map.unproject([n.x, n.y], z);
+      out[n.id] = [ll.lat, ll.lng];
+    }
+    onLayout({ pos: out, fit });
+  }, [map, bubbles, zoom, maxMembers, onLayout]);
+  return null;
+}
+
 function ResetView({ nonce }: { nonce: number }) {
   const map = useMap();
   useEffect(() => {
@@ -203,6 +275,8 @@ export default function CampusMap({
   resetNonce: number;
 }) {
   const [zoom, setZoom] = useState(initialView?.zoom ?? 4);
+  const [layout, setLayout] = useState<{ pos: Record<string, [number, number]>; fit: number }>({ pos: {}, fit: 1 });
+  const spread = layout.pos;
   const openRef = useRef(onOpenBubble);
   useEffect(() => {
     openRef.current = onOpenBubble;
@@ -242,11 +316,12 @@ export default function CampusMap({
       <ResetView nonce={resetNonce} />
       <ZoomTracker onZoom={setZoom} />
 
+      <SpreadBubbles bubbles={sorted} zoom={zoom} maxMembers={maxMembers} onLayout={setLayout} />
       {sorted.map((b) => (
         <Marker
           key={b.id}
-          position={[b.lat, b.lng]}
-          icon={bubbleIcon(b, zoom, maxMembers, sorted.length)}
+          position={spread[b.id] ?? [b.lat, b.lng]}
+          icon={bubbleIcon(b, zoom, maxMembers, sorted.length, layout.fit)}
           riseOnHover
           keyboard
           eventHandlers={{
@@ -259,7 +334,7 @@ export default function CampusMap({
         >
           <Tooltip
             direction="top"
-            offset={[0, -bubbleDiameter(b.profileCount, zoom, maxMembers, sorted.length) / 2]}
+            offset={[0, -bubbleDiameter(b.profileCount, zoom, maxMembers, sorted.length, layout.fit) / 2]}
             className="pc-tooltip"
             opacity={1}
           >
