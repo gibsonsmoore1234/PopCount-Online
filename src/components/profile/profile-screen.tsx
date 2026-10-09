@@ -104,7 +104,8 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
               </div>
             </AuraFrame>
             <p className="text-center text-sm font-black tabular-nums">
-              {formatCount(profile.voteCount)} {profile.voteCount === 1 ? "vote" : "votes"}
+              {formatCount(profile.voteCount)} {profile.voteCount === 1 ? "vote" : "votes"} ·{" "}
+              {formatCount(profile.generalCount)} {profile.generalCount === 1 ? "comment" : "comments"}
             </p>
           </motion.div>
 
