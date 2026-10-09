@@ -261,7 +261,7 @@ function Roster({ bubble, initialFeed }: { bubble: BubbleSummary; initialFeed: P
           </p>
           <Grid>
             {items.map((p, i) => (
-              <ProfileCard key={p.id} p={p} priority={i < 8} />
+              <ProfileCard key={p.id} p={p} rank={debounced ? undefined : i + 1} priority={i < 8} />
             ))}
           </Grid>
         </>

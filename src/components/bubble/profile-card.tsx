@@ -7,7 +7,7 @@ import { Photo } from "@/components/aura/photo";
 import type { ProfileCard as Card } from "@/types/api";
 
 /** 2:3 portrait card: photo, name and a frame in the score colour — every metric lives on the profile page. */
-export function ProfileCard({ p, priority }: { p: Card; priority?: boolean }) {
+export function ProfileCard({ p, rank, priority }: { p: Card; rank?: number; priority?: boolean }) {
   return (
     <motion.div
       layout="position"
@@ -30,6 +30,11 @@ export function ProfileCard({ p, priority }: { p: Card; priority?: boolean }) {
               className="transition-transform duration-500 group-hover:scale-[1.04]"
             />
 
+            {rank !== undefined && (
+              <span className="absolute top-2 left-2 grid h-7 min-w-7 place-items-center rounded-full bg-black/75 px-1.5 text-xs font-black text-white tabular-nums backdrop-blur-md">
+                #{rank}
+              </span>
+            )}
             <div className="absolute inset-x-1.5 bottom-1.5 rounded-xl border border-white/20 bg-black/70 px-2 py-1.5 text-white backdrop-blur-md sm:inset-x-2 sm:bottom-2">
               <p className="truncate text-xs leading-tight font-black sm:text-sm">{p.displayName}</p>
             </div>
