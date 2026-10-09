@@ -22,12 +22,25 @@ export function AppHeader() {
     <header className="border-ink fixed inset-x-0 top-0 z-[900] h-16 border-b-2 bg-white backdrop-blur-md">
       <div className="mx-auto flex h-full max-w-[1600px] items-center gap-2 px-3 sm:gap-3 sm:px-5">
         <Link href="/" className="group flex shrink-0 items-center gap-2" aria-label="Pop Count — map">
-          <span className="border-ink bg-ink shadow-hard-sm grid h-9 w-9 place-items-center rounded-xl border-2 text-lg font-black text-white transition group-hover:-rotate-6">
+          <span
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-lg font-black transition group-hover:-rotate-6"
+            style={{ background: "#000", color: "#fff", border: "2.5px solid #22c55e" }}
+          >
             P
           </span>
-          <span className="hidden leading-none sm:block">
-            <span className="block text-[17px] font-black tracking-tight">Pop Count</span>
-            <span className="text-aura-low mt-0.5 block text-[10px] font-extrabold tracking-wider uppercase">
+          <span className="block leading-none">
+            <span className="block text-[14px] font-black tracking-tight whitespace-nowrap sm:text-[17px]">
+              Pop-Count{" "}
+              <span
+                style={{ color: "#0a0a0c", textShadow: "0 0 6px rgb(239 68 68 / 0.85), 0 0 14px rgb(239 68 68 / 0.6)" }}
+              >
+                Online
+              </span>
+            </span>
+            <span
+              className="mt-0.5 block text-[9px] font-extrabold tracking-wider whitespace-nowrap uppercase sm:text-[10px]"
+              style={{ color: "#eab308" }}
+            >
               What&apos;s your rating?
             </span>
           </span>
