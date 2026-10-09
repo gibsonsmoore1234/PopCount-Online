@@ -134,7 +134,7 @@ async function createAnonymousUser(): Promise<SessionUser> {
     const [u] = await db
       .insert(users)
       .values({
-        email: `${handle}-${randomBytes(6).toString("hex")}@anon.popcount.ai`,
+        email: `${handle}-${randomBytes(6).toString("hex")}@anon.popcount.online`,
         handle,
         passwordHash: "!anonymous",
         isAnonymous: true,

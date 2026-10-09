@@ -1,6 +1,6 @@
 # Pop Count
 
-**popcount.ai** — a live popularity map. Find a bubble (a campus, town or any place) on the map, browse the people in it, and rate them 0–100. Everyone's score is the average of all ratings, shown as a percentage and a green / yellow / red frame.
+**popcount.online** — a live popularity map. Find a bubble (a campus, town or any place) on the map, browse the people in it, and rate them 0–100. Everyone's score is the average of all ratings, shown as a percentage and a green / yellow / red frame.
 
 - **Map → bubble → profile.** The U.S. map shows bubbles sized by how many people are in them, ringed in their average score colour. Tap one to see its people (ranked) and leaderboards, then tap a person to rate and comment.
 - **Anonymous and free.** No sign-up to browse, rate, comment, report or drop a bubble — the first action gives the device an anonymous handle. A free account is only needed to create a profile, and you can only create a profile of yourself.
@@ -20,8 +20,8 @@ No database server is needed locally — without `DATABASE_URL` the app uses PGl
 
 | Demo account | Login               | Password      |
 | ------------ | ------------------- | ------------- |
-| Member       | `demo@popcount.ai`  | `password123` |
-| Admin        | `admin@popcount.ai` | `admin12345`  |
+| Member       | `demo@popcount.online`  | `password123` |
+| Admin        | `admin@popcount.online` | `admin12345`  |
 
 The seed creates 6 bubbles, 64 fictional demo profiles with placeholder photos, ratings, comments and a house ad.
 
@@ -51,7 +51,7 @@ The app needs **Node 20+** and **PostgreSQL 14+**. In production `DATABASE_URL` 
 
 ```bash
 docker build -t popcount .
-docker run -p 3000:3000 -e DATABASE_URL=postgres://… -e DATABASE_SSL=true -e APP_URL=https://popcount.ai popcount
+docker run -p 3000:3000 -e DATABASE_URL=postgres://… -e DATABASE_SSL=true -e APP_URL=https://popcount.online popcount
 ```
 
 `npm start` applies migrations before serving. `docker compose up -d` starts a local Postgres for testing.
