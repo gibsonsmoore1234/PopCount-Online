@@ -37,7 +37,7 @@ export function errorResponse(err: unknown): Response {
     );
   }
   console.error("[api] unhandled error", err);
-  return NextResponse.json({ error: "Something went wrong. Please try again.", code: "internal" }, { status: 500 });
+  return NextResponse.json({ error: explainServerError(err), code: "internal" }, { status: 500 });
 }
 
 function assertSameOrigin(req: NextRequest) {
@@ -85,4 +85,26 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function uuidParam(id: string, what = "Resource"): string {
   if (!UUID.test(id)) throw new ApiError(404, `${what} not found.`, "not_found");
   return id;
+}
+
+/** Turn common setup problems (database not connected / not migrated) into a message that says what to fix. */
+function explainServerError(err: unknown): string {
+  const seen = new Set<unknown>();
+  let e = err as { message?: string; code?: string; cause?: unknown } | undefined;
+  const parts: string[] = [];
+  while (e && !seen.has(e)) {
+    seen.add(e);
+    parts.push(`${e.code ?? ""} ${e.message ?? ""}`);
+    e = e.cause as typeof e;
+  }
+  const text = parts.join(" ");
+  if (/DATABASE_URL is required/.test(text)) return "Server setup: DATABASE_URL is not set in Vercel.";
+  if (/ENETUNREACH|ENOTFOUND|EAI_AGAIN/.test(text))
+    return "Server setup: can't reach the database — use Supabase's Transaction pooler address (…pooler.supabase.com:6543).";
+  if (/28P01|password authentication failed/.test(text))
+    return "Server setup: the database password in DATABASE_URL is wrong.";
+  if (/42P01|42703|does not exist/.test(text))
+    return "Server setup: the database tables are missing or outdated — redeploy so the build runs migrations.";
+  if (/ECONNREFUSED|ETIMEDOUT|timeout/i.test(text)) return "Server setup: the database connection timed out.";
+  return "Something went wrong. Please try again.";
 }
