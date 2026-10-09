@@ -63,7 +63,6 @@ function ProfileFormBody({
 }) {
   const isEdit = Boolean(profile);
   const router = useRouter();
-  const { data: me } = useMe();
   const { data: bubbles } = useBubbles();
   const create = useCreateProfile();
   const update = useUpdateProfile(profile?.id ?? "");
