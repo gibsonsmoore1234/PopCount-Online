@@ -101,7 +101,7 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="border-ink shadow-hard pointer-events-auto max-w-[min(22rem,calc(100vw-9rem))] rounded-2xl border-2 bg-white/95 p-3 backdrop-blur"
+          className="border-ink shadow-hard pointer-events-auto max-w-[min(22rem,calc(100vw-9rem))] rounded-2xl border-2 bg-white p-3 backdrop-blur"
         >
           <div className="flex items-center gap-2">
             <span className="animate-pulse-ring bg-aura-high h-2.5 w-2.5 rounded-full" />

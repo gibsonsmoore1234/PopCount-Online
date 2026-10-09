@@ -32,7 +32,7 @@ export function AppHeader() {
   const [mobileSearch, setMobileSearch] = useState(false);
 
   return (
-    <header className="border-ink fixed inset-x-0 top-0 z-[900] h-16 border-b-2 bg-white/95 backdrop-blur-md">
+    <header className="border-ink fixed inset-x-0 top-0 z-[900] h-16 border-b-2 bg-white backdrop-blur-md">
       <div className="mx-auto flex h-full max-w-[1600px] items-center gap-2 px-3 sm:gap-3 sm:px-5">
         <Link href="/" className="group flex shrink-0 items-center gap-2" aria-label="Pop Count — map">
           <span className="border-ink bg-ink shadow-hard-sm grid h-9 w-9 place-items-center rounded-xl border-2 text-lg font-black text-white transition group-hover:-rotate-6">

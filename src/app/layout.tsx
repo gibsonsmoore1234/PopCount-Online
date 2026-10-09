@@ -52,7 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Skip to content
           </a>
           <AppHeader />
-          <main id="main" className="pt-16 pb-16 md:pb-0">
+          <main id="main" className="pt-16 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
             {children}
           </main>
           <MobileTabBar />

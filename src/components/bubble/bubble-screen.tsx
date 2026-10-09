@@ -71,7 +71,7 @@ export function BubbleScreen({
     <div className="min-h-[calc(100dvh-4rem)] bg-white">
       <BubbleHeader bubble={bubble} />
 
-      <div className="border-ink sticky top-16 z-[400] border-b-2 bg-white/95 backdrop-blur">
+      <div className="border-ink sticky top-16 z-[400] border-b-2 bg-white backdrop-blur">
         <div
           role="tablist"
           aria-label={`${bubble.name} sections`}

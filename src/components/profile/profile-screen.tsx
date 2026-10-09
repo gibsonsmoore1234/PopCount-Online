@@ -45,7 +45,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
   return (
     <div className="bg-surface pc-dotgrid min-h-[calc(100dvh-4rem)]">
       {/* Sticky profile bar */}
-      <div className="border-ink sticky top-16 z-[400] border-b-2 bg-white/95 backdrop-blur">
+      <div className="border-ink sticky top-16 z-[400] border-b-2 bg-white backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-3 py-2.5 sm:px-6">
           <Button asChild variant="secondary" size="sm">
             <Link href={`/b/${profile.bubble.slug}`}>
@@ -80,7 +80,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mx-auto w-full max-w-[440px] space-y-3 lg:sticky lg:top-36"
+            className="mx-auto w-full max-w-[230px] space-y-3 sm:max-w-[440px] lg:sticky lg:top-36"
           >
             <AuraFrame score={profile.auraScore} thickness="lg" className="shadow-hard-lg">
               <div className="border-ink [container-type:inline-size] relative aspect-[2/3] w-full overflow-hidden rounded-xl border-2 bg-white">
@@ -112,12 +112,12 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
           {/* Details & controls */}
           <div className="space-y-5">
             <div className="space-y-2">
-              <p className="text-muted flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold tracking-wider uppercase">
+              <p className="text-muted flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] font-extrabold tracking-wider uppercase lg:justify-start">
                 <Link href={`/b/${profile.bubble.slug}`} className="hover:text-ink flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5" /> {profile.bubble.name}
                 </Link>
               </p>
-              <h1 className="text-3xl leading-none font-black tracking-tight uppercase sm:text-5xl">
+              <h1 className="text-center text-3xl leading-none font-black tracking-tight uppercase sm:text-5xl lg:text-left">
                 {profile.displayName}
               </h1>
             </div>
