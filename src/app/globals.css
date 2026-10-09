@@ -1,0 +1,322 @@
+@import "tailwindcss";
+@import "@fontsource-variable/plus-jakarta-sans";
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Pop Count — design tokens
+   Canvas white + crisp gray surfaces, high-contrast ink line-art, and the
+   three Aura accents (green ≥ 67, yellow 34–66.9, coral < 34).
+   ────────────────────────────────────────────────────────────────────────── */
+@theme {
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-canvas: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-2: #ececef;
+  --color-ink: #0a0a0c;
+  --color-ink-2: #3f3f46;
+  --color-muted: #6b7280;
+  --color-line: #e5e5e7;
+  --color-aura-high: #22c55e;
+  --color-aura-mid: #facc15;
+  --color-aura-low: #ef4444;
+  --color-aura-none: #d4d4d8;
+  --color-ocean: #ffffff;
+  --color-white: #ffffff;
+
+  --shadow-hard-xs: 0 1px 2px rgb(0 0 0 / 0.08);
+  --shadow-hard-sm: 0 2px 8px rgb(0 0 0 / 0.08);
+  --shadow-hard: 0 8px 24px rgb(0 0 0 / 0.08);
+  --shadow-hard-lg: 0 16px 48px rgb(0 0 0 / 0.14);
+
+  --radius-card: 1.125rem;
+
+  --animate-pop-in: pc-pop-in 180ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  --animate-fade-in: pc-fade-in 160ms ease-out;
+  --animate-slide-up: pc-slide-up 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-shimmer: pc-shimmer 1.4s linear infinite;
+  --animate-pulse-ring: pc-pulse-ring 2.4s ease-out infinite;
+
+  @keyframes pc-pop-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  @keyframes pc-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pc-slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pc-shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes pc-pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgb(34 197 94 / 0.75);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgb(34 197 94 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(34 197 94 / 0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    @apply bg-ink text-white;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .pc-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .pc-scroll::-webkit-scrollbar-track {
+    background: var(--color-surface-2);
+  }
+  .pc-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-ink);
+    border-radius: 9999px;
+  }
+  .pc-no-scrollbar {
+    scrollbar-width: none;
+  }
+  .pc-no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .pc-skeleton {
+    background: linear-gradient(90deg, #eef0f3 25%, #f8fafc 50%, #eef0f3 75%);
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+  .pc-dotgrid {
+    background-image: radial-gradient(rgb(10 10 12 / 0.05) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+}
+
+/* ── Leaflet ─────────────────────────────────────────────────────────── */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--color-ocean) !important;
+}
+.leaflet-control-zoom {
+  border: 2px solid var(--color-ink) !important;
+  border-radius: 0.75rem !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-hard-sm) !important;
+}
+.leaflet-control-zoom a {
+  color: var(--color-ink) !important;
+  font-weight: 800;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 34px !important;
+}
+.leaflet-control-zoom a + a {
+  border-top: 2px solid var(--color-ink) !important;
+}
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: rgb(255 255 255 / 0.85) !important;
+  border-top-left-radius: 8px;
+}
+.leaflet-pane.leaflet-marker-pane .pc-bubble-wrap {
+  background: transparent;
+  border: 0;
+}
+.pc-bubble {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 35% 30%, #2a2a30, #000 70%);
+  color: #fff;
+  border: 2px solid rgb(255 255 255 / 0.85);
+  box-shadow:
+    0 0 0 4px var(--pc-ring, var(--color-aura-high)),
+    0 10px 22px rgb(10 10 12 / 0.35);
+  text-align: center;
+  padding: 0 4px;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+  user-select: none;
+}
+.pc-bubble:hover,
+.pc-bubble:focus-visible {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 0 5px var(--pc-ring, var(--color-aura-high)),
+    0 14px 28px rgb(10 10 12 / 0.45);
+}
+.pc-bubble__name {
+  display: block;
+  max-width: 100%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pc-bubble__members {
+  display: block;
+  margin-top: 3px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--pc-ring, var(--color-aura-high));
+  white-space: nowrap;
+}
+.pc-bubble-pending {
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-aura-mid);
+  border: 3px dashed var(--color-ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+.leaflet-tooltip.pc-tooltip {
+  border: 2px solid var(--color-ink);
+  border-radius: 12px;
+  box-shadow: var(--shadow-hard-sm);
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}
+.leaflet-tooltip.pc-tooltip::before {
+  display: none;
+}
+.pc-map-pinning .leaflet-container {
+  cursor: crosshair !important;
+}
+
+/* ── Dark glass theme: soften the line-art into hairlines, add gloss to accents ── */
+.border-ink {
+  border-color: rgb(10 10 12 / 0.12) !important;
+}
+.border-2,
+.border-\[3px\] {
+  border-width: 1px !important;
+}
+.bg-aura-high,
+.bg-aura-mid,
+.bg-aura-low,
+[data-tier],
+.pc-gloss {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0) 55%) !important;
+}
+.bg-aura-mid {
+  color: #0b0b0d;
+}
+.leaflet-tooltip.pc-tooltip {
+  background: #ffffff;
+  color: #0a0a0c;
+}
+.leaflet-control-zoom a {
+  background: #ffffff !important;
+  color: #0a0a0c !important;
+}
+.leaflet-control-attribution {
+  background: rgb(0 0 0 / 0.6) !important;
+  color: #888 !important;
+}
+.bg-black\/70,
+.bg-black\/70 * {
+  color: #fff;
+}
+.bg-black\/70 .text-white\/70 {
+  color: rgb(255 255 255 / 0.7);
+}
+.bg-black\/70 .text-white\/90 {
+  color: rgb(255 255 255 / 0.9);
+}
+
+/* Snap-Map style water + logo bubbles */
+.leaflet-container {
+  background: #ffffff !important;
+}
+.pc-bubble__logo {
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 2px solid var(--pc-ring, #22c55e);
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+.pc-bubble {
+  box-shadow:
+    0 0 0 4px var(--pc-ring, #22c55e),
+    0 0 22px var(--pc-ring, #22c55e),
+    0 10px 22px rgb(0 0 0 / 0.6) !important;
+}
+
+/* ── Colour pass: white backgrounds, brand green/yellow/red accents ── */
+.bg-ink {
+  background-color: #16a34a;
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0) 60%);
+}
+.hover\:bg-ink-2:hover {
+  background-color: #15803d;
+}
+.border-b-4.border-ink {
+  border-color: #16a34a !important;
+}
+header.fixed::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -3px;
+  height: 3px;
+  background: linear-gradient(90deg, #22c55e 0 33.3%, #facc15 33.3% 66.6%, #ef4444 66.6% 100%);
+}
+.shadow-hard,
+.shadow-hard-lg {
+  box-shadow:
+    0 0 0 1px rgb(22 163 74 / 0.08),
+    0 10px 28px rgb(22 163 74 / 0.1) !important;
+}
