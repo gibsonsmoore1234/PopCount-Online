@@ -126,7 +126,7 @@ function UsCanvas({ bubbles, zoom }: { bubbles: BubbleSummary[]; zoom: number })
       <GeoJSON
         key="outline"
         data={geo.outline}
-        style={{ color: "#ffffff", weight: 2.5, opacity: 0.9 }}
+        style={{ color: "#0a0a0c", weight: 2, opacity: 0.9 }}
         interactive={false}
       />
     </Pane>
