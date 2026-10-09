@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppHeader } from "@/components/layout/app-header";
+import { MobileTabBar } from "@/components/layout/mobile-tabbar";
 import { TermsGate } from "@/components/onboarding/terms-gate";
 import { AuthPrompt } from "@/components/auth/auth-prompt";
 import { RankingsDialog } from "@/components/rankings/rankings";
@@ -24,13 +25,15 @@ export const metadata: Metadata = {
     siteName: "popularitycontest.ai",
     type: "website",
   },
-  icons: { icon: "/icon.svg" },
+  icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Popularity" },
 };
 
 export const viewport: Viewport = {
   themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -49,9 +52,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Skip to content
           </a>
           <AppHeader />
-          <main id="main" className="pt-16">
+          <main id="main" className="pt-16 pb-16 md:pb-0">
             {children}
           </main>
+          <MobileTabBar />
           <TermsGate initiallyAccepted={termsAccepted} />
           <AuthPrompt />
           <RankingsDialog />

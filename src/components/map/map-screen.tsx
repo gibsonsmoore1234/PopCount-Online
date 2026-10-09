@@ -78,7 +78,10 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
   return (
     <section
       aria-label="Interactive campus map"
-      className={cn("relative h-[calc(100dvh-4rem)] w-full overflow-hidden", pinning && "pc-map-pinning")}
+      className={cn(
+        "relative h-[calc(100dvh-8rem)] w-full overflow-hidden md:h-[calc(100dvh-4rem)]",
+        pinning && "pc-map-pinning",
+      )}
     >
       <CampusMap
         bubbles={bubbles}
