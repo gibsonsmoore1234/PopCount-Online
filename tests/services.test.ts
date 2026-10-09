@@ -9,7 +9,7 @@ import { eq } from "drizzle-orm";
 import { createDb, setDb, type Db } from "@/lib/db";
 import * as s from "@/lib/db/schema";
 import type { SessionUser } from "@/lib/auth/session";
-import { createBubble, getBubbleBySlug } from "@/server/bubbles";
+import { createBubble, deleteBubble, getBubbleBySlug } from "@/server/bubbles";
 import { createProfile, getProfileDetail, leaderboard } from "@/server/profiles";
 import { boostProfile, rateProfile } from "@/server/ratings";
 import { addComment } from "@/server/comments";
@@ -228,6 +228,21 @@ describe("bubbles", () => {
       createBubble(admin, { name: "One Too Many", description: "", kind: "TOWN", lat: 30.2849, lng: -97.7341 }),
       409,
     );
+  });
+
+  it("deletes a bubble together with its profiles", async () => {
+    const owner = await makeUser();
+    const bubble = await createBubble(owner, {
+      name: "Doomed",
+      description: "",
+      kind: "TOWN",
+      lat: 39.74,
+      lng: -104.99,
+    });
+    const pid = await makeProfile(owner, bubble.id);
+    await deleteBubble(bubble.slug);
+    expect(await getBubbleBySlug(bubble.slug)).toBeNull();
+    expect(await getProfileDetail(pid, null)).toBeNull();
   });
 });
 

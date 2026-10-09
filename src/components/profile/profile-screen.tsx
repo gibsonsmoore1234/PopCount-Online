@@ -14,6 +14,7 @@ import type { ProfileDetail } from "@/types/api";
 import { AnimatedNumber, VoteConsole } from "./vote-console";
 import { CommentsPanel } from "./comments-panel";
 import { ReportDialog } from "./report-dialog";
+import { AdminDeleteButton } from "@/components/admin/admin-delete-button";
 
 /** Layer 3 — full-screen "Tea-app" style profile takeover. */
 export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
@@ -57,6 +58,12 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
               <Flag className="h-4 w-4" strokeWidth={2.5} />
             </Button>
           }
+          <AdminDeleteButton
+            kind="profile"
+            id={profile.id}
+            name={profile.displayName}
+            backTo={`/b/${profile.bubble.slug}`}
+          />
         </div>
       </div>
 

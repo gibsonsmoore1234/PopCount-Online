@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { eq, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { bubbleMembers, bubbles, creditTransactions, profiles, users } from "@/lib/db/schema";
@@ -36,8 +37,34 @@ export async function signup(input: SignupInput) {
   }
 }
 
+/**
+ * With no sign-up, the admin account comes from ADMIN_EMAIL / ADMIN_PASSWORD. The first login with those
+ * credentials creates (or promotes) the account; afterwards the stored password hash is used as normal.
+ */
+async function bootstrapAdmin(id: string, password: string) {
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const secret = process.env.ADMIN_PASSWORD;
+  if (!email || !secret || secret.length < 8 || id !== email) return;
+  const a = Buffer.from(password);
+  const b = Buffer.from(secret);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return;
+  const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+  if (existing) {
+    await db.update(users).set({ role: "ADMIN" }).where(eq(users.id, existing.id));
+    return;
+  }
+  await db.insert(users).values({
+    email,
+    handle: "admin",
+    passwordHash: await hashPassword(secret),
+    role: "ADMIN",
+    termsAcceptedAt: new Date(),
+  });
+}
+
 export async function login(input: LoginInput) {
   const id = input.identifier.trim().toLowerCase().replace(/^@/, "");
+  await bootstrapAdmin(id, input.password);
   const [user] = await db
     .select({ id: users.id, passwordHash: users.passwordHash, bannedAt: users.bannedAt })
     .from(users)

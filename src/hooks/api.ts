@@ -273,6 +273,14 @@ export function useDeleteProfile(id: string) {
   });
 }
 
+export function useDeleteBubble(slug: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch(`/api/bubbles/${slug}`, { method: "DELETE" }),
+    onSuccess: () => qc.invalidateQueries(),
+  });
+}
+
 /** Optimistically apply a rating change to a cached profile; the server response then reconciles exact numbers. */
 function optimisticRate(p: ProfileDetail, value: number): ProfileDetail {
   const prev = p.myRating;
