@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ShieldCheck } from "lucide-react";
+import { ImageUp, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -183,6 +183,16 @@ function ProfileFormBody({
               />
             ))}
           </div>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="w-full"
+            onClick={() => fileRef.current?.click()}
+            disabled={upload.isPending || photos.length >= 3}
+          >
+            {upload.isPending ? <Spinner /> : <ImageUp className="h-4 w-4" strokeWidth={2.5} />} Upload photo
+          </Button>
           {errors.photoUrl && <p className="text-xs font-bold text-[#9b2c2c]">{errors.photoUrl}</p>}
         </div>
 
