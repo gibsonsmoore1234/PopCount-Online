@@ -27,7 +27,7 @@ export const MIN_VOTES_FOR_RANKING = 3;
 /** Boost economics: $0.01 per click, at most 10 clicks per profile per rolling 24h. */
 export const BOOST_COST_CENTS = 1;
 export const BOOST_DAILY_CAP = 10;
-export const SIGNUP_GRANT_CENTS = 100;
+export const SIGNUP_GRANT_CENTS = 20;
 /** Every action that adds something (rating, comment, profile, bubble) costs one click. */
 export const ACTION_COST_CLICKS = 1;
 

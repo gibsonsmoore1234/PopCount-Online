@@ -22,7 +22,7 @@ export function AuthPrompt() {
             <p className="text-sm leading-snug font-bold">{reason}</p>
           </div>
           <p className="text-muted text-xs font-semibold">
-            Everyone starts with <b className="text-ink">100 clicks</b>. Rating, commenting and reporting are anonymous
+            Everyone starts with <b className="text-ink">20 clicks</b>. Rating, commenting and reporting are anonymous
             — an account is only needed to create your own profile.
           </p>
           <div className="grid grid-cols-2 gap-2">

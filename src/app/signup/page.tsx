@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function SignupPage() {
   if (await getSessionUser()) redirect("/");
   return (
-    <AuthShell title="Join Pop Count" subtitle="Free · 100 clicks to start · 18+ only.">
+    <AuthShell title="Join Pop Count" subtitle="Free · 20 clicks to start · 18+ only.">
       <Suspense>
         <AuthForm mode="signup" />
       </Suspense>
