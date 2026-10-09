@@ -3,3 +3,5 @@ node_modules
 drizzle
 .data
 package-lock.json
+# Prettier output for this file is not idempotent (long template literals)
+scripts/seed.ts
