@@ -5,7 +5,6 @@ import { badRequest, forbidden, notFound, paymentRequired, tooMany } from "@/lib
 import { BOOST_COST_CENTS, BOOST_DAILY_CAP, UP_THRESHOLD, computeAura } from "@/lib/aura";
 import type { SessionUser } from "@/lib/auth/session";
 import type { VoteResult } from "@/types/api";
-import { spendClick } from "./credits";
 
 /** Lock the profile row so concurrent votes on the same profile serialise their aggregate updates. */
 async function lockProfile(tx: Tx, profileId: string, raterId: string) {
@@ -80,7 +79,6 @@ async function balanceOf(tx: Tx, userId: string) {
 export async function rateProfile(user: SessionUser, profileId: string, value: number): Promise<VoteResult> {
   return db.transaction(async (tx) => {
     const p = await lockProfile(tx, profileId, user.id);
-    await spendClick(tx, user.id, profileId);
     const [row] = await tx
       .insert(ratings)
       .values({ profileId, raterId: user.id, value, weight: 1 })

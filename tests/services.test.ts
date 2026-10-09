@@ -135,8 +135,8 @@ describe("boost micro-economy", () => {
     // 100×4 + 0×1 over weight 5 = 80
     expect(res.profile.auraScore).toBe(80);
     expect(res.myRating.weight).toBe(4);
-    expect(res.creditBalance).toBe(246); // 250 − 1 rating − 3 boosts
-    expect(await getBalance(fan.id)).toBe(246);
+    expect(res.creditBalance).toBe(247); // 250 − 3 boosts
+    expect(await getBalance(fan.id)).toBe(247);
   });
 
   it("caps boosts at 10 per profile per day", async () => {
@@ -147,14 +147,14 @@ describe("boost micro-economy", () => {
     expect(first.myRating.boostsToday).toBe(8);
     const second = await boostProfile(fan, pid, 10); // clamped to the 2 remaining
     expect(second.myRating.boostsToday).toBe(10);
-    expect(second.creditBalance).toBe(989); // 1000 − 1 rating − 10 boosts
+    expect(second.creditBalance).toBe(990); // 1000 − 10 boosts
     await expectApiError(boostProfile(fan, pid, 1), 429);
   });
 
   it("refuses to overdraw credits", async () => {
     const pid = await makeProfile(await makeUser(), duke);
-    const broke = await makeUser({ credits: 2 });
-    await rateProfile(broke, pid, 70); // costs 1 click
+    const broke = await makeUser({ credits: 1 });
+    await rateProfile(broke, pid, 70);
     await expectApiError(boostProfile(broke, pid, 2), 402);
     expect(await getBalance(broke.id)).toBe(1);
   });
@@ -228,14 +228,14 @@ describe("bubbles", () => {
   });
 });
 
-describe("clicks", () => {
-  it("charges one click per rating/comment and refuses when out of clicks", async () => {
+describe("free actions", () => {
+  it("rating and commenting cost nothing", async () => {
     const pid = await makeProfile(await makeUser(), duke);
-    const u = await makeUser({ credits: 2 });
+    const u = await makeUser({ credits: 0 });
     await rateProfile(u, pid, 50);
     await addComment(u, pid, "COMMENT", "nice one");
+    await addComment(u, pid, "COMMENT", "again");
     expect(await getBalance(u.id)).toBe(0);
-    await expectApiError(addComment(u, pid, "COMMENT", "again"), 402);
   });
 });
 

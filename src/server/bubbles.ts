@@ -10,7 +10,6 @@ import type { BubbleRankingEntry, BubbleSummary } from "@/types/api";
 import type { SessionUser } from "@/lib/auth/session";
 import { bubbleSummaryQuery, slugify, toBubbleSummary } from "./shared";
 import { assertOwnImage } from "./images";
-import { spendClick } from "./credits";
 
 const MAX_BUBBLES_PER_USER_PER_DAY = 5;
 
@@ -134,7 +133,6 @@ export async function createBubble(user: SessionUser, input: CreateBubbleInput) 
       createdById: user.id,
     });
     await addMember(tx, bubble.id, user.id);
-    await spendClick(tx, user.id, bubble.id);
     return bubble;
   });
 }
