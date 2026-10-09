@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Vote, Sparkles, Plus, MapPin, Search, LayoutGrid, Trophy, Flag } from "lucide-react";
+import { ArrowLeft, Vote, Sparkles, Plus, MapPin, Search, Flag } from "lucide-react";
 import { useBubble, useFeed, useMe } from "@/hooks/api";
 import { useDebounced } from "@/hooks/use-gate";
 import { useUi } from "@/stores/ui-store";
@@ -15,11 +14,10 @@ import { auraColor, formatAura, formatCount } from "@/lib/aura";
 import type { FeedSort } from "@/lib/validation";
 import type { BubbleSummary, Page, ProfileCard as Card } from "@/types/api";
 import { ProfileCard, ProfileCardSkeleton } from "./profile-card";
-import { ProfileBoards } from "@/components/rankings/rankings";
 import { ReportDialog } from "@/components/profile/report-dialog";
-import { cn } from "@/lib/utils";
 
 const SORTS: { value: FeedSort; label: string }[] = [
+  { value: "random", label: "Random" },
   { value: "best", label: "Best %" },
   { value: "males", label: "Top Males" },
   { value: "females", label: "Top Females" },
@@ -28,71 +26,24 @@ const SORTS: { value: FeedSort; label: string }[] = [
   { value: "least_votes", label: "Least Votes" },
 ];
 
-type Tab = "people" | "leaderboards";
-
 /** Layer 2 — full-screen campus feed that completely replaces the map. */
 export function BubbleScreen({
   initialBubble,
   initialFeed,
+  seed,
 }: {
   initialBubble: BubbleSummary;
   initialFeed: Page<Card>;
+  seed: string;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
-  const tab = (["people", "leaderboards"].includes(params.get("tab") ?? "") ? params.get("tab") : "people") as Tab;
   const { data: bubble = initialBubble } = useBubble(initialBubble.slug, initialBubble);
-
-  const setTab = (t: Tab) => {
-    const sp = new URLSearchParams(params);
-    if (t === "people") sp.delete("tab");
-    else sp.set("tab", t);
-    sp.delete("g");
-    const qs = sp.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  };
 
   return (
     <div className="min-h-[calc(100dvh-4rem)] bg-white">
       <BubbleHeader bubble={bubble} />
 
-      <div className="border-ink sticky top-16 z-[400] border-b-2 bg-white backdrop-blur">
-        <div
-          role="tablist"
-          aria-label={`${bubble.name} sections`}
-          className="pc-no-scrollbar mx-auto flex max-w-[1400px] gap-1 overflow-x-auto px-3 sm:px-6"
-        >
-          {(
-            [
-              ["people", "People", LayoutGrid],
-              ["leaderboards", "Leaderboards", Trophy],
-            ] as const
-          ).map(([id, label, Icon]) => (
-            <button
-              key={id}
-              role="tab"
-              aria-selected={tab === id}
-              onClick={() => setTab(id)}
-              className={cn(
-                "-mb-0.5 flex shrink-0 items-center gap-1.5 border-b-4 px-3 py-3 text-xs font-black tracking-tight uppercase transition sm:text-sm",
-                tab === id ? "border-ink" : "text-muted hover:text-ink border-transparent",
-              )}
-            >
-              <Icon className="h-4 w-4" strokeWidth={2.5} /> {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="mx-auto max-w-[1400px] px-3 py-5 sm:px-6">
-        {tab === "people" && <Roster bubble={bubble} initialFeed={initialFeed} />}
-        {tab === "leaderboards" && (
-          <div className="mx-auto max-w-3xl">
-            <h2 className="mb-3 text-lg font-black tracking-tight uppercase">{bubble.name} leaderboards</h2>
-            <ProfileBoards scope="bubble" bubbleSlug={bubble.slug} />
-          </div>
-        )}
+        <Roster bubble={bubble} initialFeed={initialFeed} seed={seed} />
       </div>
     </div>
   );
@@ -178,12 +129,12 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
   );
 }
 
-function Roster({ bubble, initialFeed }: { bubble: BubbleSummary; initialFeed: Page<Card> }) {
-  const [sort, setSort] = useState<FeedSort>("best");
+function Roster({ bubble, initialFeed, seed }: { bubble: BubbleSummary; initialFeed: Page<Card>; seed: string }) {
+  const [sort, setSort] = useState<FeedSort>("random");
   const [q, setQ] = useState("");
   const debounced = useDebounced(q.trim(), 250);
-  const isDefault = sort === "best" && debounced === "";
-  const feed = useFeed(bubble.slug, sort, debounced, isDefault ? initialFeed : undefined);
+  const isDefault = sort === "random" && debounced === "";
+  const feed = useFeed(bubble.slug, sort, debounced, isDefault ? initialFeed : undefined, seed);
   const sentinel = useRef<HTMLDivElement>(null);
   const openProfileForm = useUi((s) => s.openProfileForm);
   const { data: me } = useMe();
@@ -255,7 +206,12 @@ function Roster({ bubble, initialFeed }: { bubble: BubbleSummary; initialFeed: P
           </p>
           <Grid>
             {items.map((p, i) => (
-              <ProfileCard key={p.id} p={p} rank={debounced ? undefined : i + 1} priority={i < 8} />
+              <ProfileCard
+                key={p.id}
+                p={p}
+                rank={debounced || sort === "random" ? undefined : i + 1}
+                priority={i < 8}
+              />
             ))}
           </Grid>
         </>

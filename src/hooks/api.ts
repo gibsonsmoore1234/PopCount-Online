@@ -33,7 +33,7 @@ export const qk = {
   me: ["me"] as const,
   bubbles: ["bubbles"] as const,
   bubble: (slug: string) => ["bubble", slug] as const,
-  feed: (slug: string, sort: FeedSort, q: string) => ["feed", slug, sort, q] as const,
+  feed: (slug: string, sort: FeedSort, q: string, seed = "") => ["feed", slug, sort, q, seed] as const,
   profile: (id: string) => ["profile", id] as const,
   comments: (id: string, kind: CommentKind) => ["comments", id, kind] as const,
   leaderboard: (scope: string, board: LeaderboardId, bubble?: string) =>
@@ -164,11 +164,12 @@ export function useBubbleRankings(sort: BubbleSort, enabled = true) {
 }
 
 /* ── Feed & leaderboards ───────────────────────────────────────────────── */
-export function useFeed(slug: string, sort: FeedSort, q: string, initial?: Page<ProfileCard>) {
+export function useFeed(slug: string, sort: FeedSort, q: string, initial?: Page<ProfileCard>, seed = "") {
   return useInfiniteQuery({
-    queryKey: qk.feed(slug, sort, q),
+    queryKey: qk.feed(slug, sort, q, seed),
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams({ sort, cursor: String(pageParam), limit: "24" });
+      if (seed) params.set("seed", seed);
       if (q) params.set("q", q);
       return apiFetch<Page<ProfileCard>>(`/api/bubbles/${slug}/profiles?${params}`);
     },
