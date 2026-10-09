@@ -202,8 +202,8 @@ function StepLiability() {
           You own (or have the rights to) everything you upload, and you grant Pop Count a licence to display it.
         </li>
         <li className="border-ink rounded-xl border-2 p-3">
-          Scores are opinions aggregated from other users — not statements of fact by Pop Count. Boost credits are a
-          paid feature with no cash value.
+          Scores are opinions aggregated from other users — not statements of fact by Pop Count. Clicks are free, earned
+          by watching ads, and have no cash value.
         </li>
         <li className="border-ink bg-aura-mid/50 rounded-xl border-2 p-3">
           Anyone can report content. Moderators may hide or remove content and suspend accounts that break the rules.

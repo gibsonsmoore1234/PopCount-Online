@@ -11,38 +11,33 @@ export default function TermsPage() {
         lawyer before launching publicly.
       </p>
       <h2>1. Eligibility</h2>
+      <p>You must be at least 18 years old to use Pop Count.</p>
+      <h2>2. Anonymous use</h2>
       <p>
-        You must be at least 18 years old. By creating an account you confirm that you are, and that you are a member of
-        the community you join.
+        You can browse, rate, comment and report without signing up. Your device is given an anonymous handle so we can
+        keep your clicks and stop abuse. Creating a profile requires a free account, and you may only create a profile
+        of yourself.
       </p>
-      <h2>2. Your content & responsibility</h2>
+      <h2>3. Your content &amp; responsibility</h2>
       <p>
         You are solely and legally responsible for the photos, text, comments and ratings you submit. You may only post
-        content of yourself that you own or have permission to use. You grant us a worldwide, non-exclusive licence to
-        host and display it for operating the service.
+        content that you own or have permission to use. You grant us a non-exclusive licence to host and display it for
+        operating the service.
       </p>
-      <h2>3. Ratings are opinions</h2>
+      <h2>4. Ratings are opinions</h2>
       <p>Popularity scores are aggregated opinions of users, not statements of fact by Pop Count.</p>
-      <h2>4. Boost credits</h2>
+      <h2>5. Clicks &amp; ads</h2>
       <p>
-        Boost credits are a limited, revocable licence to use a paid feature. They have no cash value, are
-        non-transferable and are non-refundable except where required by law. Boosts are capped per profile per day.
+        Pop Count is free. Rating, commenting, creating a profile or a bubble each use one click. You start with 100
+        clicks and can earn more by watching short ads. Clicks have no cash value and cannot be bought, sold or
+        transferred.
       </p>
-      <h2>5. Moderation</h2>
-      <p>
-        We may remove content or suspend accounts that violate the Community Guidelines or these terms, at our
-        discretion.
-      </p>
-      <h2>6. Disclaimers</h2>
-      <p>
-        The service is provided “as is” without warranties of any kind. To the extent permitted by law, our liability is
-        limited to the amount you paid us in the past 12 months.
-      </p>
-      <h2>7. Changes</h2>
-      <p>
-        We may update these terms; material changes will require you to accept them again before continuing to use the
-        service.
-      </p>
+      <h2>6. Moderation</h2>
+      <p>We may remove content or suspend accounts and devices that violate the Community Guidelines or these terms.</p>
+      <h2>7. Disclaimers</h2>
+      <p>The service is provided “as is” without warranties of any kind, to the extent permitted by law.</p>
+      <h2>8. Changes</h2>
+      <p>We may update these terms; material changes will require you to accept them again before continuing.</p>
     </LegalPage>
   );
 }

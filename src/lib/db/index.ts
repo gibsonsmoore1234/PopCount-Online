@@ -30,6 +30,14 @@ export function createDb(options: { url?: string; pgliteDir?: string } = {}): Db
     });
     return { db: drizzleNodePg(pool, { schema }), close: () => pool.end(), driver: "postgres" };
   }
+  // An embedded on-disk database is for local development only; serverless/multi-instance hosts would lose data.
+  if (
+    process.env.NODE_ENV === "production" &&
+    !options.pgliteDir &&
+    process.env.ALLOW_PGLITE_IN_PRODUCTION !== "true"
+  ) {
+    throw new Error("DATABASE_URL is required in production (set ALLOW_PGLITE_IN_PRODUCTION=true to override).");
+  }
   const dir = options.pgliteDir ?? process.env.PGLITE_DIR ?? path.join(process.cwd(), ".data", "pglite");
   const client = dir === "memory" ? new PGlite() : new PGlite(dir);
   const db = drizzlePglite(client, { schema }) as unknown as Db;

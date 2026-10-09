@@ -31,15 +31,10 @@ export default function GuidelinesPage() {
         </li>
         <li>No nudity or sexual content, and nothing involving anyone under 18.</li>
       </ul>
-      <h2>Advice</h2>
-      <p>
-        The advice thread is for constructive, kind suggestions — vibe, bio, photo quality, getting involved. Not for
-        criticism of how someone looks.
-      </p>
       <h2>Reporting</h2>
       <p>
-        Use the flag on any profile, comment, message or bubble. Comments and messages that several people report are
-        hidden automatically until a moderator reviews them.
+        Use the flag on any profile, comment or bubble — it&apos;s free and anonymous. Comments that several people
+        report are hidden automatically until a moderator reviews them.
       </p>
       <p>
         See also the{" "}
