@@ -29,6 +29,13 @@
       "when": 1791517338066,
       "tag": "0003_action_clicks",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791562489779,
+      "tag": "0004_extra_photos",
+      "breakpoints": true
     }
   ]
 }

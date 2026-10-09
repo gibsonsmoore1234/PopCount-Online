@@ -158,6 +158,11 @@ export const profiles = pgTable(
     affiliation: text("affiliation"),
     bio: text("bio").notNull().default(""),
     photoUrl: text("photo_url").notNull(),
+    /** Up to two more photos shown after the main one. */
+    extraPhotos: text("extra_photos")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
     /** Σ(value × weight) over all ratings. */
     ratingSum: integer("rating_sum").notNull().default(0),
     /** Σ(weight) — every free rating counts once, every boost click adds one more. */

@@ -78,6 +78,8 @@ export interface MyRating {
 export interface ProfileDetail extends ProfileCard {
   userId: string;
   bio: string;
+  /** Main photo first, then up to two more. */
+  photos: string[];
   raterCount: number;
   adviceCount: number;
   generalCount: number;
