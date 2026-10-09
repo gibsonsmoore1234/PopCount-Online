@@ -143,11 +143,15 @@ export const resolveReportSchema = z.object({
   action: z.enum(["dismiss", "hide", "restore", "delete", "ban"]),
 });
 
-export const FEED_SORTS = ["best", "males", "females", "lowest", "most_votes", "least_votes"] as const;
+export const FEED_SORTS = ["random", "best", "males", "females", "lowest", "most_votes", "least_votes"] as const;
 export type FeedSort = (typeof FEED_SORTS)[number];
 
 export const feedQuerySchema = z.object({
-  sort: z.enum(FEED_SORTS).default("best"),
+  sort: z.enum(FEED_SORTS).default("random"),
+  seed: z
+    .string()
+    .regex(/^[a-z0-9]{1,16}$/)
+    .optional(),
   q: z.string().trim().max(60).optional(),
   cursor: z.coerce.number().int().min(0).default(0),
   limit: z.coerce.number().int().min(1).max(60).default(24),

@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -18,14 +19,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/** Fresh shuffle for each visit to a bubble. */
+function newSeed() {
+  return randomBytes(6).toString("hex");
+}
+
 export default async function BubblePage({ params }: Props) {
   const { slug } = await params;
   const bubble = await getBubbleBySlug(slug);
   if (!bubble) notFound();
-  const feed = await campusFeed(bubble.id, { sort: "best", cursor: 0, limit: 24 });
+  const seed = newSeed();
+  const feed = await campusFeed(bubble.id, { sort: "random", seed, cursor: 0, limit: 24 });
   return (
     <Suspense>
-      <BubbleScreen initialBubble={bubble} initialFeed={feed} />
+      <BubbleScreen initialBubble={bubble} initialFeed={feed} seed={seed} />
     </Suspense>
   );
 }

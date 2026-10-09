@@ -236,7 +236,7 @@ const auraAscNullsLast = sql`${profiles.auraScore} asc nulls last`;
 
 export async function campusFeed(
   bubbleId: string,
-  opts: { sort: FeedSort; q?: string; cursor: number; limit: number },
+  opts: { sort: FeedSort; q?: string; seed?: string; cursor: number; limit: number },
 ): Promise<Page<ProfileCard>> {
   const filters: (SQL | undefined)[] = [visibleProfile, eq(profiles.bubbleId, bubbleId)];
   if (opts.sort === "males") filters.push(eq(profiles.gender, "MALE"));
@@ -253,6 +253,8 @@ export async function campusFeed(
   }
 
   const order: SQL[] = {
+    // Shuffled per visit: the seed keeps the order stable while paging.
+    random: [sql`md5(${profiles.id}::text || ${opts.seed ?? "0"})`],
     best: [auraDescNullsLast, desc(profiles.voteCount)],
     males: [auraDescNullsLast, desc(profiles.voteCount)],
     females: [auraDescNullsLast, desc(profiles.voteCount)],
