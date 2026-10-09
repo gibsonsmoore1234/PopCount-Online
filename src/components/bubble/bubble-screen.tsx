@@ -3,17 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowLeft,
-  Vote,
-  Sparkles,
-  Plus,
-  MapPin,
-  Search,
-  LayoutGrid,
-  Trophy,
-  Flag,
-} from "lucide-react";
+import { ArrowLeft, Vote, Sparkles, Plus, MapPin, Search, LayoutGrid, Trophy, Flag } from "lucide-react";
 import { useBubble, useFeed, useMe } from "@/hooks/api";
 import { useDebounced } from "@/hooks/use-gate";
 import { useUi } from "@/stores/ui-store";

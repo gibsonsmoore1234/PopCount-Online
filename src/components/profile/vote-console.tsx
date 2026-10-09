@@ -68,18 +68,8 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
   };
 
   return (
-    <div className="border-ink shadow-hard space-y-4 rounded-2xl border-2 bg-white p-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-black tracking-tight uppercase">Rate 0–100</h2>
-        <span className="text-muted text-[11px] font-extrabold uppercase">
-          {profile.voteCount.toLocaleString()} total votes
-        </span>
-      </div>
-
-      <div className="border-ink bg-surface space-y-2 rounded-xl border-2 p-3">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-extrabold tracking-wider uppercase">Your rating</span>
-        </div>
+    <div className="border-ink shadow-hard rounded-2xl border-2 bg-white p-3">
+      <div className="flex items-center gap-2">
         <input
           type="text"
           inputMode="numeric"
@@ -90,33 +80,29 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
           onKeyDown={(e) => {
             if (e.key === "Enter" && valid && profile.myRating?.value !== draft) cast(draft, `Rated ${draft}`);
           }}
-          placeholder="0–100"
+          placeholder="Rate 0–100"
           aria-label="Your rating from 0 to 100"
           aria-invalid={shown !== "" && !valid}
-          className="border-ink aria-[invalid=true]:border-aura-low h-14 w-full rounded-xl border-2 bg-white text-center text-3xl font-black tabular-nums focus:outline-none"
+          className="border-ink aria-[invalid=true]:border-aura-low h-11 min-w-0 flex-1 rounded-xl border-2 bg-white px-3 text-center text-lg font-black tabular-nums placeholder:text-sm placeholder:font-bold focus:outline-none"
         />
-        {shown !== "" && !valid && (
-          <p className="text-aura-low text-xs font-bold">Enter a whole number from 0 to 100.</p>
-        )}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-muted text-[11px] font-semibold">
-            {profile.myRating ? (
-              <>
-                Your rating: <b className="text-ink">{profile.myRating.value}</b>
-              </>
-            ) : (
-              "One rating per person — change it any time."
-            )}
-          </p>
-          <Button
-            size="sm"
-            onClick={() => cast(draft, `Rated ${draft}`)}
-            disabled={rate.isPending || !valid || profile.myRating?.value === draft}
-          >
-            {rate.isPending && <Spinner />} {profile.myRating ? "Update" : "Submit"} {valid ? draft : ""}
-          </Button>
-        </div>
+        <Button
+          size="md"
+          className="h-11"
+          onClick={() => cast(draft, `Rated ${draft}`)}
+          disabled={rate.isPending || !valid || profile.myRating?.value === draft}
+        >
+          {rate.isPending && <Spinner />} {profile.myRating ? "Update" : "Rate"}
+        </Button>
       </div>
+      {shown !== "" && !valid ? (
+        <p className="text-aura-low mt-1.5 text-xs font-bold">Enter a whole number from 0 to 100.</p>
+      ) : (
+        profile.myRating && (
+          <p className="text-muted mt-1.5 text-[11px] font-semibold">
+            Your rating: <b className="text-ink">{profile.myRating.value}</b>
+          </p>
+        )
+      )}
     </div>
   );
 }
