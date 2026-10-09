@@ -72,6 +72,7 @@ export async function getMe(user: SessionUser): Promise<Me> {
     email: user.email,
     handle: user.handle,
     role: user.role,
+    isAnonymous: user.isAnonymous,
     creditBalance: user.creditBalance,
     termsAccepted: Boolean(user.termsAcceptedAt),
     profile: profile ?? null,

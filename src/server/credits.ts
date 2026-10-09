@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { creditTransactions, users } from "@/lib/db/schema";
 import { CREDIT_PACKS, type CreditPackId } from "@/lib/aura";
@@ -151,5 +151,38 @@ export function verifyStripeSignature(payload: string, header: string | null, se
   return signatures.some((sig) => {
     const buf = Buffer.from(sig, "hex");
     return buf.length === exp.length && timingSafeEqual(buf, exp);
+  });
+}
+
+/* ── Rewarded ads ──────────────────────────────────────────────────────── */
+export const AD_REWARD_CLICKS = 10;
+export const AD_MIN_SECONDS = 15;
+export const AD_DAILY_LIMIT = 30;
+
+/**
+ * Grant boost clicks for a watched rewarded ad. Server-enforced pacing (one ad per 15 s, 30 per day)
+ * keeps it honest in test mode; with a live ad network, verify its server-side callback before granting.
+ */
+export async function claimAdReward(user: SessionUser) {
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${"ad:" + user.id}))`);
+    const [stats] = await tx
+      .select({
+        today: sql<number>`count(*) filter (where ${creditTransactions.createdAt} > now() - interval '1 day')::int`.mapWith(Number),
+        last: sql<Date | null>`max(${creditTransactions.createdAt})`,
+      })
+      .from(creditTransactions)
+      .where(and(eq(creditTransactions.userId, user.id), eq(creditTransactions.reason, "AD_REWARD")));
+    if (stats.today >= AD_DAILY_LIMIT) throw new ApiError(429, "Daily ad limit reached — come back tomorrow.", "rate_limited");
+    if (stats.last && Date.now() - new Date(stats.last).getTime() < AD_MIN_SECONDS * 1000) {
+      throw new ApiError(429, "Finish watching the ad first.", "rate_limited");
+    }
+    await tx.insert(creditTransactions).values({ userId: user.id, amount: AD_REWARD_CLICKS, reason: "AD_REWARD" });
+    const [u] = await tx
+      .update(users)
+      .set({ creditBalance: sql`${users.creditBalance} + ${AD_REWARD_CLICKS}` })
+      .where(eq(users.id, user.id))
+      .returning({ b: users.creditBalance });
+    return { creditBalance: u.b, granted: AD_REWARD_CLICKS, remainingToday: AD_DAILY_LIMIT - stats.today - 1 };
   });
 }

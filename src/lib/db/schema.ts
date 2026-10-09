@@ -29,7 +29,7 @@ export const commentKind = pgEnum("comment_kind", ["COMMENT", "ADVICE"]);
 export const voteEventKind = pgEnum("vote_event_kind", ["RATE", "BOOST"]);
 export const reportTarget = pgEnum("report_target", ["PROFILE", "COMMENT", "MESSAGE", "BUBBLE"]);
 export const reportStatus = pgEnum("report_status", ["OPEN", "ACTIONED", "DISMISSED"]);
-export const creditReason = pgEnum("credit_reason", ["SIGNUP_GRANT", "PURCHASE", "BOOST", "ADMIN_ADJUST", "REFUND"]);
+export const creditReason = pgEnum("credit_reason", ["SIGNUP_GRANT", "PURCHASE", "BOOST", "ADMIN_ADJUST", "REFUND", "AD_REWARD"]);
 
 const bytea = customType<{ data: Buffer; driverData: Buffer | Uint8Array }>({
   dataType: () => "bytea",
@@ -52,6 +52,8 @@ export const users = pgTable(
     handle: text("handle").notNull(),
     passwordHash: text("password_hash").notNull(),
     role: userRole("role").notNull().default("USER"),
+    /** Auto-provisioned device identity — browses, rates and comments without ever signing up. */
+    isAnonymous: boolean("is_anonymous").notNull().default(false),
     /** Boost credit balance in cents. One cent = one boost click. */
     creditBalance: integer("credit_balance").notNull().default(0),
     termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true, mode: "date" }),

@@ -10,7 +10,10 @@ export const SESSION_COOKIE = "pc_session";
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const RENEW_WITHIN_MS = 15 * 24 * 60 * 60 * 1000;
 
-export type SessionUser = Pick<User, "id" | "email" | "handle" | "role" | "creditBalance" | "termsAcceptedAt">;
+export type SessionUser = Pick<
+  User,
+  "id" | "email" | "handle" | "role" | "creditBalance" | "termsAcceptedAt" | "isAnonymous"
+>;
 
 function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
@@ -60,6 +63,7 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
       email: users.email,
       handle: users.handle,
       role: users.role,
+      isAnonymous: users.isAnonymous,
       creditBalance: users.creditBalance,
       termsAcceptedAt: users.termsAcceptedAt,
       bannedAt: users.bannedAt,
@@ -87,6 +91,7 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     email: row.email,
     handle: row.handle,
     role: row.role,
+    isAnonymous: row.isAnonymous,
     creditBalance: row.creditBalance,
     termsAcceptedAt: row.termsAcceptedAt,
   };
@@ -104,9 +109,53 @@ export async function requireAdmin(): Promise<SessionUser> {
   return user;
 }
 
-/** Writing actions also require the 3-part terms to have been accepted on the account. */
+/**
+ * Writing actions (rate, comment, boost, chat, report) never require signing up: a visitor without a
+ * session is given an anonymous device identity (random handle, httpOnly session cookie) on first use.
+ */
 export async function requireMember(): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (user) {
+    if (!user.termsAcceptedAt) throw forbidden("Accept the community terms before posting or voting.");
+    return user;
+  }
+  return createAnonymousUser();
+}
+
+async function createAnonymousUser(): Promise<SessionUser> {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const handle = `anon_${randomBytes(3).toString("hex")}`;
+    const [u] = await db
+      .insert(users)
+      .values({
+        email: `${handle}-${randomBytes(6).toString("hex")}@anon.popularitycontest.ai`,
+        handle,
+        passwordHash: "!anonymous",
+        isAnonymous: true,
+        creditBalance: 0,
+        termsAcceptedAt: new Date(),
+      })
+      .onConflictDoNothing()
+      .returning();
+    if (!u) continue;
+    await createSession(u.id);
+    return {
+      id: u.id,
+      email: u.email,
+      handle: u.handle,
+      role: u.role,
+      isAnonymous: true,
+      creditBalance: u.creditBalance,
+      termsAcceptedAt: u.termsAcceptedAt,
+    };
+  }
+  throw unauthorized("Couldn't start an anonymous session — try again.");
+}
+
+/** Posting a profile is the one action that needs a real (non-anonymous) account: you can only post yourself. */
+export async function requireAccount(): Promise<SessionUser> {
   const user = await requireUser();
-  if (!user.termsAcceptedAt) throw forbidden("Accept the community terms before posting or voting.");
+  if (user.isAnonymous) throw forbidden("Make a quick account to post your own profile.");
+  if (!user.termsAcceptedAt) throw forbidden("Accept the community terms first.");
   return user;
 }

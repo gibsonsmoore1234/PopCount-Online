@@ -10,6 +10,7 @@ export interface Me {
   email: string;
   handle: string;
   role: Role;
+  isAnonymous: boolean;
   creditBalance: number;
   termsAccepted: boolean;
   profile: { id: string; displayName: string; photoUrl: string; bubbleSlug: string; bubbleName: string } | null;

@@ -37,6 +37,7 @@ async function makeUser(opts: { credits?: number } = {}): Promise<SessionUser> {
     email: u.email,
     handle: u.handle,
     role: u.role,
+    isAnonymous: u.isAnonymous,
     creditBalance: u.creditBalance,
     termsAcceptedAt: u.termsAcceptedAt,
   };
