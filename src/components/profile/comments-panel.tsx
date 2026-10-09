@@ -13,42 +13,23 @@ import { EmptyState, Skeleton, Spinner } from "@/components/ui/misc";
 import { Avatar } from "@/components/aura/photo";
 import { errorMessage } from "@/lib/api/client";
 import type { CommentDto, CommentKind, ProfileDetail } from "@/types/api";
-import { cn, timeAgo } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
 import { ReportDialog } from "./report-dialog";
 
-/** Discussion: general comments + a dedicated thread for constructive Aura advice. */
+/** The profile's single public comment thread. */
 export function CommentsPanel({ profile }: { profile: ProfileDetail }) {
-  const [kind, setKind] = useState<CommentKind>("COMMENT");
-  const tabs = [
-    { id: "COMMENT" as const, label: "Comments", count: profile.generalCount, icon: MessageCircle },
-    { id: "ADVICE" as const, label: "Aura Advice", count: profile.adviceCount, icon: Lightbulb },
-  ];
-
   return (
     <section
       className="border-ink shadow-hard space-y-4 rounded-2xl border-2 bg-white p-4 sm:p-5"
-      aria-label="Discussion"
+      aria-label="Comments"
     >
-      <div role="tablist" className="border-ink flex gap-1 border-b-2">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            role="tab"
-            aria-selected={kind === t.id}
-            onClick={() => setKind(t.id)}
-            className={cn(
-              "-mb-0.5 flex items-center gap-1.5 border-b-4 px-3 py-2 text-xs font-black tracking-tight uppercase sm:text-sm",
-              kind === t.id ? "border-ink" : "text-muted hover:text-ink border-transparent",
-            )}
-          >
-            <t.icon className="h-4 w-4" strokeWidth={2.5} /> {t.label}
-            <span className="border-ink bg-surface rounded-full border-2 px-1.5 text-[10px] tabular-nums">
-              {t.count}
-            </span>
-          </button>
-        ))}
-      </div>
-      <Thread key={kind} profile={profile} kind={kind} />
+      <h2 className="flex items-center gap-1.5 text-sm font-black tracking-tight uppercase">
+        <MessageCircle className="h-4 w-4" strokeWidth={2.5} /> Comments
+        <span className="border-ink bg-surface rounded-full border-2 px-1.5 text-[10px] tabular-nums">
+          {profile.generalCount}
+        </span>
+      </h2>
+      <Thread profile={profile} kind="COMMENT" />
     </section>
   );
 }

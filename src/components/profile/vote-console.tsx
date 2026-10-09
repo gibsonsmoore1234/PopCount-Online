@@ -3,23 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, AnimatePresence } from "motion/react";
 import { Slider } from "radix-ui";
-import { Flame, ThumbsDown, Zap, Info } from "lucide-react";
+import { Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useBoost, useMe, useRate } from "@/hooks/api";
 import { useAuthGuard } from "@/hooks/use-gate";
 import { useUi } from "@/stores/ui-store";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/misc";
-import {
-  AURA_COLORS,
-  BOOST_COST_CENTS,
-  BOOST_DAILY_CAP,
-  DOWNVOTE_VALUE,
-  UPVOTE_VALUE,
-  auraTier,
-  formatCents,
-  tierLabel,
-} from "@/lib/aura";
+import { AURA_COLORS, BOOST_COST_CENTS, BOOST_DAILY_CAP, auraTier, formatCents, tierLabel } from "@/lib/aura";
 import { errorMessage } from "@/lib/api/client";
 import type { ProfileDetail } from "@/types/api";
 import { cn } from "@/lib/utils";
@@ -73,40 +64,18 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
     });
   };
 
-  const total = profile.upCount + profile.downCount;
-  const upPct = total ? (profile.upCount / total) * 100 : 50;
-
   return (
     <div className="border-ink shadow-hard space-y-4 rounded-2xl border-2 bg-white p-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-black tracking-tight uppercase">Rate their Aura</h2>
+        <h2 className="text-sm font-black tracking-tight uppercase">Rate 0–100</h2>
         <span className="text-muted text-[11px] font-extrabold uppercase">
           {profile.voteCount.toLocaleString()} total votes
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <Button
-          variant="aura"
-          size="lg"
-          onClick={() => cast(UPVOTE_VALUE, "🔥 Upvote cast — rated 100")}
-          disabled={rate.isPending}
-        >
-          <Flame className="h-5 w-5" strokeWidth={2.5} /> Upvote
-        </Button>
-        <Button
-          variant="danger"
-          size="lg"
-          onClick={() => cast(DOWNVOTE_VALUE, "👎 Downvote cast — rated 0")}
-          disabled={rate.isPending}
-        >
-          <ThumbsDown className="h-5 w-5" strokeWidth={2.5} /> Downvote
-        </Button>
-      </div>
-
       <div className="border-ink bg-surface space-y-2 rounded-xl border-2 p-3">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-extrabold tracking-wider uppercase">Exact Aura</span>
+          <span className="text-[11px] font-extrabold tracking-wider uppercase">Your rating</span>
           <span
             className="border-ink rounded-lg border-2 px-2 py-0.5 text-sm font-black tabular-nums"
             style={{ background: AURA_COLORS[tier] }}
@@ -133,10 +102,9 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
             {profile.myRating ? (
               <>
                 Your rating: <b className="text-ink">{profile.myRating.value}</b>
-                {profile.myRating.weight > 1 && <> · weight ×{profile.myRating.weight}</>}
               </>
             ) : (
-              "One free rating per person — change it any time."
+              "One rating per person — change it any time."
             )}
           </p>
           <Button
@@ -147,28 +115,6 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
             {rate.isPending && <Spinner />} {profile.myRating ? "Update" : "Submit"} {draft}
           </Button>
         </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <div className="flex justify-between text-xs font-black tabular-nums">
-          <span className="flex items-center gap-1">
-            <Flame className="h-3.5 w-3.5" /> {profile.upCount.toLocaleString()} upvotes
-          </span>
-          <span className="flex items-center gap-1">
-            {profile.downCount.toLocaleString()} downvotes <ThumbsDown className="h-3.5 w-3.5" />
-          </span>
-        </div>
-        <div className="border-ink bg-aura-low flex h-3.5 overflow-hidden rounded-full border-2">
-          <motion.div
-            className="border-ink bg-aura-high h-full border-r-2"
-            initial={false}
-            animate={{ width: `${upPct}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
-        <p className="text-muted flex items-center gap-1 text-[10px] font-semibold">
-          <Info className="h-3 w-3" /> Aura = average of every 0–100 rating (🔥 = 100, 👎 = 0), boosts add weight.
-        </p>
       </div>
     </div>
   );

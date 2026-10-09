@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Share2, Flag, Pencil, Trash2, MapPin, Trophy, EyeOff, Sparkles, Users } from "lucide-react";
+import { ArrowLeft, Share2, Flag, Pencil, Trash2, MapPin, EyeOff, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useDeleteProfile, useMe, useProfile } from "@/hooks/api";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,8 @@ import { AuraFrame } from "@/components/aura/aura";
 import { Photo } from "@/components/aura/photo";
 import { AURA_COLORS, auraTier, formatCount, tierLabel } from "@/lib/aura";
 import { errorMessage } from "@/lib/api/client";
-import type { ProfileDetail, Sticker } from "@/types/api";
-import { cn, genderLabel } from "@/lib/utils";
-import { AnimatedNumber, BoostWidget, VoteConsole } from "./vote-console";
+import type { ProfileDetail } from "@/types/api";
+import { AnimatedNumber, VoteConsole } from "./vote-console";
 import { CommentsPanel } from "./comments-panel";
 import { ProfileFormDialog } from "./profile-form";
 import { ReportDialog } from "./report-dialog";
@@ -86,10 +85,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
             <AuraFrame score={profile.auraScore} thickness="lg" className="shadow-hard-lg">
               <div className="border-ink [container-type:inline-size] relative aspect-[2/3] w-full overflow-hidden rounded-xl border-2 bg-white">
                 <Photo src={profile.photoUrl} alt={profile.displayName} eager />
-                <div className="absolute inset-x-3 top-3 flex items-start justify-between">
-                  <span className="border-ink shadow-hard-xs rounded-full border-2 bg-white px-2.5 py-1 text-[11px] font-black uppercase">
-                    {genderLabel(profile.gender)}
-                  </span>
+                <div className="absolute inset-x-3 top-3 flex items-start justify-end">
                   <div
                     className="border-ink shadow-hard-sm rounded-2xl border-2 px-3 py-1.5 text-right"
                     style={{ background: AURA_COLORS[tier] }}
@@ -107,20 +103,11 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
                     <div className="mt-0.5 text-[9px] font-extrabold tracking-wider uppercase">{tierLabel(tier)}</div>
                   </div>
                 </div>
-                {profile.stickers.length > 0 && (
-                  <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5">
-                    {profile.stickers.map((s, i) => (
-                      <StickerBadge key={s.id} s={s} i={i} />
-                    ))}
-                  </div>
-                )}
               </div>
             </AuraFrame>
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <MiniStat label="Votes" value={formatCount(profile.voteCount)} />
-              <MiniStat label="Raters" value={formatCount(profile.raterCount)} />
-              <MiniStat label="Nat'l rank" value={profile.nationalRank ? `#${profile.nationalRank}` : "—"} />
-            </div>
+            <p className="text-center text-sm font-black tabular-nums">
+              {formatCount(profile.voteCount)} {profile.voteCount === 1 ? "vote" : "votes"}
+            </p>
           </motion.div>
 
           {/* Details & controls */}
@@ -130,34 +117,16 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
                 <Link href={`/b/${profile.bubble.slug}`} className="hover:text-ink flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5" /> {profile.bubble.name}
                 </Link>
-                {profile.affiliation && <span>· {profile.affiliation}</span>}
               </p>
               <h1 className="text-3xl leading-none font-black tracking-tight uppercase sm:text-5xl">
                 {profile.displayName}
               </h1>
-              <p className="text-ink-2 text-sm font-bold">@{profile.handle}</p>
-              {profile.nationalRank && (
-                <p className="border-ink shadow-hard-xs inline-flex items-center gap-1.5 rounded-full border-2 bg-white px-3 py-1 text-xs font-black">
-                  <Trophy className="h-3.5 w-3.5" /> #{profile.nationalRank} nationally of{" "}
-                  {profile.nationalEligible.toLocaleString()}
-                </p>
-              )}
             </div>
-
-            {profile.bio && (
-              <div className="border-ink shadow-hard-sm rounded-2xl border-2 bg-white p-4">
-                <p className="text-muted text-[10px] font-extrabold tracking-wider uppercase">Bio</p>
-                <p className="mt-1 text-sm leading-relaxed font-semibold whitespace-pre-wrap">{profile.bio}</p>
-              </div>
-            )}
 
             {profile.isOwner ? (
               <OwnerPanel profile={profile} onEdit={() => setEditing(true)} onDelete={() => setDeleting(true)} />
             ) : (
-              <div className="grid items-start gap-5 xl:grid-cols-[1.4fr_1fr]">
-                <VoteConsole profile={profile} />
-                <BoostWidget profile={profile} />
-              </div>
+              <VoteConsole profile={profile} />
             )}
 
             <CommentsPanel profile={profile} />
@@ -177,24 +146,6 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
         />
       )}
     </div>
-  );
-}
-
-function StickerBadge({ s, i }: { s: Sticker; i: number }) {
-  const bg = { high: AURA_COLORS.high, mid: AURA_COLORS.mid, low: AURA_COLORS.low, ink: "#000000" }[s.tone];
-  return (
-    <motion.span
-      initial={{ scale: 0, rotate: -12 }}
-      animate={{ scale: 1, rotate: i % 2 ? 3 : -3 }}
-      transition={{ type: "spring", stiffness: 380, damping: 18, delay: 0.15 + i * 0.08 }}
-      className={cn(
-        "border-ink shadow-hard-sm inline-flex items-center gap-1 rounded-lg border-2 px-2 py-1 text-[10px] font-black uppercase",
-        s.tone === "ink" ? "text-white" : "text-ink",
-      )}
-      style={{ background: bg }}
-    >
-      <Sparkles className="h-3 w-3" /> {s.label}
-    </motion.span>
   );
 }
 
