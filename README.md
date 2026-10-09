@@ -58,7 +58,7 @@ docker run -p 3000:3000 -e DATABASE_URL=postgres://… -e DATABASE_SSL=true -e A
 
 ### Before going public
 
-- **Map tiles:** street-level tiles use CARTO's free basemaps, which have usage limits for commercial use — buy a plan or swap the URL in `src/components/map/campus-map.tsx`.
+- **Map tiles:** street-level tiles use CARTO with the project key in `src/components/map/campus-map.tsx` (override with `NEXT_PUBLIC_CARTO_KEY`).
 - **Rate limiting** is in-memory per instance; back `src/lib/rate-limit.ts` with Redis/Upstash for multiple instances.
 - **Images and ad videos** are stored in Postgres; move them to object storage (S3/R2) behind `/api/images/:id` at scale.
 - **Legal:** `/terms`, `/guidelines` and `/privacy` are templates — have them reviewed.

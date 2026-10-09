@@ -23,6 +23,9 @@ const US_BOUNDS = L.latLngBounds([15, -140], [56, -50]);
 /** Initial / "reset" framing: the lower 48. */
 const CONTINENTAL = L.latLngBounds([24.4, -124.8], [49.4, -66.9]);
 
+// CARTO basemap key (public: it is sent with every tile request). Override with NEXT_PUBLIC_CARTO_KEY.
+const CARTO_KEY = process.env.NEXT_PUBLIC_CARTO_KEY || "cb1_4fk0_1_7e48971c6d955168286f5af9";
+
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
@@ -227,8 +230,7 @@ export default function CampusMap({
       attributionControl
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        subdomains="abcd"
+        url={`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`}
         maxZoom={19}
         minZoom={7}
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
