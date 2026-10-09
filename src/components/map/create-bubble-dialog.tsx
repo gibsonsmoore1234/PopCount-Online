@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, ImageUp, School, Building2 } from "lucide-react";
+import { MapPin, ImageUp } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { useCreateBubble, useUpload } from "@/hooks/api";
 import { createBubbleSchema } from "@/lib/validation";
 import { prepareImage } from "@/lib/image";
 import { errorMessage } from "@/lib/api/client";
-import { cn } from "@/lib/utils";
 
 export function CreateBubbleDialog({
   pin,
@@ -39,8 +38,7 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
   const fileRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [badge, setBadge] = useState("");
-  const [kind, setKind] = useState<"CAMPUS" | "TOWN">("CAMPUS");
+  const kind = "TOWN" as const;
   const [logoUrl, setLogoUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -61,7 +59,6 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
       name,
       description,
       kind,
-      badge,
       logoUrl,
       lat: pin.lat,
       lng: pin.lng,
@@ -69,7 +66,7 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
     if (!parsed.success) return setError(parsed.error.issues[0]?.message ?? "Check the form.");
     setError(null);
     create.mutate(
-      { name, description, kind, badge: badge || undefined, logoUrl: logoUrl || undefined, lat: pin.lat, lng: pin.lng },
+      { name, description, kind, logoUrl: logoUrl || undefined, lat: pin.lat, lng: pin.lng },
       {
         onSuccess: ({ bubble }) => {
           toast.success(`${bubble.name} is on the map!`, { description: `${bubble.countyName}, ${bubble.stateName}` });
@@ -91,29 +88,6 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
         Pinned at {pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}
       </div>
 
-      <div role="radiogroup" aria-label="Bubble type" className="grid grid-cols-2 gap-2">
-        {(
-          [
-            ["CAMPUS", "Campus", School],
-            ["TOWN", "Town", Building2],
-          ] as const
-        ).map(([v, label, Icon]) => (
-          <button
-            key={v}
-            type="button"
-            role="radio"
-            aria-checked={kind === v}
-            onClick={() => setKind(v)}
-            className={cn(
-              "border-ink flex h-11 items-center justify-center gap-2 rounded-xl border-2 text-sm font-extrabold transition",
-              kind === v ? "bg-ink shadow-hard-sm text-white" : "hover:bg-surface-2 bg-white",
-            )}
-          >
-            <Icon className="h-4 w-4" strokeWidth={2.5} /> {label}
-          </button>
-        ))}
-      </div>
-
       <div className="flex items-end gap-3">
         <BubbleLogo name={name || "New"} logoUrl={logoUrl || null} avgAura={null} size={56} />
         <Field label="Bubble name *" htmlFor={`${uid}-n`} className="flex-1">
@@ -122,7 +96,7 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={48}
-            placeholder={kind === "CAMPUS" ? "e.g. Ole Miss" : "e.g. Oxford, MS"}
+            placeholder="e.g. Ole Miss"
           />
         </Field>
       </div>
@@ -138,16 +112,7 @@ function CreateBubbleForm({ pin, onClose }: { pin: { lat: number; lng: number };
         />
       </Field>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Badge" htmlFor={`${uid}-b`} hint="A local landmark or nickname.">
-          <Input
-            id={`${uid}-b`}
-            value={badge}
-            onChange={(e) => setBadge(e.target.value)}
-            maxLength={24}
-            placeholder="e.g. The Grove"
-          />
-        </Field>
+      <div>
         <Field label="Logo">
           <input
             ref={fileRef}
