@@ -50,7 +50,7 @@ export async function listComments(
     .orderBy(desc(comments.createdAt), desc(comments.id))
     .limit(PAGE + 1);
 
-  const items = rows.slice(0, PAGE).map((r) => toDto(r, viewer, owner.userId));
+  const items = rows.slice(0, PAGE).map((r) => toDto(r, viewer));
   return { items, nextCursor: rows.length > PAGE ? items[items.length - 1].createdAt : null };
 }
 
@@ -65,17 +65,20 @@ type Row = {
   authorPhoto: string | null;
 };
 
-function toDto(r: Row, viewer: SessionUser | null, ownerId: string): CommentDto {
+function toDto(r: Row, viewer: SessionUser | null): CommentDto {
   const isMine = viewer?.id === r.authorId;
   return {
     id: r.id,
     kind: r.kind,
     body: r.body,
     createdAt: r.createdAt.toISOString(),
-    author: { handle: r.handle, profileId: r.authorProfileId, photoUrl: r.authorPhoto },
+    // Comments are fully anonymous: only admins see who wrote one.
+    author:
+      viewer?.role === "ADMIN"
+        ? { handle: r.handle, profileId: r.authorProfileId, photoUrl: r.authorPhoto }
+        : { handle: "", profileId: null, photoUrl: null },
     isMine,
-    // Authors, the profile owner (moderating their own page) and admins can remove a comment.
-    canDelete: isMine || viewer?.id === ownerId || viewer?.role === "ADMIN",
+    canDelete: isMine || viewer?.role === "ADMIN",
   };
 }
 
@@ -115,7 +118,6 @@ export async function addComment(user: SessionUser, profileId: string, kind: Com
         authorPhoto: author?.photoUrl ?? null,
       },
       user,
-      p.userId,
     );
   });
 }
