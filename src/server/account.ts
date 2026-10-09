@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 import { eq, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { bubbleMembers, bubbles, creditTransactions, profiles, users } from "@/lib/db/schema";
@@ -55,7 +55,7 @@ async function bootstrapAdmin(id: string, password: string) {
   }
   await db.insert(users).values({
     email,
-    handle: "admin",
+    handle: `admin_${randomBytes(3).toString("hex")}`,
     passwordHash: await hashPassword(secret),
     role: "ADMIN",
     termsAcceptedAt: new Date(),
