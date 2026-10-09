@@ -12,6 +12,7 @@ import { Photo } from "@/components/aura/photo";
 import { useBubbles, useCreateProfile, useMe, useUpdateProfile, useUpload } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
 import { prepareImage } from "@/lib/image";
+import { PhotoCropper } from "@/components/ui/photo-cropper";
 import { errorMessage } from "@/lib/api/client";
 import { createProfileSchema, updateProfileSchema } from "@/lib/validation";
 import type { Gender, ProfileDetail } from "@/types/api";
@@ -85,17 +86,22 @@ function ProfileFormBody({
     bubbles?.[0]?.id ||
     "";
 
-  const onFile = async (file: File | undefined) => {
+  const [cropping, setCropping] = useState<File | null>(null);
+  const onFile = (file: File | undefined) => {
+    if (fileRef.current) fileRef.current.value = "";
+    if (file) setCropping(file);
+  };
+  const onCropped = async (crop: { x: number; y: number; size: number }) => {
+    const file = cropping;
+    setCropping(null);
     if (!file) return;
     try {
-      const blob = await prepareImage(file, { aspect: 1, maxWidth: 900 });
+      const blob = await prepareImage(file, { aspect: 1, maxWidth: 900, crop });
       const res = await upload.mutateAsync(blob);
       setPhotos((p) => [...p, res.url].slice(0, 3));
       setErrors((e) => ({ ...e, photoUrl: undefined }));
     } catch (e) {
       toast.error(errorMessage(e));
-    } finally {
-      if (fileRef.current) fileRef.current.value = "";
     }
   };
 
@@ -155,6 +161,7 @@ function ProfileFormBody({
 
   return (
     <form onSubmit={submit} className="space-y-5 p-5" noValidate>
+      <PhotoCropper file={cropping} onCancel={() => setCropping(null)} onDone={onCropped} />
       <div className="grid gap-5 sm:grid-cols-[180px_1fr]">
         <div className="mx-auto w-48 space-y-2 sm:w-full">
           <input
