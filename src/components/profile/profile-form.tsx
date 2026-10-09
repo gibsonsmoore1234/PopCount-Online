@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { ImageUp, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/misc";
 import { Photo } from "@/components/aura/photo";
-import { useBubbles, useCreateProfile, useMe, useUpdateProfile, useUpload } from "@/hooks/api";
+import { useBubbles, useCreateProfile, useUpdateProfile, useUpload } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
 import { prepareImage } from "@/lib/image";
 import { PhotoCropper } from "@/components/ui/photo-cropper";
@@ -282,21 +282,8 @@ export function GlobalProfileForm() {
   const open = useUi((s) => s.profileFormOpen);
   const bubbleId = useUi((s) => s.profileFormBubbleId);
   const close = useUi((s) => s.closeProfileForm);
-  const { data: me } = useMe();
-  const router = useRouter();
 
-  useEffect(() => {
-    // Already have a profile? Take them to it instead of a form that would fail.
-    if (open && me?.profile) {
-      close();
-      router.push(`/p/${me.profile.id}`);
-      toast("You already have a profile — edit it from here.");
-    }
-  }, [open, me, close, router]);
-
-  return (
-    <ProfileFormDialog open={open && !me?.profile} onOpenChange={(o) => !o && close()} defaultBubbleId={bubbleId} />
-  );
+  return <ProfileFormDialog open={open} onOpenChange={(o) => !o && close()} defaultBubbleId={bubbleId} />;
 }
 
 /** One square photo slot: tap an empty slot to upload, × to remove. */

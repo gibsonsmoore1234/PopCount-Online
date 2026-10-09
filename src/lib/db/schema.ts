@@ -179,7 +179,7 @@ export const profiles = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (t) => [
-    uniqueIndex("profiles_user_key").on(t.userId),
+    uniqueIndex("profiles_user_bubble_key").on(t.userId, t.bubbleId),
     index("profiles_bubble_aura_idx").on(t.bubbleId, t.auraScore),
     index("profiles_bubble_votes_idx").on(t.bubbleId, t.voteCount),
     index("profiles_aura_idx").on(t.auraScore),

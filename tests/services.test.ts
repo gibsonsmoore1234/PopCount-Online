@@ -261,6 +261,16 @@ describe("comment reactions", () => {
   });
 });
 
+describe("profiles per bubble", () => {
+  it("allows one profile per bubble, in as many bubbles as you like", async () => {
+    const u = await makeUser();
+    await makeProfile(u, duke);
+    await expectApiError(makeProfile(u, duke), 409);
+    const other = await createBubble(u, { name: "Second Home", description: "", kind: "TOWN", lat: 35.0, lng: -90.0 });
+    await makeProfile(u, other.id);
+  });
+});
+
 describe("free actions", () => {
   it("rating and commenting cost nothing", async () => {
     const pid = await makeProfile(await makeUser(), duke);
