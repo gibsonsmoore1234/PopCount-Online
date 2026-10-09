@@ -30,12 +30,7 @@ export function AppHeader() {
           </span>
           <span className="block leading-none">
             <span className="block text-[14px] font-black tracking-tight whitespace-nowrap sm:text-[17px]">
-              Pop-Count{" "}
-              <span
-                style={{ color: "#0a0a0c", textShadow: "0 0 6px rgb(239 68 68 / 0.85), 0 0 14px rgb(239 68 68 / 0.6)" }}
-              >
-                Online
-              </span>
+              PopCount <span style={{ color: "#ef4444" }}>Online</span>
             </span>
             <span
               className="mt-0.5 block text-[9px] font-extrabold tracking-wider whitespace-nowrap uppercase sm:text-[10px]"
