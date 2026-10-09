@@ -8,7 +8,9 @@ export const metadata: Metadata = { title: "Log in" };
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  if (await getSessionUser()) redirect("/");
+  const user = await getSessionUser();
+  // Anonymous visitors also have a session; only skip the form for a real (admin) login.
+  if (user && !user.isAnonymous) redirect(user.role === "ADMIN" ? "/admin" : "/");
   return (
     <AuthShell title="Log in" subtitle="Welcome back to Pop Count.">
       <Suspense>
