@@ -16,7 +16,6 @@ import { cn } from "@/lib/utils";
 export function AppHeader() {
   const { data: me } = useMe();
   const openRankings = useUi((s) => s.openRankings);
-  const setCreditsOpen = useUi((s) => s.setCreditsOpen);
   const [mobileSearch, setMobileSearch] = useState(false);
 
   return (
@@ -61,15 +60,6 @@ export function AppHeader() {
             </Button>
           ) : null}
 
-          <button
-            onClick={() => setCreditsOpen(true)}
-            className="border-ink bg-aura-high shadow-hard-sm flex h-8 items-center gap-1.5 rounded-xl border-2 px-2.5 text-xs font-black tabular-nums transition hover:brightness-95"
-            aria-label="Get more clicks — watch an ad"
-          >
-            {me ? <span>{me.creditBalance}</span> : null}
-            <span className="hidden sm:inline">Get more clicks</span>
-          </button>
-
           {me && !me.isAnonymous && <AccountMenu />}
         </nav>
       </div>
@@ -90,7 +80,6 @@ function AccountMenu() {
   const { data: me } = useMe();
   const logout = useLogout();
   const router = useRouter();
-  const setCreditsOpen = useUi((s) => s.setCreditsOpen);
   if (!me) return null;
 
   const item =
@@ -128,9 +117,6 @@ function AccountMenu() {
               <MapIcon className="h-4 w-4" /> {me.profile.bubbleName}
             </DropdownMenu.Item>
           )}
-          <DropdownMenu.Item className={item} onSelect={() => setCreditsOpen(true)}>
-            Get more clicks · {me.creditBalance}
-          </DropdownMenu.Item>
           {me.role === "ADMIN" && (
             <DropdownMenu.Item className={item} onSelect={() => router.push("/admin")}>
               <Shield className="h-4 w-4" /> Moderation queue

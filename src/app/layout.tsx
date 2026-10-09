@@ -6,7 +6,6 @@ import { AppHeader } from "@/components/layout/app-header";
 import { TermsGate } from "@/components/onboarding/terms-gate";
 import { RankingsDialog } from "@/components/rankings/rankings";
 import { GlobalProfileForm } from "@/components/profile/profile-form";
-import { BuyCreditsDialog } from "@/components/credits/buy-credits-dialog";
 import { getSessionUser } from "@/lib/auth/session";
 import { getMe } from "@/server/account";
 import { TERMS_COOKIE, TERMS_VERSION } from "@/lib/terms";
@@ -56,7 +55,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <TermsGate initiallyAccepted={termsAccepted} />
           <RankingsDialog />
           <GlobalProfileForm />
-          <BuyCreditsDialog />
         </Providers>
       </body>
     </html>

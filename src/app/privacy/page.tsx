@@ -23,8 +23,8 @@ export default function PrivacyPage() {
       </p>
       <h2>Photos</h2>
       <p>Uploaded photos are cropped and re-encoded in your browser before upload, which strips location metadata.</p>
-      <h2>Ads</h2>
-      <p>We record when an ad starts and finishes to award clicks. We do not sell your data to advertisers.</p>
+      <h2>Advertising</h2>
+      <p>We do not sell your data to advertisers.</p>
       <h2>Deletion</h2>
       <p>Deleting your profile permanently removes it along with its ratings and comments.</p>
     </LegalPage>

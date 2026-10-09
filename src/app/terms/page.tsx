@@ -14,9 +14,8 @@ export default function TermsPage() {
       <p>You must be at least 18 years old to use Pop Count.</p>
       <h2>2. Anonymous use</h2>
       <p>
-        You can browse, rate, comment and report without signing up. Your device is given an anonymous handle so we can
-        keep your clicks and stop abuse. Creating a profile requires a free account, and you may only create a profile
-        of yourself.
+        Pop Count has no accounts. Your device is given an anonymous handle so we can stop abuse and let you edit or
+        delete what you post. You may only create a profile of yourself.
       </p>
       <h2>3. Your content &amp; responsibility</h2>
       <p>
@@ -26,12 +25,8 @@ export default function TermsPage() {
       </p>
       <h2>4. Ratings are opinions</h2>
       <p>Popularity scores are aggregated opinions of users, not statements of fact by Pop Count.</p>
-      <h2>5. Clicks &amp; ads</h2>
-      <p>
-        Pop Count is free. Rating, commenting, creating a profile or a bubble each use one click. You start with 100
-        clicks and can earn more by watching short ads. Clicks have no cash value and cannot be bought, sold or
-        transferred.
-      </p>
+      <h2>5. Free to use</h2>
+      <p>Pop Count is free. There are no payments.</p>
       <h2>6. Moderation</h2>
       <p>We may remove content or suspend accounts and devices that violate the Community Guidelines or these terms.</p>
       <h2>7. Disclaimers</h2>

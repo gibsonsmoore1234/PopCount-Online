@@ -4,7 +4,7 @@
 
 - **Map → bubble → profile.** The U.S. map shows bubbles sized by how many people are in them, ringed in their average score colour. Tap one to see its people (ranked) and leaderboards, then tap a person to rate and comment.
 - **Anonymous and free.** No sign-up to browse, rate, comment, report or drop a bubble — the first action gives the device an anonymous handle. A free account is only needed to create a profile, and you can only create a profile of yourself.
-- **Clicks.** Everyone starts with 20 clicks. Rating, commenting, creating a profile or a bubble costs 1 click. **Get more clicks** plays a 10-second ad for +10 clicks (max 30 ads a day). There are no payments anywhere.
+- **Free.** Rating, commenting, profiles and bubbles cost nothing. There are no payments.
 - **Safety.** 3-step disclaimer on first visit (guidelines, liability, 18+), profanity masking, free reporting, auto-hide after 3 reports, and an admin moderation queue.
 - **Admin.** `/admin` has the moderation queue and an **Ads** manager to upload image or video ads.
 
@@ -18,8 +18,8 @@ open http://localhost:3000
 
 No database server is needed locally — without `DATABASE_URL` the app uses PGlite stored in `.data/pglite`.
 
-| Demo account | Login               | Password      |
-| ------------ | ------------------- | ------------- |
+| Demo account | Login                   | Password      |
+| ------------ | ----------------------- | ------------- |
 | Member       | `demo@popcount.online`  | `password123` |
 | Admin        | `admin@popcount.online` | `admin12345`  |
 
