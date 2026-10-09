@@ -64,7 +64,7 @@ const pendingIcon = L.divIcon({
 });
 
 /* ── Cut-out U.S. vector canvas ─────────────────────────────────────── */
-const TRI = ["#22C55E", "#FACC15", "#EF4444"] as const;
+const GREYS = ["#d4d4d8", "#b4b4bb", "#93939b"] as const;
 type UsGeo = { counties: FeatureCollection; states: MultiLineString; outline: MultiLineString };
 
 function hash(s: string) {
@@ -75,8 +75,8 @@ function hash(s: string) {
 
 /** Counties painted in the three Aura colours: bubble counties take their bubble's average, the rest a state palette. */
 function countyColor(fips: string, byCounty: Map<string, number | null>) {
-  if (byCounty.has(fips)) return auraColor(byCounty.get(fips) ?? null);
-  return TRI[(hash(fips.slice(0, 2)) + (hash(fips) % 7 === 0 ? 1 : 0)) % 3];
+  if (byCounty.has(fips)) return "#52525b";
+  return GREYS[(hash(fips.slice(0, 2)) + (hash(fips) % 7 === 0 ? 1 : 0)) % 3];
 }
 
 function UsCanvas({ bubbles, zoom }: { bubbles: BubbleSummary[]; zoom: number }) {

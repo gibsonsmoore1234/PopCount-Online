@@ -101,7 +101,6 @@ export function BubbleScreen({
 function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
   const { data: me } = useMe();
   const openProfileForm = useUi((s) => s.openProfileForm);
-  const promptAuth = useUi((s) => s.promptAuth);
   const [reportOpen, setReportOpen] = useState(false);
 
   return (
@@ -114,14 +113,9 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
             </Link>
           </Button>
           <div className="flex flex-wrap gap-2">
-            {me && !me.profile && (
+            {!me?.profile && (
               <Button size="sm" onClick={() => openProfileForm(bubble.id)}>
                 <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile here
-              </Button>
-            )}
-            {(!me || me.isAnonymous) && (
-              <Button size="sm" onClick={() => promptAuth(`Create an account to post your profile in ${bubble.name}.`)}>
-                <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile
               </Button>
             )}
             {

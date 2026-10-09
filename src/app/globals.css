@@ -320,3 +320,8 @@ header.fixed::after {
     0 0 0 1px rgb(22 163 74 / 0.08),
     0 10px 28px rgb(22 163 74 / 0.1) !important;
 }
+
+/* Greyscale map: street tiles match the grey county canvas. */
+.leaflet-tile-pane {
+  filter: grayscale(1);
+}

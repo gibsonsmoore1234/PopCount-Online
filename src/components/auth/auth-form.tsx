@@ -163,30 +163,6 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
         {pending && <Spinner />} {mode === "login" ? "Log in" : "Create account"}
       </Button>
-
-      <p className="text-muted text-center text-xs font-semibold">
-        {mode === "login" ? (
-          <>
-            New here?{" "}
-            <Link
-              href={`/signup${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}
-              className="text-ink font-extrabold underline underline-offset-2"
-            >
-              Create an account
-            </Link>
-          </>
-        ) : (
-          <>
-            Already have an account?{" "}
-            <Link
-              href={`/login${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}
-              className="text-ink font-extrabold underline underline-offset-2"
-            >
-              Log in
-            </Link>
-          </>
-        )}
-      </p>
     </form>
   );
 }

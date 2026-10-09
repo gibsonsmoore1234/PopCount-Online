@@ -1,10 +1,7 @@
-import { api, clientIp, readJson } from "@/lib/api/route";
-import { rateLimit, LIMITS } from "@/lib/rate-limit";
-import { signupSchema } from "@/lib/validation";
-import { signup } from "@/server/account";
+import { api } from "@/lib/api/route";
+import { notFound } from "@/lib/errors";
 
-export const POST = api(async (req) => {
-  rateLimit(`auth:${clientIp(req)}`, LIMITS.auth);
-  const input = await readJson(req, signupSchema);
-  return signup(input);
+/** Sign-up is disabled: every visitor is anonymous. (Admins log in at /login.) */
+export const POST = api(async () => {
+  throw notFound("Sign-up is not available.");
 });

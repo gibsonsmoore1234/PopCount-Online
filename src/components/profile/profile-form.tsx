@@ -335,12 +335,6 @@ export function GlobalProfileForm() {
 
   useEffect(() => {
     // Already have a profile? Take them to it instead of a form that would fail.
-    // Profiles need a real account (self-only); anonymous visitors are asked to sign up first.
-    if (open && (!me || me.isAnonymous)) {
-      close();
-      useUi.getState().promptAuth("Creating your own profile needs a quick free account.");
-      return;
-    }
     if (open && me?.profile) {
       close();
       router.push(`/p/${me.profile.id}`);
@@ -349,10 +343,6 @@ export function GlobalProfileForm() {
   }, [open, me, close, router]);
 
   return (
-    <ProfileFormDialog
-      open={open && Boolean(me) && !me?.isAnonymous && !me?.profile}
-      onOpenChange={(o) => !o && close()}
-      defaultBubbleId={bubbleId}
-    />
+    <ProfileFormDialog open={open && !me?.profile} onOpenChange={(o) => !o && close()} defaultBubbleId={bubbleId} />
   );
 }
