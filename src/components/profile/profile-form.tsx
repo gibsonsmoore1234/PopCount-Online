@@ -257,7 +257,7 @@ function ProfileFormBody({
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.5} />
               <span>
                 <b>This is me.</b> I&apos;m 18+, the photo is of me and I own it, and I want my profile to be publicly
-                rated. I can delete it any time.
+                rated.
               </span>
             </span>
           </Checkbox>
