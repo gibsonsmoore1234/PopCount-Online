@@ -33,7 +33,8 @@ export const qk = {
   me: ["me"] as const,
   bubbles: ["bubbles"] as const,
   bubble: (slug: string) => ["bubble", slug] as const,
-  feed: (slug: string, sort: FeedSort, q: string, seed = "") => ["feed", slug, sort, q, seed] as const,
+  feed: (slug: string, sort: FeedSort, q: string, seed = "", gender = "") =>
+    ["feed", slug, sort, q, seed, gender] as const,
   profile: (id: string) => ["profile", id] as const,
   comments: (id: string, kind: CommentKind) => ["comments", id, kind] as const,
   leaderboard: (scope: string, board: LeaderboardId, bubble?: string) =>
@@ -164,12 +165,20 @@ export function useBubbleRankings(sort: BubbleSort, enabled = true) {
 }
 
 /* ── Feed & leaderboards ───────────────────────────────────────────────── */
-export function useFeed(slug: string, sort: FeedSort, q: string, initial?: Page<ProfileCard>, seed = "") {
+export function useFeed(
+  slug: string,
+  sort: FeedSort,
+  q: string,
+  initial?: Page<ProfileCard>,
+  seed = "",
+  gender: "" | "MALE" | "FEMALE" = "",
+) {
   return useInfiniteQuery({
-    queryKey: qk.feed(slug, sort, q, seed),
+    queryKey: qk.feed(slug, sort, q, seed, gender),
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams({ sort, cursor: String(pageParam), limit: "24" });
       if (seed) params.set("seed", seed);
+      if (gender) params.set("gender", gender);
       if (q) params.set("q", q);
       return apiFetch<Page<ProfileCard>>(`/api/bubbles/${slug}/profiles?${params}`);
     },

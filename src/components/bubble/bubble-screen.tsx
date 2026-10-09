@@ -19,11 +19,16 @@ import { ReportDialog } from "@/components/profile/report-dialog";
 const SORTS: { value: FeedSort; label: string }[] = [
   { value: "random", label: "Random" },
   { value: "best", label: "Best %" },
-  { value: "males", label: "Top Males" },
-  { value: "females", label: "Top Females" },
   { value: "lowest", label: "Lowest %" },
-  { value: "most_votes", label: "Most Votes" },
-  { value: "least_votes", label: "Least Votes" },
+  { value: "most_votes", label: "Most Known" },
+  { value: "least_votes", label: "Least Known" },
+];
+
+type GenderFilter = "" | "MALE" | "FEMALE";
+const GENDERS: { value: GenderFilter; label: string }[] = [
+  { value: "", label: "All" },
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
 ];
 
 /** Layer 2 — full-screen campus feed that completely replaces the map. */
@@ -131,10 +136,11 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
 
 function Roster({ bubble, initialFeed, seed }: { bubble: BubbleSummary; initialFeed: Page<Card>; seed: string }) {
   const [sort, setSort] = useState<FeedSort>("random");
+  const [gender, setGender] = useState<GenderFilter>("");
   const [q, setQ] = useState("");
   const debounced = useDebounced(q.trim(), 250);
-  const isDefault = sort === "random" && debounced === "";
-  const feed = useFeed(bubble.slug, sort, debounced, isDefault ? initialFeed : undefined, seed);
+  const isDefault = sort === "random" && gender === "" && debounced === "";
+  const feed = useFeed(bubble.slug, sort, debounced, isDefault ? initialFeed : undefined, seed, gender);
   const sentinel = useRef<HTMLDivElement>(null);
   const openProfileForm = useUi((s) => s.openProfileForm);
   const { data: me } = useMe();
@@ -158,7 +164,10 @@ function Roster({ bubble, initialFeed, seed }: { bubble: BubbleSummary; initialF
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <Pills ariaLabel="Sort people" value={sort} onChange={setSort} options={SORTS} />
+        <div className="flex flex-col gap-2">
+          <Pills ariaLabel="Sort people" value={sort} onChange={setSort} options={SORTS} />
+          <Pills ariaLabel="Filter by gender" value={gender} onChange={setGender} options={GENDERS} />
+        </div>
         <label className="border-ink focus-within:shadow-hard-sm flex h-9 w-full items-center gap-2 rounded-xl border-2 bg-white px-3 lg:w-72">
           <Search className="h-4 w-4 shrink-0" strokeWidth={3} />
           <input
