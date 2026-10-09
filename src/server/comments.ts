@@ -1,6 +1,6 @@
 import { and, desc, eq, lt, sql } from "drizzle-orm";
 import { db, type Tx } from "@/lib/db";
-import { comments, profiles, users } from "@/lib/db/schema";
+import { commentReactions, comments, profiles, users } from "@/lib/db/schema";
 import { forbidden, notFound } from "@/lib/errors";
 import { cleanUserText } from "@/lib/moderation";
 import type { SessionUser } from "@/lib/auth/session";
@@ -34,6 +34,13 @@ export async function listComments(
       handle: users.handle,
       authorProfileId: authorProfile.id,
       authorPhoto: authorProfile.photoUrl,
+      likes: comments.likeCount,
+      dislikes: comments.dislikeCount,
+      myReaction: viewer
+        ? sql<
+            number | null
+          >`(select ${commentReactions.value} from ${commentReactions} where ${commentReactions.commentId} = ${comments.id} and ${commentReactions.userId} = ${viewer.id})`
+        : sql<number | null>`null`,
     })
     .from(comments)
     .innerJoin(users, eq(users.id, comments.authorId))
@@ -63,6 +70,9 @@ type Row = {
   handle: string;
   authorProfileId: string | null;
   authorPhoto: string | null;
+  likes?: number;
+  dislikes?: number;
+  myReaction?: number | null;
 };
 
 function toDto(r: Row, viewer: SessionUser | null): CommentDto {
@@ -77,6 +87,9 @@ function toDto(r: Row, viewer: SessionUser | null): CommentDto {
       viewer?.role === "ADMIN"
         ? { handle: r.handle, profileId: r.authorProfileId, photoUrl: r.authorPhoto }
         : { handle: "", profileId: null, photoUrl: null },
+    likes: r.likes ?? 0,
+    dislikes: r.dislikes ?? 0,
+    myReaction: r.myReaction === 1 ? 1 : r.myReaction === -1 ? -1 : 0,
     isMine,
     canDelete: isMine || viewer?.role === "ADMIN",
   };
@@ -164,4 +177,36 @@ export async function adjustCount(tx: Tx, profileId: string, kind: CommentKind, 
         : { commentCount: sql`greatest(${profiles.commentCount} + ${delta}, 0)` },
     )
     .where(eq(profiles.id, profileId));
+}
+
+/** Like (1), dislike (−1) or clear (0) a comment. Choosing the same reaction again clears it on the client side. */
+export async function reactToComment(user: SessionUser, commentId: string, value: -1 | 0 | 1) {
+  return db.transaction(async (tx) => {
+    const [c] = await tx
+      .select({ id: comments.id })
+      .from(comments)
+      .where(and(eq(comments.id, commentId), eq(comments.isHidden, false)))
+      .for("update")
+      .limit(1);
+    if (!c) throw notFound("Comment not found.");
+    if (value === 0) {
+      await tx
+        .delete(commentReactions)
+        .where(and(eq(commentReactions.commentId, commentId), eq(commentReactions.userId, user.id)));
+    } else {
+      await tx
+        .insert(commentReactions)
+        .values({ commentId, userId: user.id, value })
+        .onConflictDoUpdate({ target: [commentReactions.commentId, commentReactions.userId], set: { value } });
+    }
+    const [counts] = await tx
+      .update(comments)
+      .set({
+        likeCount: sql`(select count(*) from ${commentReactions} where ${commentReactions.commentId} = ${commentId} and ${commentReactions.value} = 1)`,
+        dislikeCount: sql`(select count(*) from ${commentReactions} where ${commentReactions.commentId} = ${commentId} and ${commentReactions.value} = -1)`,
+      })
+      .where(eq(comments.id, commentId))
+      .returning({ likes: comments.likeCount, dislikes: comments.dislikeCount });
+    return { ...counts, myReaction: value };
+  });
 }

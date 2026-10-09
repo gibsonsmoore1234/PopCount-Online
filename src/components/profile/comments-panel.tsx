@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { MessageCircle, Lightbulb, Trash2, Flag } from "lucide-react";
+import { MessageCircle, Lightbulb, Trash2, Flag, ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "sonner";
 import { useAddComment, useComments, useDeleteComment, useMe } from "@/hooks/api";
 import { useAuthGuard } from "@/hooks/use-gate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
 import { EmptyState, Skeleton, Spinner } from "@/components/ui/misc";
-import { errorMessage } from "@/lib/api/client";
+import { apiFetch, errorMessage } from "@/lib/api/client";
 import type { CommentDto, CommentKind, ProfileDetail } from "@/types/api";
 import { timeAgo } from "@/lib/utils";
 import { ReportDialog } from "./report-dialog";
@@ -132,6 +132,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
                     </span>
                   </div>
                   <p className="text-ink-2 mt-0.5 text-sm font-semibold break-words whitespace-pre-wrap">{c.body}</p>
+                  <Reactions comment={c} />
                 </div>
               </motion.li>
             ))}
@@ -160,6 +161,61 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
           subject="this comment"
         />
       )}
+    </div>
+  );
+}
+
+/** Like / dislike buttons. Tapping your current choice again clears it. Updates instantly, then syncs. */
+function Reactions({ comment }: { comment: CommentDto }) {
+  const [state, setState] = useState({ likes: comment.likes, dislikes: comment.dislikes, mine: comment.myReaction });
+  const [busy, setBusy] = useState(false);
+
+  const react = async (choice: 1 | -1) => {
+    if (busy) return;
+    const prev = state;
+    const next = prev.mine === choice ? 0 : choice;
+    setState({
+      mine: next,
+      likes: prev.likes - (prev.mine === 1 ? 1 : 0) + (next === 1 ? 1 : 0),
+      dislikes: prev.dislikes - (prev.mine === -1 ? 1 : 0) + (next === -1 ? 1 : 0),
+    });
+    setBusy(true);
+    try {
+      const r = await apiFetch<{ likes: number; dislikes: number; myReaction: -1 | 0 | 1 }>(
+        `/api/comments/${comment.id}/reaction`,
+        { method: "POST", json: { value: next } },
+      );
+      setState({ likes: r.likes, dislikes: r.dislikes, mine: r.myReaction });
+    } catch (e) {
+      setState(prev);
+      toast.error(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const btn =
+    "flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-extrabold tabular-nums transition";
+  return (
+    <div className="mt-1.5 flex gap-1.5">
+      <button
+        type="button"
+        aria-label="Like"
+        aria-pressed={state.mine === 1}
+        onClick={() => react(1)}
+        className={`${btn} ${state.mine === 1 ? "border-ink bg-aura-high" : "border-line hover:bg-surface-2 bg-white"}`}
+      >
+        <ThumbsUp className="h-3.5 w-3.5" /> {state.likes}
+      </button>
+      <button
+        type="button"
+        aria-label="Dislike"
+        aria-pressed={state.mine === -1}
+        onClick={() => react(-1)}
+        className={`${btn} ${state.mine === -1 ? "border-ink bg-aura-low text-white" : "border-line hover:bg-surface-2 bg-white"}`}
+      >
+        <ThumbsDown className="h-3.5 w-3.5" /> {state.dislikes}
+      </button>
     </div>
   );
 }

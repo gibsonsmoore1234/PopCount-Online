@@ -104,6 +104,10 @@ export interface CommentDto {
   body: string;
   createdAt: string;
   author: { handle: string; profileId: string | null; photoUrl: string | null };
+  likes: number;
+  dislikes: number;
+  /** 1 liked, −1 disliked, 0 none — for the current viewer. */
+  myReaction: -1 | 0 | 1;
   isMine: boolean;
   canDelete: boolean;
 }
