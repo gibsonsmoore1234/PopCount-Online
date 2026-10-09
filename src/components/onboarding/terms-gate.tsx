@@ -67,7 +67,7 @@ export function TermsGate({ initiallyAccepted }: { initiallyAccepted: boolean })
               <span className="border-ink bg-ink grid h-8 w-8 place-items-center rounded-lg border-2 text-sm font-black text-white">
                 P
               </span>
-              <D.Title className="text-base font-black tracking-tight uppercase">Welcome to Popularity Contest</D.Title>
+              <D.Title className="text-base font-black tracking-tight uppercase">Welcome to Pop Count</D.Title>
             </div>
             <D.Description className="text-muted mt-1 text-xs font-semibold">
               Three quick agreements before the map unlocks. Step {step} of 3.
@@ -119,8 +119,8 @@ export function TermsGate({ initiallyAccepted }: { initiallyAccepted: boolean })
                   <>
                     <h3 className="text-lg font-black tracking-tight uppercase">3. Age & student verification</h3>
                     <p className="text-ink-2 leading-relaxed font-semibold">
-                      Popularity Contest is strictly for adults. Profiles of anyone under 18 are removed immediately and
-                      the account that posted them is banned.
+                      Pop Count is strictly for adults. Profiles of anyone under 18 are removed immediately and the
+                      account that posted them is banned.
                     </p>
                     <Checkbox id="age" checked={adult} onChange={setAdult}>
                       I confirm I am <b>18 years of age or older</b> and a current student or member of the community I
@@ -148,7 +148,7 @@ export function TermsGate({ initiallyAccepted }: { initiallyAccepted: boolean })
               <ArrowLeft className="h-4 w-4" strokeWidth={3} /> Back
             </Button>
             <Button size="md" onClick={next} disabled={step === 3 && !(adult && tos)}>
-              {step === 1 ? "I Agree & Continue" : step === 2 ? "I Agree — Next" : "Enter Popularity Contest"}
+              {step === 1 ? "I Agree & Continue" : step === 2 ? "I Agree — Next" : "Enter Pop Count"}
               <ArrowRight className="h-4 w-4" strokeWidth={3} />
             </Button>
           </div>
@@ -163,8 +163,8 @@ function StepGuidelines() {
     <>
       <h3 className="text-lg font-black tracking-tight uppercase">1. Community guidelines</h3>
       <p className="text-ink-2 leading-relaxed font-semibold">
-        Popularity Contest is a game people <b>opt into</b>. Every profile is created by the person in it — you can only
-        post yourself.
+        Pop Count is a game people <b>opt into</b>. Every profile is created by the person in it — you can only post
+        yourself.
       </p>
       <ul className="space-y-2">
         {[
@@ -191,7 +191,7 @@ function StepLiability() {
     <>
       <h3 className="text-lg font-black tracking-tight uppercase">2. Liability & your content</h3>
       <p className="text-ink-2 leading-relaxed font-semibold">
-        Popularity Contest hosts content created by its users. By continuing you agree that:
+        Pop Count hosts content created by its users. By continuing you agree that:
       </p>
       <ul className="text-ink-2 list-none space-y-2 text-[13px] font-semibold">
         <li className="border-ink rounded-xl border-2 p-3">
@@ -199,12 +199,11 @@ function StepLiability() {
           cast.
         </li>
         <li className="border-ink rounded-xl border-2 p-3">
-          You own (or have the rights to) everything you upload, and you grant Popularity Contest a licence to display
-          it.
+          You own (or have the rights to) everything you upload, and you grant Pop Count a licence to display it.
         </li>
         <li className="border-ink rounded-xl border-2 p-3">
-          Scores are opinions aggregated from other users — not statements of fact by Popularity Contest. Boost credits
-          are a paid feature with no cash value.
+          Scores are opinions aggregated from other users — not statements of fact by Pop Count. Boost credits are a
+          paid feature with no cash value.
         </li>
         <li className="border-ink bg-aura-mid/50 rounded-xl border-2 p-3">
           Anyone can report content. Moderators may hide or remove content and suspend accounts that break the rules.

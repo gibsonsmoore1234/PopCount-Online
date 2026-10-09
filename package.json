@@ -1,9 +1,9 @@
 {
-  "name": "popularity-contest",
+  "name": "pop-count",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Popularity Contest — location-based Aura ratings inside campus & town bubbles.",
+  "description": "Pop Count — location-based Aura ratings inside campus & town bubbles.",
   "engines": {
     "node": ">=20.9.0"
   },

@@ -7,8 +7,8 @@ export default function TermsPage() {
   return (
     <LegalPage title="Terms of Service" updated="October 9, 2026">
       <p>
-        These terms govern your use of Popularity Contest (popularitycontest.ai). They are a starting template — have
-        them reviewed by a lawyer before launching publicly.
+        These terms govern your use of Pop Count (popcount.ai). They are a starting template — have them reviewed by a
+        lawyer before launching publicly.
       </p>
       <h2>1. Eligibility</h2>
       <p>
@@ -22,7 +22,7 @@ export default function TermsPage() {
         host and display it for operating the service.
       </p>
       <h2>3. Ratings are opinions</h2>
-      <p>Aura scores are aggregated opinions of users, not statements of fact by Popularity Contest.</p>
+      <p>Aura scores are aggregated opinions of users, not statements of fact by Pop Count.</p>
       <h2>4. Boost credits</h2>
       <p>
         Boost credits are a limited, revocable licence to use a paid feature. They have no cash value, are

@@ -1,6 +1,6 @@
-# Popularity Contest
+# Pop Count
 
-**popularitycontest.ai**: a location-based social app. You opt in, drop into your campus or town **bubble** on a live U.S. map, and see where your **Aura** (a 0–100 score) lands among your peers.
+**popcount.ai**: a location-based social app. You opt in, drop into your campus or town **bubble** on a live U.S. map, and see where your **Aura** (a 0–100 score) lands among your peers.
 
 - **Interactive map:** campus and town bubbles sized by membership. Each bubble's ring is colored by its average Aura. Pan and zoom from the national view down to street level, and drop new bubbles anywhere in the U.S. (max 100 per county).
 - **Campus feed:** a full-screen roster of 2:3 portrait cards, each framed in its Aura color. Sort by Best %, Top Males, Top Females, Lowest %, Most Votes and Least Votes. Search within the campus, plus local leaderboards and group channels.
@@ -23,10 +23,10 @@ open http://localhost:3000
 
 No database server is needed for local development. Without `DATABASE_URL`, the app runs **PGlite** (real PostgreSQL compiled to WASM) and stores the data in `.data/pglite`.
 
-| Demo account | Login                        | Password      |
-| ------------ | ---------------------------- | ------------- |
-| Member       | `demo@popularitycontest.ai`  | `password123` |
-| Admin        | `admin@popularitycontest.ai` | `admin12345`  |
+| Demo account | Login               | Password      |
+| ------------ | ------------------- | ------------- |
+| Member       | `demo@popcount.ai`  | `password123` |
+| Admin        | `admin@popcount.ai` | `admin12345`  |
 
 The seed creates 6 campus bubbles (Duke, Ole Miss, NYU, UCLA, UT Austin, UMiami), 64 demo profiles, about 240 accounts, about 2,400 ratings, comments, advice and group chats. Every demo person is fictional. Their photos are generated illustrations (DiceBear "Notionists", CC0), not pictures of real people.
 

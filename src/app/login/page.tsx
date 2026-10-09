@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function LoginPage() {
   if (await getSessionUser()) redirect("/");
   return (
-    <AuthShell title="Log in" subtitle="Welcome back to the contest.">
+    <AuthShell title="Log in" subtitle="Welcome back to Pop Count.">
       <Suspense>
         <AuthForm mode="login" />
       </Suspense>

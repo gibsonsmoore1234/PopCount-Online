@@ -8,8 +8,8 @@ export default function GuidelinesPage() {
   return (
     <LegalPage title="Community Guidelines" updated="October 9, 2026">
       <p>
-        Popularity Contest is a game people choose to play. These rules keep it fun for everyone in it. Breaking them
-        gets content removed and accounts suspended.
+        Pop Count is a game people choose to play. These rules keep it fun for everyone in it. Breaking them gets
+        content removed and accounts suspended.
       </p>
       <h2>Opt-in only</h2>
       <ul>

@@ -15,18 +15,18 @@ import { TERMS_COOKIE, TERMS_VERSION } from "@/lib/terms";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
-  title: { default: "Popularity Contest — Live Campus Aura Map", template: "%s · Popularity Contest" },
+  title: { default: "Pop Count — Live Campus Aura Map", template: "%s · Pop Count" },
   description:
     "Opt in, drop into your campus or town bubble, and see where your Aura lands. Live 0–100 ratings, leaderboards and group threads on an interactive map.",
-  applicationName: "Popularity Contest",
+  applicationName: "Pop Count",
   openGraph: {
-    title: "Popularity Contest",
+    title: "Pop Count",
     description: "Live campus Aura ratings on an interactive map.",
-    siteName: "popularitycontest.ai",
+    siteName: "popcount.ai",
     type: "website",
   },
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Popularity" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Pop Count" },
 };
 
 export const viewport: Viewport = {

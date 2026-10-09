@@ -33,7 +33,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
   const share = async () => {
     const url = window.location.href;
     try {
-      if (navigator.share) await navigator.share({ title: `${profile.displayName} on Popularity Contest`, url });
+      if (navigator.share) await navigator.share({ title: `${profile.displayName} on Pop Count`, url });
       else {
         await navigator.clipboard.writeText(url);
         toast.success("Link copied");

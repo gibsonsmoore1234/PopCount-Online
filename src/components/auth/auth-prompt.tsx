@@ -15,7 +15,7 @@ export function AuthPrompt() {
 
   return (
     <Dialog open={Boolean(reason)} onOpenChange={(o) => !o && close()}>
-      <DialogContent title="Join the contest" size="sm">
+      <DialogContent title="Join Pop Count" size="sm">
         <div className="space-y-4 p-5">
           <div className="border-ink bg-aura-high/40 flex items-start gap-3 rounded-xl border-2 p-3">
             <Sparkles className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={2.5} />

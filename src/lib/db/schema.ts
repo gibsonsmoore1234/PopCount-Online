@@ -29,7 +29,14 @@ export const commentKind = pgEnum("comment_kind", ["COMMENT", "ADVICE"]);
 export const voteEventKind = pgEnum("vote_event_kind", ["RATE", "BOOST"]);
 export const reportTarget = pgEnum("report_target", ["PROFILE", "COMMENT", "MESSAGE", "BUBBLE"]);
 export const reportStatus = pgEnum("report_status", ["OPEN", "ACTIONED", "DISMISSED"]);
-export const creditReason = pgEnum("credit_reason", ["SIGNUP_GRANT", "PURCHASE", "BOOST", "ADMIN_ADJUST", "REFUND", "AD_REWARD"]);
+export const creditReason = pgEnum("credit_reason", [
+  "SIGNUP_GRANT",
+  "PURCHASE",
+  "BOOST",
+  "ADMIN_ADJUST",
+  "REFUND",
+  "AD_REWARD",
+]);
 
 const bytea = customType<{ data: Buffer; driverData: Buffer | Uint8Array }>({
   dataType: () => "bytea",

@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!profile) return { title: "Profile not found" };
   return {
     title: `${profile.displayName} · ${formatAura(profile.auraScore)} Aura`,
-    description: `${profile.displayName} (@${profile.handle}) at ${profile.bubble.name} — ${profile.voteCount} votes on Popularity Contest.`,
+    description: `${profile.displayName} (@${profile.handle}) at ${profile.bubble.name} — ${profile.voteCount} votes on Pop Count.`,
   };
 }
 

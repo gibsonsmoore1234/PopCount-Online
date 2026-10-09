@@ -67,7 +67,7 @@ export async function startCheckout(user: SessionUser, packId: CreditPackId, ori
     "line_items[0][quantity]": "1",
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": String(pack.priceCents),
-    "line_items[0][price_data][product_data][name]": `Popularity Contest · ${pack.label} boost pack`,
+    "line_items[0][price_data][product_data][name]": `Pop Count · ${pack.label} boost pack`,
     "line_items[0][price_data][product_data][description]": pack.blurb,
     client_reference_id: user.id,
     customer_email: user.email,
@@ -168,12 +168,16 @@ export async function claimAdReward(user: SessionUser) {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${"ad:" + user.id}))`);
     const [stats] = await tx
       .select({
-        today: sql<number>`count(*) filter (where ${creditTransactions.createdAt} > now() - interval '1 day')::int`.mapWith(Number),
+        today:
+          sql<number>`count(*) filter (where ${creditTransactions.createdAt} > now() - interval '1 day')::int`.mapWith(
+            Number,
+          ),
         last: sql<Date | null>`max(${creditTransactions.createdAt})`,
       })
       .from(creditTransactions)
       .where(and(eq(creditTransactions.userId, user.id), eq(creditTransactions.reason, "AD_REWARD")));
-    if (stats.today >= AD_DAILY_LIMIT) throw new ApiError(429, "Daily ad limit reached — come back tomorrow.", "rate_limited");
+    if (stats.today >= AD_DAILY_LIMIT)
+      throw new ApiError(429, "Daily ad limit reached — come back tomorrow.", "rate_limited");
     if (stats.last && Date.now() - new Date(stats.last).getTime() < AD_MIN_SECONDS * 1000) {
       throw new ApiError(429, "Finish watching the ad first.", "rate_limited");
     }
