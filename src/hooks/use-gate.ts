@@ -1,21 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useMe } from "./api";
-import { useUi } from "@/stores/ui-store";
 
 /** Returns `guard(reason)` → true when the viewer may act; otherwise opens the sign-in prompt. */
 export function useAuthGuard() {
-  const { data: me } = useMe();
-  const promptAuth = useUi((s) => s.promptAuth);
-  return useCallback(
-    (reason: string) => {
-      if (me) return true;
-      promptAuth(reason);
-      return false;
-    },
-    [me, promptAuth],
-  );
+  return useCallback((reason: string) => {
+    // Rating and commenting never need sign-up: the server gives this device an anonymous identity.
+    void reason;
+    return true;
+  }, []);
 }
 
 export function useDebounced<T>(value: T, ms = 250): T {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Zap, Play, Gift } from "lucide-react";
+import { Play, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -73,7 +73,6 @@ function AdPlayer({ onDone }: { onDone: () => void }) {
           <p className="text-[10px] font-extrabold tracking-wider uppercase">Your clicks</p>
           <p className="text-2xl font-black tabular-nums">{balance.toLocaleString()}</p>
         </div>
-        <Zap className="fill-ink h-7 w-7" strokeWidth={2} />
       </div>
 
       {view ? (

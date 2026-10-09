@@ -36,6 +36,7 @@ export const creditReason = pgEnum("credit_reason", [
   "ADMIN_ADJUST",
   "REFUND",
   "AD_REWARD",
+  "ACTION",
 ]);
 
 const bytea = customType<{ data: Buffer; driverData: Buffer | Uint8Array }>({

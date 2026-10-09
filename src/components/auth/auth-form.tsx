@@ -56,7 +56,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       signup.mutate(parsed.data, {
         onSuccess: () => {
           acceptTerms();
-          toast.success("Account created — $2.50 boost credit added!", {
+          toast.success("Account created — you start with 100 clicks!", {
             description: "Next: create your profile to join the rankings.",
             action: { label: "Create profile", onClick: () => router.push("/?create=1") },
           });

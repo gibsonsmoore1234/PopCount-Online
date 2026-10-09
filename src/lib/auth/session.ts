@@ -5,6 +5,7 @@ import { and, eq, gt, lt } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { sessions, users, type User } from "@/lib/db/schema";
 import { forbidden, unauthorized } from "@/lib/errors";
+import { SIGNUP_GRANT_CENTS } from "@/lib/aura";
 
 export const SESSION_COOKIE = "pc_session";
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
@@ -132,7 +133,7 @@ async function createAnonymousUser(): Promise<SessionUser> {
         handle,
         passwordHash: "!anonymous",
         isAnonymous: true,
-        creditBalance: 0,
+        creditBalance: SIGNUP_GRANT_CENTS,
         termsAcceptedAt: new Date(),
       })
       .onConflictDoNothing()

@@ -6,6 +6,7 @@ import { cleanUserText } from "@/lib/moderation";
 import type { SessionUser } from "@/lib/auth/session";
 import type { CommentDto, CommentKind, Page } from "@/types/api";
 import { alias } from "drizzle-orm/pg-core";
+import { spendClick } from "./credits";
 
 const PAGE = 20;
 const authorProfile = alias(profiles, "author_profile");
@@ -88,6 +89,7 @@ export async function addComment(user: SessionUser, profileId: string, kind: Com
       .for("update")
       .limit(1);
     if (!p || p.isHidden) throw notFound("Profile not found.");
+    await spendClick(tx, user.id, profileId);
 
     const [row] = await tx
       .insert(comments)

@@ -18,6 +18,7 @@ import {
 } from "./shared";
 import { addMember } from "./bubbles";
 import { assertOwnImage } from "./images";
+import { spendClick } from "./credits";
 
 const eligible = gte(profiles.voteCount, MIN_VOTES_FOR_RANKING);
 
@@ -48,6 +49,7 @@ export async function createProfile(user: SessionUser, input: CreateProfileInput
         })
         .returning({ id: profiles.id });
       await addMember(tx, bubble.id, user.id);
+      await spendClick(tx, user.id, profile.id);
       return { id: profile.id, bubbleSlug: bubble.slug };
     });
   } catch (err) {

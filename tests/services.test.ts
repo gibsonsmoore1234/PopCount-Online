@@ -135,8 +135,8 @@ describe("boost micro-economy", () => {
     // 100×4 + 0×1 over weight 5 = 80
     expect(res.profile.auraScore).toBe(80);
     expect(res.myRating.weight).toBe(4);
-    expect(res.creditBalance).toBe(247);
-    expect(await getBalance(fan.id)).toBe(247);
+    expect(res.creditBalance).toBe(246); // 250 − 1 rating − 3 boosts
+    expect(await getBalance(fan.id)).toBe(246);
   });
 
   it("caps boosts at 10 per profile per day", async () => {
@@ -147,14 +147,14 @@ describe("boost micro-economy", () => {
     expect(first.myRating.boostsToday).toBe(8);
     const second = await boostProfile(fan, pid, 10); // clamped to the 2 remaining
     expect(second.myRating.boostsToday).toBe(10);
-    expect(second.creditBalance).toBe(990);
+    expect(second.creditBalance).toBe(989); // 1000 − 1 rating − 10 boosts
     await expectApiError(boostProfile(fan, pid, 1), 429);
   });
 
   it("refuses to overdraw credits", async () => {
     const pid = await makeProfile(await makeUser(), duke);
-    const broke = await makeUser({ credits: 1 });
-    await rateProfile(broke, pid, 70);
+    const broke = await makeUser({ credits: 2 });
+    await rateProfile(broke, pid, 70); // costs 1 click
     await expectApiError(boostProfile(broke, pid, 2), 402);
     expect(await getBalance(broke.id)).toBe(1);
   });
@@ -225,6 +225,17 @@ describe("bubbles", () => {
       createBubble(admin, { name: "One Too Many", description: "", kind: "TOWN", lat: 30.2849, lng: -97.7341 }),
       409,
     );
+  });
+});
+
+describe("clicks", () => {
+  it("charges one click per rating/comment and refuses when out of clicks", async () => {
+    const pid = await makeProfile(await makeUser(), duke);
+    const u = await makeUser({ credits: 2 });
+    await rateProfile(u, pid, 50);
+    await addComment(u, pid, "COMMENT", "nice one");
+    expect(await getBalance(u.id)).toBe(0);
+    await expectApiError(addComment(u, pid, "COMMENT", "again"), 402);
   });
 });
 
