@@ -14,7 +14,7 @@ export async function createReport(
 ) {
   const target = await describeTarget(input.targetType, input.targetId);
   if (!target) throw notFound("That content no longer exists.");
-  if (target.ownerId === user.id) throw badRequest("You can't report your own content — delete it instead.");
+  if (target.ownerId === user.id) throw badRequest("You can't report your own content.");
 
   try {
     await db.transaction(async (tx) => {

@@ -1,30 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Share2, Flag, Pencil, Trash2, MapPin, EyeOff } from "lucide-react";
+import { ArrowLeft, Share2, Flag, MapPin, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { useDeleteProfile, useProfile } from "@/hooks/api";
+import { useProfile } from "@/hooks/api";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/misc";
 import { AuraFrame } from "@/components/aura/aura";
 import { Photo } from "@/components/aura/photo";
 import { AURA_COLORS, auraTier, formatCount } from "@/lib/aura";
-import { errorMessage } from "@/lib/api/client";
 import type { ProfileDetail } from "@/types/api";
 import { AnimatedNumber, VoteConsole } from "./vote-console";
 import { CommentsPanel } from "./comments-panel";
-import { ProfileFormDialog } from "./profile-form";
 import { ReportDialog } from "./report-dialog";
 
 /** Layer 3 — full-screen "Tea-app" style profile takeover. */
 export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
   const { data: profile = initial } = useProfile(initial.id, initial);
-  const [editing, setEditing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [reporting, setReporting] = useState(false);
   const tier = auraTier(profile.auraScore);
 
@@ -59,11 +52,11 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
           <Button variant="secondary" size="icon-sm" aria-label="Share profile" onClick={share}>
             <Share2 className="h-4 w-4" strokeWidth={2.5} />
           </Button>
-          {!profile.isOwner && (
+          {
             <Button variant="secondary" size="icon-sm" aria-label="Report profile" onClick={() => setReporting(true)}>
               <Flag className="h-4 w-4" strokeWidth={2.5} />
             </Button>
-          )}
+          }
         </div>
       </div>
 
@@ -122,20 +115,14 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
               </h1>
             </div>
 
-            {profile.isOwner ? (
-              <OwnerPanel onEdit={() => setEditing(true)} onDelete={() => setDeleting(true)} />
-            ) : (
-              <VoteConsole profile={profile} />
-            )}
+            <VoteConsole profile={profile} />
 
             <CommentsPanel profile={profile} />
           </div>
         </div>
       </div>
 
-      {profile.isOwner && <ProfileFormDialog open={editing} onOpenChange={setEditing} profile={profile} />}
-      {profile.isOwner && <DeleteProfileDialog open={deleting} onOpenChange={setDeleting} profile={profile} />}
-      {!profile.isOwner && (
+      {
         <ReportDialog
           open={reporting}
           onOpenChange={setReporting}
@@ -143,65 +130,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
           targetId={profile.id}
           subject={profile.displayName}
         />
-      )}
+      }
     </div>
-  );
-}
-
-function OwnerPanel({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
-  return (
-    <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
-      <Button variant="secondary" size="sm" onClick={onEdit}>
-        <Pencil className="h-4 w-4" strokeWidth={2.5} /> Edit profile
-      </Button>
-      <Button variant="danger" size="sm" onClick={onDelete}>
-        <Trash2 className="h-4 w-4" strokeWidth={2.5} /> Delete profile
-      </Button>
-    </div>
-  );
-}
-
-function DeleteProfileDialog({
-  open,
-  onOpenChange,
-  profile,
-}: {
-  open: boolean;
-  onOpenChange: (o: boolean) => void;
-  profile: ProfileDetail;
-}) {
-  const del = useDeleteProfile(profile.id);
-  const router = useRouter();
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent title="Delete your profile?" size="sm">
-        <div className="space-y-4 p-5">
-          <p className="text-ink-2 text-sm font-semibold">
-            This permanently removes your profile, its {profile.voteCount.toLocaleString()} votes and every comment on
-            it. Your account stays, so you can create a new profile later.
-          </p>
-          <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => onOpenChange(false)}>
-              Keep it
-            </Button>
-            <Button
-              variant="danger"
-              disabled={del.isPending}
-              onClick={() =>
-                del.mutate(undefined, {
-                  onSuccess: () => {
-                    toast.success("Profile deleted");
-                    router.push(`/b/${profile.bubble.slug}`);
-                  },
-                  onError: (e) => toast.error(errorMessage(e)),
-                })
-              }
-            >
-              {del.isPending && <Spinner />} Delete forever
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }
