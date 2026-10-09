@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { MessageCircle, Lightbulb, Trash2, Flag } from "lucide-react";
@@ -10,7 +9,6 @@ import { useAuthGuard } from "@/hooks/use-gate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
 import { EmptyState, Skeleton, Spinner } from "@/components/ui/misc";
-import { Avatar } from "@/components/aura/photo";
 import { errorMessage } from "@/lib/api/client";
 import type { CommentDto, CommentKind, ProfileDetail } from "@/types/api";
 import { timeAgo } from "@/lib/utils";
@@ -103,21 +101,8 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
                 exit={{ opacity: 0, height: 0 }}
                 className="group border-ink bg-surface flex gap-3 rounded-xl border-2 p-3"
               >
-                <Avatar src={c.author.photoUrl} name={c.author.handle} size={34} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 text-xs">
-                    {c.author.profileId ? (
-                      <Link href={`/p/${c.author.profileId}`} className="truncate font-black hover:underline">
-                        @{c.author.handle}
-                      </Link>
-                    ) : (
-                      <span className="truncate font-black">@{c.author.handle}</span>
-                    )}
-                    {c.author.handle === profile.handle && (
-                      <span className="border-ink bg-aura-mid rounded border px-1 text-[9px] font-black uppercase">
-                        Owner
-                      </span>
-                    )}
                     <time
                       dateTime={c.createdAt}
                       className="text-muted text-[10px] font-bold"
@@ -172,7 +157,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
           onOpenChange={(o) => !o && setReporting(null)}
           targetType="COMMENT"
           targetId={reporting.id}
-          subject={`@${reporting.author.handle}'s comment`}
+          subject="this comment"
         />
       )}
     </div>
