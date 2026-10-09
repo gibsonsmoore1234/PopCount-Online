@@ -7,7 +7,6 @@ import { DropdownMenu } from "radix-ui";
 import {
   Trophy,
   Search,
-  Plus,
   UserRound,
   LogOut,
   Shield,
@@ -29,15 +28,8 @@ import { cn } from "@/lib/utils";
 export function AppHeader() {
   const { data: me } = useMe();
   const openRankings = useUi((s) => s.openRankings);
-  const openProfileForm = useUi((s) => s.openProfileForm);
-  const promptAuth = useUi((s) => s.promptAuth);
   const setCreditsOpen = useUi((s) => s.setCreditsOpen);
   const [mobileSearch, setMobileSearch] = useState(false);
-
-  const onCreate = () => {
-    if (!me) return promptAuth("Create an account to post your own profile.");
-    openProfileForm();
-  };
 
   return (
     <header className="border-ink fixed inset-x-0 top-0 z-[900] h-16 border-b-2 bg-white/95 backdrop-blur-md">
@@ -79,11 +71,7 @@ export function AppHeader() {
                 <UserRound className="h-4 w-4" strokeWidth={2.5} /> My Profile
               </Link>
             </Button>
-          ) : (
-            <Button variant="primary" size="sm" onClick={onCreate} className="hidden sm:inline-flex">
-              <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile
-            </Button>
-          )}
+          ) : null}
 
           {me && (
             <button
@@ -116,7 +104,6 @@ function AccountMenu() {
   const { data: me } = useMe();
   const logout = useLogout();
   const router = useRouter();
-  const openProfileForm = useUi((s) => s.openProfileForm);
   const setCreditsOpen = useUi((s) => s.setCreditsOpen);
   if (!me) return null;
 
@@ -149,11 +136,7 @@ function AccountMenu() {
             <DropdownMenu.Item className={item} onSelect={() => router.push(`/p/${me.profile!.id}`)}>
               <UserRound className="h-4 w-4" /> My profile
             </DropdownMenu.Item>
-          ) : (
-            <DropdownMenu.Item className={item} onSelect={() => openProfileForm()}>
-              <Plus className="h-4 w-4" /> Create my profile
-            </DropdownMenu.Item>
-          )}
+          ) : null}
           {me.profile && (
             <DropdownMenu.Item className={item} onSelect={() => router.push(`/b/${me.profile!.bubbleSlug}`)}>
               <MapIcon className="h-4 w-4" /> {me.profile.bubbleName}

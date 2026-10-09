@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { MapPinPlus, Plus, X, Crosshair, Users, Vote, Globe2 } from "lucide-react";
+import { MapPinPlus, X, Crosshair, Users, Vote, Globe2 } from "lucide-react";
 import { useBubbles, useMe } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
 import { Button } from "@/components/ui/button";
@@ -113,15 +113,6 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
         </motion.div>
 
         <div className="pointer-events-auto flex flex-col items-end gap-2">
-          {!me?.profile && (
-            <Button
-              size="sm"
-              onClick={() => (me ? openProfileForm() : promptAuth("Create an account to post your own profile."))}
-              className="shadow-hard"
-            >
-              <Plus className="h-4 w-4" strokeWidth={3} /> <span>Create Profile</span>
-            </Button>
-          )}
           <Button
             size="sm"
             variant={pinning ? "boost" : "secondary"}
