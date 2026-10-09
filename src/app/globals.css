@@ -285,3 +285,21 @@
 .bg-black\/70 .text-white\/90 {
   color: rgb(255 255 255 / 0.9);
 }
+
+/* Snap-Map style water + logo bubbles */
+.leaflet-container {
+  background: radial-gradient(ellipse at 50% 40%, #0d1a24 0%, #05090d 70%), #05090d !important;
+}
+.pc-bubble__logo {
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 2px solid var(--pc-ring, #22c55e);
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+.pc-bubble {
+  box-shadow:
+    0 0 0 4px var(--pc-ring, #22c55e),
+    0 0 22px var(--pc-ring, #22c55e),
+    0 10px 22px rgb(0 0 0 / 0.6) !important;
+}

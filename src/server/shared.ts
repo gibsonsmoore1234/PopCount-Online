@@ -121,6 +121,7 @@ export function toBubbleSummary(row: BubbleSummaryRow): BubbleSummary {
     logoUrl: b.logoUrl,
     lat: b.lat,
     lng: b.lng,
+    countyFips: b.countyFips,
     countyName: b.countyName,
     stateName: b.stateName,
     population: b.population,

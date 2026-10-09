@@ -95,6 +95,16 @@ export async function createBubble(user: SessionUser, input: CreateBubbleInput) 
       throw conflict(`${county.county} County already has the maximum of ${MAX_BUBBLES_PER_COUNTY} bubbles.`);
     }
 
+    // Pins can't stack on identical coordinates (≈1 m precision).
+    const [dupe] = await tx
+      .select({ id: bubbles.id })
+      .from(bubbles)
+      .where(
+        sql`round(${bubbles.lat}::numeric, 5) = round(${input.lat}::numeric, 5) and round(${bubbles.lng}::numeric, 5) = round(${input.lng}::numeric, 5)`,
+      )
+      .limit(1);
+    if (dupe) throw conflict("Another bubble already sits on exactly this spot — move your pin slightly.");
+
     const slug = await uniqueSlug(tx, slugify(input.name));
     const [bubble] = await tx
       .insert(bubbles)

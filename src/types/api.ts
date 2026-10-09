@@ -26,6 +26,7 @@ export interface BubbleSummary {
   logoUrl: string | null;
   lat: number;
   lng: number;
+  countyFips: string;
   countyName: string;
   stateName: string;
   population: number | null;

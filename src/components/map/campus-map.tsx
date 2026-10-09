@@ -3,7 +3,18 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, Marker, TileLayer, Tooltip, ZoomControl, useMap, useMapEvents } from "react-leaflet";
+import {
+  GeoJSON,
+  MapContainer,
+  Marker,
+  Pane,
+  TileLayer,
+  Tooltip,
+  ZoomControl,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
+import type { Feature, FeatureCollection, MultiLineString } from "geojson";
 import { auraColor, formatAura } from "@/lib/aura";
 import type { BubbleSummary } from "@/types/api";
 
@@ -35,6 +46,7 @@ function bubbleIcon(b: BubbleSummary, zoom: number) {
   // Strictly two lines inside the bubble: the name, and the member count.
   const html = `
     <div class="pc-bubble" style="--pc-ring:${auraColor(b.avgAura)}" role="button" tabindex="0" aria-label="${escapeHtml(b.name)}, ${b.memberCount} members">
+      ${b.logoUrl ? `<img class="pc-bubble__logo" src="${escapeHtml(b.logoUrl)}" alt="" referrerpolicy="no-referrer" style="width:${Math.round(d * 0.34)}px;height:${Math.round(d * 0.34)}px"/>` : ""}
       <span class="pc-bubble__name" style="font-size:${nameSize}px">${escapeHtml(b.name)}</span>
       <span class="pc-bubble__members" style="font-size:${memberSize}px">${members}</span>
     </div>`;
@@ -47,6 +59,80 @@ const pendingIcon = L.divIcon({
   iconSize: [44, 44],
   iconAnchor: [22, 22],
 });
+
+/* ── Cut-out U.S. vector canvas ─────────────────────────────────────── */
+const TRI = ["#22C55E", "#FACC15", "#EF4444"] as const;
+type UsGeo = { counties: FeatureCollection; states: MultiLineString; outline: MultiLineString };
+
+function hash(s: string) {
+  let h = 0;
+  for (const c of s) h = (h * 33 + c.charCodeAt(0)) >>> 0;
+  return h;
+}
+
+/** Counties painted in the three Aura colours: bubble counties take their bubble's average, the rest a state palette. */
+function countyColor(fips: string, byCounty: Map<string, number | null>) {
+  if (byCounty.has(fips)) return auraColor(byCounty.get(fips) ?? null);
+  return TRI[(hash(fips.slice(0, 2)) + (hash(fips) % 7 === 0 ? 1 : 0)) % 3];
+}
+
+function UsCanvas({ bubbles, zoom }: { bubbles: BubbleSummary[]; zoom: number }) {
+  const [geo, setGeo] = useState<UsGeo | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/geo/us")
+      .then((r) => r.json())
+      .then((g: UsGeo) => alive && setGeo(g))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const byCounty = useMemo(() => {
+    const m = new Map<string, number | null>();
+    for (const b of bubbles) m.set(countyFipsOf(b), b.avgAura);
+    return m;
+  }, [bubbles]);
+  if (!geo) return null;
+  // Fade the painted counties out as street-level tiles take over.
+  const fill = zoom >= 10 ? 0.12 : zoom >= 8 ? 0.45 : 0.82;
+  return (
+    <Pane name="us" style={{ zIndex: 350 }}>
+      <GeoJSON
+        key={`c-${fill}-${byCounty.size}`}
+        data={geo.counties}
+        style={(f?: Feature) => {
+          const fips = String(f?.id ?? "");
+          const hasBubble = byCounty.has(fips);
+          return {
+            fillColor: countyColor(fips, byCounty),
+            fillOpacity: hasBubble ? Math.min(1, fill + 0.15) : fill * (0.7 + (hash(fips) % 30) / 100),
+            color: "#000",
+            weight: zoom >= 6 ? 0.6 : 0.25,
+            opacity: 0.55,
+          };
+        }}
+        interactive={false}
+      />
+      <GeoJSON
+        key="states"
+        data={geo.states}
+        style={{ color: "#000", weight: 1.6, opacity: 0.9 }}
+        interactive={false}
+      />
+      <GeoJSON
+        key="outline"
+        data={geo.outline}
+        style={{ color: "#ffffff", weight: 2.5, opacity: 0.9 }}
+        interactive={false}
+      />
+    </Pane>
+  );
+}
+
+function countyFipsOf(b: BubbleSummary) {
+  return b.countyFips;
+}
 
 function ViewTracker({ onChange }: { onChange: (center: [number, number], zoom: number) => void }) {
   const map = useMapEvents({
@@ -129,6 +215,7 @@ export default function CampusMap({
       maxBounds={US_BOUNDS}
       maxBoundsViscosity={0.8}
       zoomControl={false}
+      preferCanvas
       worldCopyJump={false}
       className="h-full w-full"
       attributionControl
@@ -137,8 +224,10 @@ export default function CampusMap({
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         subdomains="abcd"
         maxZoom={19}
+        minZoom={7}
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
       />
+      <UsCanvas bubbles={bubbles} zoom={zoom} />
       <ZoomControl position="bottomright" />
       <SizeFix />
       <ViewTracker onChange={onViewChange} />
