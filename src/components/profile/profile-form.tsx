@@ -6,7 +6,7 @@ import { ImageUp, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
+import { Checkbox, Field, Input, Select } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/misc";
 import { AuraFrame } from "@/components/aura/aura";
 import { Photo } from "@/components/aura/photo";
@@ -74,7 +74,7 @@ function ProfileFormBody({
   const [chosenBubble, setBubbleId] = useState("");
   const [gender, setGender] = useState<Gender>(profile?.gender ?? "FEMALE");
   const [affiliation, setAffiliation] = useState(profile?.affiliation ?? "");
-  const [bio, setBio] = useState(profile?.bio ?? "");
+  const bio = profile?.bio ?? "";
   const [photoUrl, setPhotoUrl] = useState(profile?.photoUrl ?? "");
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
@@ -248,22 +248,6 @@ function ProfileFormBody({
             </button>
           ))}
         </div>
-      </Field>
-
-      <Field
-        label="Bio"
-        htmlFor={`${uid}-bio`}
-        error={errors.bio}
-        aside={<span className="text-muted text-[10px] font-bold">{bio.length}/280</span>}
-      >
-        <Textarea
-          id={`${uid}-bio`}
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          maxLength={280}
-          rows={3}
-          placeholder="Year, major, what you're into…"
-        />
       </Field>
 
       {!isEdit && (
