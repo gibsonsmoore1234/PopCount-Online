@@ -70,21 +70,17 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
             </Link>
           </Button>
           <div className="flex flex-wrap gap-2">
-            {!me?.profileBubbleIds?.includes(bubble.id) && (
-              <Button size="sm" onClick={() => openProfileForm(bubble.id)}>
-                <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile here
-              </Button>
-            )}
-            {
-              <Button
-                size="icon-sm"
-                variant="secondary"
-                aria-label="Report this bubble"
-                onClick={() => setReportOpen(true)}
-              >
-                <Flag className="h-4 w-4" strokeWidth={2.5} />
-              </Button>
-            }
+            <Button size="sm" onClick={() => openProfileForm(bubble.id)}>
+              <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile here
+            </Button>
+            <Button
+              size="icon-sm"
+              variant="secondary"
+              aria-label="Report this bubble"
+              onClick={() => setReportOpen(true)}
+            >
+              <Flag className="h-4 w-4" strokeWidth={2.5} />
+            </Button>
             <AdminDeleteButton kind="bubble" slug={bubble.slug} name={bubble.name} />
           </div>
         </div>
@@ -123,15 +119,13 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
           </div>
         </div>
       </div>
-      {
-        <ReportDialog
-          open={reportOpen}
-          onOpenChange={setReportOpen}
-          targetType="BUBBLE"
-          targetId={bubble.id}
-          subject={bubble.name}
-        />
-      }
+      <ReportDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        targetType="BUBBLE"
+        targetId={bubble.id}
+        subject={bubble.name}
+      />
     </header>
   );
 }
@@ -201,11 +195,9 @@ function Roster({ bubble, initialFeed, seed }: { bubble: BubbleSummary; initialF
               : "Nobody matches this filter yet — be the first."
           }
           action={
-            !me?.profileBubbleIds?.includes(bubble.id) && (
-              <Button size="sm" onClick={() => openProfileForm(bubble.id)}>
-                <Plus className="h-4 w-4" strokeWidth={3} /> Create your profile
-              </Button>
-            )
+            <Button size="sm" onClick={() => openProfileForm(bubble.id)}>
+              <Plus className="h-4 w-4" strokeWidth={3} /> Create your profile
+            </Button>
           }
         />
       ) : (
