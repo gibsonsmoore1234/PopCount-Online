@@ -254,9 +254,29 @@ export const comments = pgTable(
     body: text("body").notNull(),
     isHidden: boolean("is_hidden").notNull().default(false),
     reportCount: integer("report_count").notNull().default(0),
+    likeCount: integer("like_count").notNull().default(0),
+    dislikeCount: integer("dislike_count").notNull().default(0),
     ...timestamps,
   },
   (t) => [index("comments_profile_kind_time_idx").on(t.profileId, t.kind, t.createdAt)],
+);
+
+/** One like (+1) or dislike (−1) per person per comment. */
+export const commentReactions = pgTable(
+  "comment_reactions",
+  {
+    commentId: uuid("comment_id")
+      .notNull()
+      .references(() => comments.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    value: smallint("value").notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.commentId, t.userId] }),
+    check("comment_reactions_value", sql`${t.value} in (-1, 1)`),
+  ],
 );
 
 export const groups = pgTable(

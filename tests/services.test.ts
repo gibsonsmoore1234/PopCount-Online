@@ -12,7 +12,7 @@ import type { SessionUser } from "@/lib/auth/session";
 import { createBubble, deleteBubble, getBubbleBySlug } from "@/server/bubbles";
 import { createProfile, getProfileDetail, leaderboard } from "@/server/profiles";
 import { boostProfile, rateProfile } from "@/server/ratings";
-import { addComment } from "@/server/comments";
+import { addComment, reactToComment } from "@/server/comments";
 import { createReport } from "@/server/reports";
 import { getBalance } from "@/server/credits";
 import { claimAdView, createAd, startAdView } from "@/server/ads";
@@ -244,6 +244,20 @@ describe("bubbles", () => {
     await deleteBubble(bubble.slug);
     expect(await getBubbleBySlug(bubble.slug)).toBeNull();
     expect(await getProfileDetail(pid, null)).toBeNull();
+  });
+});
+
+describe("comment reactions", () => {
+  it("counts one like or dislike per person and lets them switch or clear", async () => {
+    const pid = await makeProfile(await makeUser(), duke);
+    const c = await addComment(await makeUser(), pid, "COMMENT", "hello");
+    const a = await makeUser();
+    const b = await makeUser();
+    await reactToComment(a, c.id, 1);
+    await reactToComment(a, c.id, 1);
+    expect(await reactToComment(b, c.id, -1)).toMatchObject({ likes: 1, dislikes: 1 });
+    expect(await reactToComment(a, c.id, -1)).toMatchObject({ likes: 0, dislikes: 2 });
+    expect(await reactToComment(b, c.id, 0)).toMatchObject({ likes: 0, dislikes: 1, myReaction: 0 });
   });
 });
 
