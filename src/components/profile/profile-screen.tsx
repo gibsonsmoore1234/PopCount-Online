@@ -89,19 +89,23 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
                 <Photo key={current} src={current} alt={profile.displayName} eager />
                 {photos.length > 1 && (
                   <>
-                    {/* Tap the left/right half to flip through photos. */}
+                    {/* < and > flip through the photos. */}
                     <button
                       type="button"
                       aria-label="Previous photo"
-                      className="absolute inset-y-0 left-0 w-1/2"
+                      className="absolute top-1/2 left-3 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-black/70 text-xl font-black text-white shadow-lg transition hover:bg-black"
                       onClick={() => setShown((i) => (i - 1 + photos.length) % photos.length)}
-                    />
+                    >
+                      &lt;
+                    </button>
                     <button
                       type="button"
                       aria-label="Next photo"
-                      className="absolute inset-y-0 right-0 w-1/2"
+                      className="absolute top-1/2 right-3 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-black/70 text-xl font-black text-white shadow-lg transition hover:bg-black"
                       onClick={() => setShown((i) => (i + 1) % photos.length)}
-                    />
+                    >
+                      &gt;
+                    </button>
                     <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
                       {photos.map((u, i) => (
                         <span
