@@ -6,7 +6,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowLeft, Share2, Flag, Pencil, Trash2, MapPin, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { useDeleteProfile, useMe, useProfile } from "@/hooks/api";
+import { useDeleteProfile, useProfile } from "@/hooks/api";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/misc";
@@ -23,7 +23,6 @@ import { ReportDialog } from "./report-dialog";
 /** Layer 3 — full-screen "Tea-app" style profile takeover. */
 export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
   const { data: profile = initial } = useProfile(initial.id, initial);
-  const { data: me } = useMe();
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [reporting, setReporting] = useState(false);
@@ -60,7 +59,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
           <Button variant="secondary" size="icon-sm" aria-label="Share profile" onClick={share}>
             <Share2 className="h-4 w-4" strokeWidth={2.5} />
           </Button>
-          {me && !profile.isOwner && (
+          {!profile.isOwner && (
             <Button variant="secondary" size="icon-sm" aria-label="Report profile" onClick={() => setReporting(true)}>
               <Flag className="h-4 w-4" strokeWidth={2.5} />
             </Button>
@@ -135,7 +134,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
 
       {profile.isOwner && <ProfileFormDialog open={editing} onOpenChange={setEditing} profile={profile} />}
       {profile.isOwner && <DeleteProfileDialog open={deleting} onOpenChange={setDeleting} profile={profile} />}
-      {me && !profile.isOwner && (
+      {!profile.isOwner && (
         <ReportDialog
           open={reporting}
           onOpenChange={setReporting}

@@ -22,8 +22,8 @@ export function AuthPrompt() {
             <p className="text-sm leading-snug font-bold">{reason}</p>
           </div>
           <p className="text-muted text-xs font-semibold">
-            Everyone starts with <b className="text-ink">100 clicks</b>. Browsing stays free and open — an account is
-            only needed to vote, comment or post.
+            Everyone starts with <b className="text-ink">100 clicks</b>. Rating, commenting and reporting are anonymous
+            — an account is only needed to create your own profile.
           </p>
           <div className="grid grid-cols-2 gap-2">
             <Button asChild variant="secondary" onClick={close}>

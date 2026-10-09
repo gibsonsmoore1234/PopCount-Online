@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { sessions, users, type User } from "@/lib/db/schema";
 import { forbidden, unauthorized } from "@/lib/errors";
 import { SIGNUP_GRANT_CENTS } from "@/lib/aura";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const SESSION_COOKIE = "pc_session";
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
@@ -124,6 +125,10 @@ export async function requireMember(): Promise<SessionUser> {
 }
 
 async function createAnonymousUser(): Promise<SessionUser> {
+  // Each new anonymous identity gets 100 free clicks — cap how many one IP can mint (cookie-clearing abuse).
+  const h = await headers();
+  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "local";
+  rateLimit(`anon:${ip}`, { max: 5, windowMs: 24 * 60 * 60_000 });
   for (let attempt = 0; attempt < 5; attempt++) {
     const handle = `anon_${randomBytes(3).toString("hex")}`;
     const [u] = await db

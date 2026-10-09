@@ -119,12 +119,12 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
                 <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile here
               </Button>
             )}
-            {!me && (
+            {(!me || me.isAnonymous) && (
               <Button size="sm" onClick={() => promptAuth(`Create an account to post your profile in ${bubble.name}.`)}>
                 <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile
               </Button>
             )}
-            {me && (
+            {
               <Button
                 size="icon-sm"
                 variant="secondary"
@@ -133,7 +133,7 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
               >
                 <Flag className="h-4 w-4" strokeWidth={2.5} />
               </Button>
-            )}
+            }
           </div>
         </div>
 
@@ -171,7 +171,7 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
           </div>
         </div>
       </div>
-      {me && (
+      {
         <ReportDialog
           open={reportOpen}
           onOpenChange={setReportOpen}
@@ -179,7 +179,7 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
           targetId={bubble.id}
           subject={bubble.name}
         />
-      )}
+      }
     </header>
   );
 }

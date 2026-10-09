@@ -70,7 +70,7 @@ export function AppHeader() {
             <span className="hidden sm:inline">Get more clicks</span>
           </button>
 
-          {me && <AccountMenu />}
+          {me && !me.isAnonymous && <AccountMenu />}
         </nav>
       </div>
 

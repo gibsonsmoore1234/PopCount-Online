@@ -135,7 +135,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}
-                      {me && !c.isMine && (
+                      {!c.isMine && (
                         <button
                           aria-label="Report comment"
                           onClick={() => setReporting(c)}

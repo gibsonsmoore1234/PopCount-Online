@@ -33,7 +33,6 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
   const mapView = useUi((s) => s.mapView);
   const setMapView = useUi((s) => s.setMapView);
   const openProfileForm = useUi((s) => s.openProfileForm);
-  const promptAuth = useUi((s) => s.promptAuth);
   const [pinning, setPinning] = useState(false);
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null);
   const [resetNonce, setResetNonce] = useState(0);
@@ -61,7 +60,6 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
   );
 
   const startPinning = () => {
-    if (!me) return promptAuth("Create an account to drop a new bubble.");
     setPinning((p) => !p);
   };
 
