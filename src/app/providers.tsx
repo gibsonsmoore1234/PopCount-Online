@@ -30,7 +30,6 @@ export function Providers({ children, me }: { children: ReactNode; me: Me | null
       <Toaster
         position="bottom-center"
         offset={20}
-        mobileOffset={{ bottom: 80 }}
         toastOptions={{
           classNames: {
             toast:

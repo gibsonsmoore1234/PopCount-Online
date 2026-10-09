@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppHeader } from "@/components/layout/app-header";
-import { MobileTabBar } from "@/components/layout/mobile-tabbar";
 import { TermsGate } from "@/components/onboarding/terms-gate";
 import { AuthPrompt } from "@/components/auth/auth-prompt";
 import { RankingsDialog } from "@/components/rankings/rankings";
@@ -52,10 +51,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Skip to content
           </a>
           <AppHeader />
-          <main id="main" className="pt-16 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+          <main id="main" className="pt-16 pb-[env(safe-area-inset-bottom)]">
             {children}
           </main>
-          <MobileTabBar />
           <TermsGate initiallyAccepted={termsAccepted} />
           <AuthPrompt />
           <RankingsDialog />
