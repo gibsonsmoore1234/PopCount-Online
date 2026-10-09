@@ -49,7 +49,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-3 py-2.5 sm:px-6">
           <Button asChild variant="secondary" size="sm">
             <Link href={`/b/${profile.bubble.slug}`}>
-              <ArrowLeft className="h-4 w-4" strokeWidth={3} /> <span className="hidden sm:inline">Back to Campus</span>
+              <ArrowLeft className="h-4 w-4" strokeWidth={3} /> <span className="hidden sm:inline">Back to Bubble</span>
               <span className="sm:hidden">Back</span>
             </Link>
           </Button>

@@ -49,7 +49,7 @@ export function AppHeader() {
           <span className="hidden leading-none sm:block">
             <span className="block text-[17px] font-black tracking-tight">Pop Count</span>
             <span className="text-muted mt-0.5 flex items-center gap-1 text-[10px] font-extrabold tracking-wider uppercase">
-              <span className="animate-pulse-ring bg-aura-high h-1.5 w-1.5 rounded-full" /> Live campus map
+              <span className="animate-pulse-ring bg-aura-high h-1.5 w-1.5 rounded-full" /> Live map
             </span>
           </span>
         </Link>
@@ -96,18 +96,7 @@ export function AppHeader() {
             </button>
           )}
 
-          {me ? (
-            <AccountMenu />
-          ) : (
-            <>
-              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                <Link href="/login">Log in</Link>
-              </Button>
-              <Button asChild variant="primary" size="sm">
-                <Link href="/signup">Sign up</Link>
-              </Button>
-            </>
-          )}
+          {me && <AccountMenu />}
         </nav>
       </div>
 

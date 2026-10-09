@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bubble = await getBubbleBySlug((await params).slug);
   if (!bubble) return { title: "Bubble not found" };
   return {
-    title: `${bubble.name} — Campus Feed`,
+    title: `${bubble.name} — Feed`,
     description: `${bubble.memberCount} members · ${bubble.profileCount} profiles · ${bubble.countyName} County, ${bubble.stateName}. ${bubble.description}`,
   };
 }

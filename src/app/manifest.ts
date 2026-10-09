@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Pop Count",
     short_name: "Pop Count",
-    description: "Live campus popularity map.",
+    description: "Live popularity map.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

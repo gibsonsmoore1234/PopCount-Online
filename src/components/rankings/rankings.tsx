@@ -49,7 +49,7 @@ export function RankingsPanel({ onNavigate }: { onNavigate?: () => void }) {
         {(
           [
             ["profiles", "Top Profiles", Trophy],
-            ["bubbles", "Campus Bubbles", MapPin],
+            ["bubbles", "Bubbles", MapPin],
           ] as const
         ).map(([id, label, Icon]) => (
           <button

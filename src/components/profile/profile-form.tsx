@@ -241,7 +241,7 @@ function ProfileFormBody({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Campus / town bubble *" htmlFor={`${uid}-bubble`} error={errors.bubbleId}>
+        <Field label="Bubble *" htmlFor={`${uid}-bubble`} error={errors.bubbleId}>
           <Select id={`${uid}-bubble`} value={bubbleId} onChange={(e) => setBubbleId(e.target.value)}>
             {(bubbles ?? []).map((b) => (
               <option key={b.id} value={b.id}>

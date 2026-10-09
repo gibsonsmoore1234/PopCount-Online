@@ -86,7 +86,7 @@ export function SearchBox({
               setOpen(false);
             }
           }}
-          placeholder="Search people, campuses, towns…"
+          placeholder="Search people and bubbles…"
           aria-label="Search people and bubbles"
           role="combobox"
           aria-expanded={showPanel}
@@ -171,7 +171,7 @@ export function SearchBox({
                       <span className="block truncate text-sm font-extrabold">{b.name}</span>
                       <span className="text-muted flex items-center gap-1 truncate text-[11px] font-semibold">
                         <MapPin className="h-3 w-3" strokeWidth={2.5} />
-                        {b.countyName}, {b.stateName} · {plural(b.memberCount, "member")}
+                        {b.countyName}, {b.stateName} · {plural(b.profileCount, "person", "people")}
                       </span>
                     </span>
                     <AuraBadge score={b.avgAura} size="sm" suffix="avg" />

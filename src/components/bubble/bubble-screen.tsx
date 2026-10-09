@@ -5,22 +5,17 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
-  Users,
   Vote,
   Sparkles,
-  GraduationCap,
   Plus,
-  Check,
   MapPin,
   Search,
   LayoutGrid,
   Trophy,
   MessagesSquare,
   Flag,
-  LogOut,
 } from "lucide-react";
-import { toast } from "sonner";
-import { useBubble, useFeed, useMe, useMembership } from "@/hooks/api";
+import { useBubble, useFeed, useMe } from "@/hooks/api";
 import { useDebounced } from "@/hooks/use-gate";
 import { useUi } from "@/stores/ui-store";
 import { Button } from "@/components/ui/button";
@@ -28,7 +23,6 @@ import { Pills } from "@/components/ui/pills";
 import { EmptyState, ErrorState, StatTile, Spinner } from "@/components/ui/misc";
 import { BubbleLogo } from "@/components/aura/bubble-logo";
 import { auraColor, formatAura, formatCount } from "@/lib/aura";
-import { errorMessage } from "@/lib/api/client";
 import type { FeedSort } from "@/lib/validation";
 import type { BubbleSummary, Page, ProfileCard as Card } from "@/types/api";
 import { ProfileCard, ProfileCardSkeleton } from "./profile-card";
@@ -122,20 +116,9 @@ export function BubbleScreen({
 
 function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
   const { data: me } = useMe();
-  const membership = useMembership(bubble.slug);
   const openProfileForm = useUi((s) => s.openProfileForm);
   const promptAuth = useUi((s) => s.promptAuth);
   const [reportOpen, setReportOpen] = useState(false);
-  const isMember = Boolean(me?.memberships.includes(bubble.id));
-  const isHome = me?.profile?.bubbleSlug === bubble.slug;
-
-  const toggleJoin = () => {
-    if (!me) return promptAuth(`Create an account to join ${bubble.name}.`);
-    membership.mutate(!isMember, {
-      onSuccess: () => toast.success(isMember ? `Left ${bubble.name}` : `Joined ${bubble.name}`),
-      onError: (e) => toast.error(errorMessage(e)),
-    });
-  };
 
   return (
     <header className="border-ink bg-surface border-b-2">
@@ -157,23 +140,6 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
                 <Plus className="h-4 w-4" strokeWidth={3} /> Create Profile
               </Button>
             )}
-            <Button
-              size="sm"
-              variant={isMember ? "aura" : "secondary"}
-              onClick={toggleJoin}
-              disabled={membership.isPending || (isMember && isHome)}
-              title={isHome ? "This is your profile's home bubble" : undefined}
-            >
-              {membership.isPending ? (
-                <Spinner />
-              ) : isMember ? (
-                <Check className="h-4 w-4" strokeWidth={3} />
-              ) : (
-                <Users className="h-4 w-4" strokeWidth={2.5} />
-              )}
-              {isMember ? (isHome ? "Home bubble" : "Joined") : "Join bubble"}
-              {isMember && !isHome && <LogOut className="h-3.5 w-3.5 opacity-60" strokeWidth={2.5} />}
-            </Button>
             {me && (
               <Button
                 size="icon-sm"
@@ -204,9 +170,6 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
                     {bubble.badge}
                   </span>
                 )}
-                <span className="border-ink flex items-center gap-1 rounded-lg border-2 bg-white px-2 py-0.5 text-[10px] font-black uppercase sm:text-xs">
-                  <GraduationCap className="h-3.5 w-3.5" /> {bubble.kind === "CAMPUS" ? "Campus" : "Town"}
-                </span>
               </div>
               <p className="text-muted mt-1 flex items-center gap-1 text-xs font-bold">
                 <MapPin className="h-3.5 w-3.5" /> {bubble.countyName} County, {bubble.stateName}
@@ -217,13 +180,9 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:w-[560px]">
-            <StatTile label="Members" value={formatCount(bubble.memberCount)} />
-            <StatTile
-              label={bubble.kind === "CAMPUS" ? "Student pop." : "Population"}
-              value={bubble.population ? formatCount(bubble.population) : "—"}
-            />
-            <StatTile label="Campus avg" value={formatAura(bubble.avgAura)} accent={auraColor(bubble.avgAura)} />
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:w-[440px]">
+            <StatTile label="People" value={formatCount(bubble.profileCount)} />
+            <StatTile label="Bubble avg" value={formatAura(bubble.avgAura)} accent={auraColor(bubble.avgAura)} />
             <StatTile label="Total votes" value={formatCount(bubble.totalVotes)} />
           </div>
         </div>

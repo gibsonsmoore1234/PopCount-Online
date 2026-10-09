@@ -61,7 +61,7 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
   );
 
   const startPinning = () => {
-    if (!me) return promptAuth("Create an account to drop a new campus or town bubble.");
+    if (!me) return promptAuth("Create an account to drop a new bubble.");
     setPinning((p) => !p);
   };
 
@@ -76,7 +76,7 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
 
   return (
     <section
-      aria-label="Interactive campus map"
+      aria-label="Interactive map"
       className={cn(
         "relative h-[calc(100dvh-8rem)] w-full overflow-hidden md:h-[calc(100dvh-4rem)]",
         pinning && "pc-map-pinning",
@@ -105,10 +105,10 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
         >
           <div className="flex items-center gap-2">
             <span className="animate-pulse-ring bg-aura-high h-2.5 w-2.5 rounded-full" />
-            <h1 className="text-xs font-black tracking-tight uppercase">Interactive Campus Map</h1>
+            <h1 className="text-xs font-black tracking-tight uppercase">Interactive Map</h1>
           </div>
           <p className="text-ink-2 mt-1 hidden text-[11px] leading-snug font-semibold sm:block">
-            Tap any bubble to open its full campus feed. Bubble size = members · ring colour = average rating.
+            Tap any bubble to open its feed. Bubble size = people · ring colour = average rating.
           </p>
         </motion.div>
 
@@ -164,7 +164,7 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
           <Globe2 className="h-3.5 w-3.5" /> {bubbles.length} bubbles
         </span>
         <span className="border-ink shadow-hard-sm flex items-center gap-1 rounded-xl border-2 bg-white px-2 py-1">
-          <Users className="h-3.5 w-3.5" /> {formatCount(totals.members)} members
+          <Users className="h-3.5 w-3.5" /> {formatCount(totals.profiles)} people
         </span>
         <span className="border-ink shadow-hard-sm hidden items-center gap-1 rounded-xl border-2 bg-white px-2 py-1 sm:flex">
           <Vote className="h-3.5 w-3.5" /> {formatCount(totals.votes)} votes

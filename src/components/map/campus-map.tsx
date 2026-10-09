@@ -40,15 +40,15 @@ export function bubbleDiameter(members: number, zoom: number, maxMembers = membe
 }
 
 function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number) {
-  const d = bubbleDiameter(b.memberCount, zoom, maxMembers);
-  const members = `• ${b.memberCount.toLocaleString("en-US")} Members`;
+  const d = bubbleDiameter(b.profileCount, zoom, maxMembers);
+  const members = `• ${b.profileCount.toLocaleString("en-US")} ${b.profileCount === 1 ? "Person" : "People"}`;
   // Fit both lines inside the circle's inner chord (≈80% of the diameter).
   const avail = d * 0.8 - 8;
   const nameSize = Math.max(6, Math.min(16, d / 7, avail / (b.name.length * 0.66)));
   const memberSize = Math.max(5.5, Math.min(12, d / 10, avail / (members.length * 0.56)));
   // Strictly two lines inside the bubble: the name, and the member count.
   const html = `
-    <div class="pc-bubble" style="--pc-ring:${auraColor(b.avgAura)}" role="button" tabindex="0" aria-label="${escapeHtml(b.name)}, ${b.memberCount} members">
+    <div class="pc-bubble" style="--pc-ring:${auraColor(b.avgAura)}" role="button" tabindex="0" aria-label="${escapeHtml(b.name)}, ${b.profileCount} people">
       ${b.logoUrl ? `<img class="pc-bubble__logo" src="${escapeHtml(b.logoUrl)}" alt="" referrerpolicy="no-referrer" style="width:${Math.round(d * 0.34)}px;height:${Math.round(d * 0.34)}px"/>` : ""}
       <span class="pc-bubble__name" style="font-size:${nameSize}px">${escapeHtml(b.name)}</span>
       <span class="pc-bubble__members" style="font-size:${memberSize}px">${members}</span>
@@ -205,8 +205,8 @@ export default function CampusMap({
   }, [onOpenBubble]);
 
   // Larger bubbles render first so smaller neighbours stay clickable on top.
-  const maxMembers = useMemo(() => Math.max(1, ...bubbles.map((b) => b.memberCount)), [bubbles]);
-  const sorted = useMemo(() => [...bubbles].sort((a, b) => b.memberCount - a.memberCount), [bubbles]);
+  const maxMembers = useMemo(() => Math.max(1, ...bubbles.map((b) => b.profileCount)), [bubbles]);
+  const sorted = useMemo(() => [...bubbles].sort((a, b) => b.profileCount - a.profileCount), [bubbles]);
 
   return (
     <MapContainer
@@ -256,7 +256,7 @@ export default function CampusMap({
         >
           <Tooltip
             direction="top"
-            offset={[0, -bubbleDiameter(b.memberCount, zoom, maxMembers) / 2]}
+            offset={[0, -bubbleDiameter(b.profileCount, zoom, maxMembers) / 2]}
             className="pc-tooltip"
             opacity={1}
           >

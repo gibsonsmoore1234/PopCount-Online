@@ -15,13 +15,13 @@ import { TERMS_COOKIE, TERMS_VERSION } from "@/lib/terms";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
-  title: { default: "Pop Count — Live Campus Popularity Map", template: "%s · Pop Count" },
+  title: { default: "Pop Count — Live Popularity Map", template: "%s · Pop Count" },
   description:
-    "Opt in, drop into your campus or town bubble, and see where your popularity lands. Live 0–100 ratings, leaderboards and group threads on an interactive map.",
+    "Opt in, drop into any bubble, and see where your popularity lands. Live 0–100 ratings, leaderboards and group threads on an interactive map.",
   applicationName: "Pop Count",
   openGraph: {
     title: "Pop Count",
-    description: "Live campus popularity ratings on an interactive map.",
+    description: "Live popularity ratings on an interactive map.",
     siteName: "popcount.ai",
     type: "website",
   },

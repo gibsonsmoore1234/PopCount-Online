@@ -70,7 +70,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
           value={body}
           onChange={(e) => setBody(e.target.value)}
           maxLength={500}
-          placeholder={kind === "ADVICE" ? "Share constructive advice…" : "Write a public campus comment..."}
+          placeholder={kind === "ADVICE" ? "Share constructive advice…" : "Write a public comment..."}
           aria-label={kind === "ADVICE" ? "Write advice" : "Write a comment"}
           onFocus={() => !me && guard("Create an account to join the conversation.")}
         />

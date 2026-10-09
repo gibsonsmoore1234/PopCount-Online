@@ -50,12 +50,11 @@ export function MobileTabBar() {
       >
         <Search className="h-5 w-5" /> Search
       </button>
-      <Link
-        href={me ? "/me" : "/login"}
-        className={cn(item, active(pathname.startsWith("/p/") || pathname === "/login"))}
-      >
-        <UserRound className="h-5 w-5" /> {me ? "Me" : "Log in"}
-      </Link>
+      {me && (
+        <Link href="/me" className={cn(item, active(pathname.startsWith("/p/")))}>
+          <UserRound className="h-5 w-5" /> Me
+        </Link>
+      )}
     </nav>
   );
 }

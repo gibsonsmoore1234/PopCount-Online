@@ -24,11 +24,7 @@ export function CreateBubbleDialog({
 }) {
   return (
     <Dialog open={Boolean(pin)} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent
-        title="Drop a new bubble"
-        description="Pin a campus or town so its people can find each other."
-        size="md"
-      >
+      <DialogContent title="Drop a new bubble" description="Pin any place so its people can find each other." size="md">
         {pin && <CreateBubbleForm pin={pin} onClose={onClose} />}
       </DialogContent>
     </Dialog>
