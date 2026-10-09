@@ -4,7 +4,13 @@
  */
 export async function prepareImage(
   file: File,
-  opts: { aspect: number; maxWidth: number; quality?: number },
+  opts: {
+    aspect: number;
+    maxWidth: number;
+    quality?: number;
+    /** Square crop chosen by the user, in source-image pixels. Overrides the centre crop. */
+    crop?: { x: number; y: number; size: number };
+  },
 ): Promise<Blob> {
   if (!file.type.startsWith("image/")) throw new Error("Choose an image file.");
   if (file.size > 20 * 1024 * 1024) throw new Error("That image is over 20 MB.");
@@ -14,7 +20,11 @@ export async function prepareImage(
   let sy = 0;
   let sw = W;
   let sh = H;
-  if (W / H > opts.aspect) {
+  if (opts.crop) {
+    sx = Math.max(0, opts.crop.x);
+    sy = Math.max(0, opts.crop.y);
+    sw = sh = Math.min(opts.crop.size, W - sx, H - sy);
+  } else if (W / H > opts.aspect) {
     sw = H * opts.aspect;
     sx = (W - sw) / 2;
   } else {
