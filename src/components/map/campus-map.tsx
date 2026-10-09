@@ -44,8 +44,7 @@ export function bubbleDiameter(members: number, zoom: number, maxMembers = membe
   return Math.round(Math.max(24, base * scale * crowd * fit));
 }
 
-function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number, count: number, fit: number) {
-  const d = bubbleDiameter(b.profileCount, zoom, maxMembers, count, fit);
+function bubbleIcon(b: BubbleSummary, d: number) {
   const nameSize = Math.max(9, Math.min(13, d / 6));
   // Just the picture filling the circle, the ring in the score colour, and the name underneath.
   const html = `
@@ -55,7 +54,7 @@ function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number, count: n
           ? `<img class="pc-bubble__logo" src="${escapeHtml(b.logoUrl)}" alt="" referrerpolicy="no-referrer"/>`
           : `<span class="pc-bubble__initials" style="font-size:${Math.round(d / 3)}px">${escapeHtml(b.name.slice(0, 2))}</span>`
       }
-      <span class="pc-bubble__name" style="font-size:${nameSize}px">${escapeHtml(b.name)}</span>
+      ${d >= 24 ? `<span class="pc-bubble__name" style="font-size:${nameSize}px">${escapeHtml(b.name)}</span>` : ""}
     </div>`;
   return L.divIcon({ html, className: "pc-bubble-wrap", iconSize: [d, d], iconAnchor: [d / 2, d / 2] });
 }
@@ -83,18 +82,52 @@ function countyColor(fips: string, byCounty: Map<string, number | null>) {
   return GREYS[(hash(fips.slice(0, 2)) + (hash(fips) % 7 === 0 ? 1 : 0)) % 3];
 }
 
-function UsCanvas({ bubbles, zoom }: { bubbles: BubbleSummary[]; zoom: number }) {
+let geoPromise: Promise<UsGeo> | null = null;
+/** The U.S. county/state shapes, fetched once and shared by every map layer. */
+function useUsGeo() {
   const [geo, setGeo] = useState<UsGeo | null>(null);
   useEffect(() => {
     let alive = true;
-    fetch("/api/geo/us")
-      .then((r) => r.json())
-      .then((g: UsGeo) => alive && setGeo(g))
-      .catch(() => {});
+    geoPromise ??= fetch("/api/geo/us").then((r) => r.json() as Promise<UsGeo>);
+    geoPromise.then((g) => alive && setGeo(g)).catch(() => {});
     return () => {
       alive = false;
     };
   }, []);
+  return geo;
+}
+
+type Box = [number, number, number, number]; // minLng, minLat, maxLng, maxLat
+/** Bounding boxes of every county (by FIPS) and every state (by 2-digit FIPS). */
+function regionBoxes(geo: UsGeo) {
+  const county = new Map<string, Box>();
+  const state = new Map<string, Box>();
+  const grow = (m: Map<string, Box>, k: string, b: Box) => {
+    const o = m.get(k);
+    m.set(k, o ? [Math.min(o[0], b[0]), Math.min(o[1], b[1]), Math.max(o[2], b[2]), Math.max(o[3], b[3])] : b);
+  };
+  const walk = (c: unknown, b: Box) => {
+    if (Array.isArray(c) && typeof c[0] === "number") {
+      const [x, y] = c as number[];
+      b[0] = Math.min(b[0], x);
+      b[1] = Math.min(b[1], y);
+      b[2] = Math.max(b[2], x);
+      b[3] = Math.max(b[3], y);
+    } else if (Array.isArray(c)) for (const k of c) walk(k, b);
+  };
+  for (const f of geo.counties.features) {
+    const fips = String(f.id ?? "").padStart(5, "0");
+    const b: Box = [Infinity, Infinity, -Infinity, -Infinity];
+    walk((f.geometry as { coordinates?: unknown }).coordinates, b);
+    if (!Number.isFinite(b[0])) continue;
+    county.set(fips, b);
+    grow(state, fips.slice(0, 2), b);
+  }
+  return { county, state };
+}
+
+function UsCanvas({ bubbles, zoom }: { bubbles: BubbleSummary[]; zoom: number }) {
+  const geo = useUsGeo();
   const byCounty = useMemo(() => {
     const m = new Map<string, number | null>();
     for (const b of bubbles) m.set(countyFipsOf(b), b.avgAura);
@@ -164,6 +197,8 @@ function PinPicker({ active, onPick }: { active: boolean; onPick: (lat: number, 
  * Keep bubbles from overlapping: at the current zoom, push any circles (plus their name label) that
  * collide apart in screen space, then convert back to map coordinates. Re-runs on every zoom change.
  */
+type Layout = { pos: Record<string, [number, number]>; size: Record<string, number> };
+
 function SpreadBubbles({
   bubbles,
   zoom,
@@ -173,14 +208,29 @@ function SpreadBubbles({
   bubbles: BubbleSummary[];
   zoom: number;
   maxMembers: number;
-  onLayout: (layout: { pos: Record<string, [number, number]>; fit: number }) => void;
+  onLayout: (layout: Layout) => void;
 }) {
   const map = useMap();
+  const geo = useUsGeo();
+  const boxes = useMemo(() => (geo ? regionBoxes(geo) : null), [geo]);
   useEffect(() => {
     const z = map.getZoom();
     const pts = bubbles.map((b) => ({ b, p: map.project([b.lat, b.lng], z) }));
-    const radius = (b: BubbleSummary, f: number) =>
-      bubbleDiameter(b.profileCount, zoom, maxMembers, bubbles.length, f) / 2;
+    // Never bigger than the bubble's state — or its county when the state has more than one bubble.
+    const perState = new Map<string, number>();
+    for (const b of bubbles) perState.set(b.countyFips.slice(0, 2), (perState.get(b.countyFips.slice(0, 2)) ?? 0) + 1);
+    const cap = new Map<string, number>();
+    for (const b of bubbles) {
+      const st = b.countyFips.slice(0, 2);
+      const box = boxes && ((perState.get(st) ?? 0) > 1 ? boxes.county.get(b.countyFips) : boxes.state.get(st));
+      if (!box) continue;
+      const a = map.project([box[1], box[0]], z);
+      const c = map.project([box[3], box[2]], z);
+      cap.set(b.id, Math.max(10, Math.min(Math.abs(c.x - a.x), Math.abs(c.y - a.y))));
+    }
+    const sizeOf = (b: BubbleSummary, f: number) =>
+      Math.min(bubbleDiameter(b.profileCount, zoom, maxMembers, bubbles.length, f), cap.get(b.id) ?? Infinity);
+    const radius = (b: BubbleSummary, f: number) => sizeOf(b, f) / 2;
     // 1) Crowded? Shrink every bubble until the tightest pair no longer touches (down to 40%).
     let fit = 1;
     for (let i = 0; i < pts.length; i++) {
@@ -192,7 +242,12 @@ function SpreadBubbles({
     }
     fit = Math.max(0.4, fit);
     // 2) Anything still touching (e.g. same spot) gets nudged apart. Radius includes the name label.
-    const nodes = pts.map(({ b, p }) => ({ id: b.id, x: p.x, y: p.y, r: radius(b, fit) + 14 }));
+    const nodes = pts.map(({ b, p }) => ({
+      id: b.id,
+      x: p.x,
+      y: p.y,
+      r: radius(b, fit) + (radius(b, fit) < 18 ? 4 : 14),
+    }));
     for (let iter = 0; iter < 120; iter++) {
       let moved = false;
       for (let i = 0; i < nodes.length; i++) {
@@ -227,8 +282,10 @@ function SpreadBubbles({
       const ll = map.unproject([n.x, n.y], z);
       out[n.id] = [ll.lat, ll.lng];
     }
-    onLayout({ pos: out, fit });
-  }, [map, bubbles, zoom, maxMembers, onLayout]);
+    const size: Record<string, number> = {};
+    for (const { b } of pts) size[b.id] = Math.round(sizeOf(b, fit));
+    onLayout({ pos: out, size });
+  }, [map, bubbles, zoom, maxMembers, onLayout, boxes]);
   return null;
 }
 
@@ -275,7 +332,7 @@ export default function CampusMap({
   resetNonce: number;
 }) {
   const [zoom, setZoom] = useState(initialView?.zoom ?? 4);
-  const [layout, setLayout] = useState<{ pos: Record<string, [number, number]>; fit: number }>({ pos: {}, fit: 1 });
+  const [layout, setLayout] = useState<Layout>({ pos: {}, size: {} });
   const spread = layout.pos;
   const openRef = useRef(onOpenBubble);
   useEffect(() => {
@@ -321,7 +378,7 @@ export default function CampusMap({
         <Marker
           key={b.id}
           position={spread[b.id] ?? [b.lat, b.lng]}
-          icon={bubbleIcon(b, zoom, maxMembers, sorted.length, layout.fit)}
+          icon={bubbleIcon(b, layout.size[b.id] ?? bubbleDiameter(b.profileCount, zoom, maxMembers, sorted.length))}
           riseOnHover
           keyboard
           eventHandlers={{
@@ -334,7 +391,7 @@ export default function CampusMap({
         >
           <Tooltip
             direction="top"
-            offset={[0, -bubbleDiameter(b.profileCount, zoom, maxMembers, sorted.length, layout.fit) / 2]}
+            offset={[0, -(layout.size[b.id] ?? bubbleDiameter(b.profileCount, zoom, maxMembers, sorted.length)) / 2]}
             className="pc-tooltip"
             opacity={1}
           >
