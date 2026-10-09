@@ -85,7 +85,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
             className="mx-auto w-full max-w-[330px] space-y-3 sm:max-w-[440px] lg:sticky lg:top-36"
           >
             <AuraFrame score={profile.auraScore} thickness="lg" className="shadow-hard-lg">
-              <div className="border-ink [container-type:inline-size] relative aspect-[2/3] w-full overflow-hidden rounded-xl border-2 bg-white">
+              <div className="border-ink [container-type:inline-size] relative aspect-square w-full overflow-hidden rounded-xl border-2 bg-white">
                 <Photo key={current} src={current} alt={profile.displayName} eager />
                 {photos.length > 1 && (
                   <>

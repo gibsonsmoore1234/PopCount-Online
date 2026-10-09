@@ -6,7 +6,7 @@ import { AuraFrame } from "@/components/aura/aura";
 import { Photo } from "@/components/aura/photo";
 import type { ProfileCard as Card } from "@/types/api";
 
-/** 2:3 portrait card: photo, name and a frame in the score colour — every metric lives on the profile page. */
+/** Square card: photo, name and a frame in the score colour — every metric lives on the profile page. */
 export function ProfileCard({ p, rank, priority }: { p: Card; rank?: number; priority?: boolean }) {
   return (
     <motion.div
@@ -22,7 +22,7 @@ export function ProfileCard({ p, rank, priority }: { p: Card; rank?: number; pri
         aria-label={p.displayName}
       >
         <AuraFrame score={p.auraScore} thickness="md">
-          <div className="border-ink bg-surface-2 [container-type:inline-size] relative aspect-[2/3] w-full overflow-hidden rounded-xl border-2">
+          <div className="border-ink bg-surface-2 [container-type:inline-size] relative aspect-square w-full overflow-hidden rounded-xl border-2">
             <Photo
               src={p.photoUrl}
               alt={p.displayName}
@@ -48,7 +48,7 @@ export function ProfileCard({ p, rank, priority }: { p: Card; rank?: number; pri
 export function ProfileCardSkeleton() {
   return (
     <div className="border-line rounded-[var(--radius-card)] border-2 p-1.5">
-      <div className="pc-skeleton aspect-[2/3] w-full rounded-xl" />
+      <div className="pc-skeleton aspect-square w-full rounded-xl" />
     </div>
   );
 }

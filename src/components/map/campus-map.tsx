@@ -15,7 +15,7 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import type { Feature, FeatureCollection, MultiLineString } from "geojson";
-import { auraColor, formatAura } from "@/lib/aura";
+import { auraColor } from "@/lib/aura";
 import type { BubbleSummary } from "@/types/api";
 
 /** Panning limit: the continental U.S. with an ocean margin. */
@@ -46,17 +46,16 @@ export function bubbleDiameter(members: number, zoom: number, maxMembers = membe
 
 function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number, count: number) {
   const d = bubbleDiameter(b.profileCount, zoom, maxMembers, count);
-  const members = `• ${b.profileCount.toLocaleString("en-US")} ${b.profileCount === 1 ? "Person" : "People"}`;
-  // Fit both lines inside the circle's inner chord (≈80% of the diameter).
-  const avail = d * 0.8 - 8;
-  const nameSize = Math.max(6, Math.min(16, d / 7, avail / (b.name.length * 0.66)));
-  const memberSize = Math.max(5.5, Math.min(12, d / 10, avail / (members.length * 0.56)));
-  // Strictly two lines inside the bubble: the name, and the member count.
+  const nameSize = Math.max(9, Math.min(13, d / 6));
+  // Just the picture filling the circle, the ring in the score colour, and the name underneath.
   const html = `
-    <div class="pc-bubble" style="--pc-ring:${auraColor(b.avgAura)}" role="button" tabindex="0" aria-label="${escapeHtml(b.name)}, ${b.profileCount} people">
-      ${b.logoUrl ? `<img class="pc-bubble__logo" src="${escapeHtml(b.logoUrl)}" alt="" referrerpolicy="no-referrer" style="width:${Math.round(d * 0.34)}px;height:${Math.round(d * 0.34)}px"/>` : ""}
+    <div class="pc-bubble" style="--pc-ring:${auraColor(b.avgAura)}" role="button" tabindex="0" aria-label="${escapeHtml(b.name)}">
+      ${
+        b.logoUrl
+          ? `<img class="pc-bubble__logo" src="${escapeHtml(b.logoUrl)}" alt="" referrerpolicy="no-referrer"/>`
+          : `<span class="pc-bubble__initials" style="font-size:${Math.round(d / 3)}px">${escapeHtml(b.name.slice(0, 2))}</span>`
+      }
       <span class="pc-bubble__name" style="font-size:${nameSize}px">${escapeHtml(b.name)}</span>
-      <span class="pc-bubble__members" style="font-size:${memberSize}px">${members}</span>
     </div>`;
   return L.divIcon({ html, className: "pc-bubble-wrap", iconSize: [d, d], iconAnchor: [d / 2, d / 2] });
 }
@@ -264,19 +263,7 @@ export default function CampusMap({
             className="pc-tooltip"
             opacity={1}
           >
-            <div className="min-w-44 space-y-0.5">
-              <div className="text-xs font-black uppercase">{b.name}</div>
-              <div className="text-muted text-[11px] font-semibold">
-                {b.countyName}, {b.stateName}
-              </div>
-              <div className="flex items-center gap-2 pt-1 text-[11px] font-extrabold">
-                <span className="border-ink rounded-full border-2 px-1.5" style={{ background: auraColor(b.avgAura) }}>
-                  {formatAura(b.avgAura)} avg
-                </span>
-                <span>{b.profileCount} profiles</span>
-                <span>{b.totalVotes.toLocaleString()} votes</span>
-              </div>
-            </div>
+            <div className="text-xs font-black uppercase">{b.name}</div>
           </Tooltip>
         </Marker>
       ))}
