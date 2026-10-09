@@ -7,8 +7,8 @@ export default function TermsPage() {
   return (
     <LegalPage title="Terms of Service" updated="October 9, 2026">
       <p>
-        These terms govern your use of Pop Count (popcount.online). They are a starting template — have them reviewed by a
-        lawyer before launching publicly.
+        These terms govern your use of Pop Count (popcount.online). They are a starting template — have them reviewed by
+        a lawyer before launching publicly.
       </p>
       <h2>1. Eligibility</h2>
       <p>You must be at least 18 years old to use Pop Count.</p>

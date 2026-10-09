@@ -4,7 +4,6 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { AppHeader } from "@/components/layout/app-header";
 import { TermsGate } from "@/components/onboarding/terms-gate";
-import { AuthPrompt } from "@/components/auth/auth-prompt";
 import { RankingsDialog } from "@/components/rankings/rankings";
 import { GlobalProfileForm } from "@/components/profile/profile-form";
 import { BuyCreditsDialog } from "@/components/credits/buy-credits-dialog";
@@ -55,7 +54,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             {children}
           </main>
           <TermsGate initiallyAccepted={termsAccepted} />
-          <AuthPrompt />
           <RankingsDialog />
           <GlobalProfileForm />
           <BuyCreditsDialog />
