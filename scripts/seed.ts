@@ -407,8 +407,8 @@ async function main() {
     }
     await seed(db);
     console.log(`✓ Seeded demo data (${driver})`);
-    console.log(`\n  Demo login:  demo@popcount.ai  /  ${DEMO_PASSWORD}`);
-    console.log(`  Admin login: admin@popcount.ai /  ${ADMIN_PASSWORD}\n`);
+    console.log(`\n  Demo login:  demo@popcount.online  /  ${DEMO_PASSWORD}`);
+    console.log(`  Admin login: admin@popcount.online /  ${ADMIN_PASSWORD}\n`);
   } finally {
     await close();
   }
@@ -424,7 +424,7 @@ async function seed(db: Db) {
   const [admin] = await db
     .insert(s.users)
     .values({
-      email: "admin@popcount.ai",
+      email: "admin@popcount.online",
       handle: "admin",
       passwordHash: adminHash,
       role: "ADMIN",
@@ -435,7 +435,7 @@ async function seed(db: Db) {
   const [demo] = await db
     .insert(s.users)
     .values({
-      email: "demo@popcount.ai",
+      email: "demo@popcount.online",
       handle: "demo",
       passwordHash: demoHash,
       creditBalance: SIGNUP_GRANT_CENTS,
@@ -491,7 +491,7 @@ async function seed(db: Db) {
       const [u] = await db
         .insert(s.users)
         .values({
-          email: `${handle}@demo.popcount.ai`,
+          email: `${handle}@demo.popcount.online`,
           handle,
           passwordHash: demoHash,
           creditBalance: int(40, SIGNUP_GRANT_CENTS),
@@ -523,7 +523,7 @@ async function seed(db: Db) {
       const last = pick(LAST);
       const handle = uniqueHandle(first, last);
       return {
-        email: `${handle}@demo.popcount.ai`,
+        email: `${handle}@demo.popcount.online`,
         handle,
         passwordHash: demoHash,
         creditBalance: int(0, SIGNUP_GRANT_CENTS),

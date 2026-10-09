@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Pop Count",
     description: "Live popularity ratings on an interactive map.",
-    siteName: "popcount.ai",
+    siteName: "popcount.online",
     type: "website",
   },
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
