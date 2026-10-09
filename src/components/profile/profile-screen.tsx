@@ -12,7 +12,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/misc";
 import { AuraFrame } from "@/components/aura/aura";
 import { Photo } from "@/components/aura/photo";
-import { AURA_COLORS, auraTier, formatCount, tierLabel } from "@/lib/aura";
+import { AURA_COLORS, auraTier, formatCount } from "@/lib/aura";
 import { errorMessage } from "@/lib/api/client";
 import type { ProfileDetail } from "@/types/api";
 import { AnimatedNumber, VoteConsole } from "./vote-console";
@@ -89,7 +89,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
                   <div
                     className="border-ink shadow-hard-sm rounded-2xl border-2 px-3 py-1.5 text-right"
                     style={{ background: AURA_COLORS[tier] }}
-                    aria-label={`Aura score ${profile.auraScore ?? "unrated"}`}
+                    aria-label={`Popularity score ${profile.auraScore ?? "unrated"}`}
                   >
                     <div className="text-2xl leading-none font-black tabular-nums sm:text-3xl">
                       {profile.auraScore === null ? (
@@ -100,7 +100,6 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
                         </>
                       )}
                     </div>
-                    <div className="mt-0.5 text-[9px] font-extrabold tracking-wider uppercase">{tierLabel(tier)}</div>
                   </div>
                 </div>
               </div>

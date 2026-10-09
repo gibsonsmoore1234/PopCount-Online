@@ -200,8 +200,8 @@ async function bubbleStickers(bubbleId: string, profileId: string): Promise<Stic
 
   const out: Sticker[] = [];
   if (known?.id === profileId) out.push({ id: "most-known", label: "Most Known", tone: "ink" });
-  if (n >= 3 && most?.id === profileId) out.push({ id: "most-aura", label: "Most AURA", tone: "high" });
-  if (n >= 3 && least?.id === profileId) out.push({ id: "least-aura", label: "Least AURA", tone: "low" });
+  if (n >= 3 && most?.id === profileId) out.push({ id: "most-aura", label: "Most Popular", tone: "high" });
+  if (n >= 3 && least?.id === profileId) out.push({ id: "least-aura", label: "Least Popular", tone: "low" });
   return out;
 }
 

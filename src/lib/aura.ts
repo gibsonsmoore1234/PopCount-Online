@@ -64,7 +64,7 @@ export function formatAura(score: number | null | undefined): string {
 }
 
 export function tierLabel(tier: AuraTier): string {
-  return { high: "High Aura", mid: "Mid Aura", low: "Low Aura", none: "Unrated" }[tier];
+  return { high: "High", mid: "Mid", low: "Low", none: "Unrated" }[tier];
 }
 
 export function formatCents(cents: number): string {

@@ -62,8 +62,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
     <div className="space-y-4">
       {kind === "ADVICE" && (
         <p className="border-ink bg-aura-high/30 rounded-xl border-2 px-3 py-2 text-xs font-bold">
-          💡 Constructive tips only — how could {profile.displayName.split(" ")[0]} level up their Aura? No comments
-          about bodies.
+          💡 Constructive tips only — how could {profile.displayName.split(" ")[0]} level up? No comments about bodies.
         </p>
       )}
       <form onSubmit={submit} className="flex gap-2">

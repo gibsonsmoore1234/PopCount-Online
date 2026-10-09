@@ -21,7 +21,7 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Primary"
-      className="border-ink fixed inset-x-0 bottom-0 z-[900] flex h-16 border-t-2 bg-black/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+      className="border-ink fixed inset-x-0 bottom-0 z-[900] flex h-16 border-t-2 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
     >
       <Link href="/" className={cn(item, active(pathname === "/"))}>
         <MapIcon className="h-5 w-5" /> Map

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, AnimatePresence } from "motion/react";
-import { Slider } from "radix-ui";
 import { Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useBoost, useMe, useRate } from "@/hooks/api";
@@ -10,7 +9,7 @@ import { useAuthGuard } from "@/hooks/use-gate";
 import { useUi } from "@/stores/ui-store";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/misc";
-import { AURA_COLORS, BOOST_COST_CENTS, BOOST_DAILY_CAP, auraTier, formatCents, tierLabel } from "@/lib/aura";
+import { BOOST_COST_CENTS, BOOST_DAILY_CAP, formatCents } from "@/lib/aura";
 import { errorMessage } from "@/lib/api/client";
 import type { ProfileDetail } from "@/types/api";
 import { cn } from "@/lib/utils";
@@ -49,9 +48,13 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
   const rate = useRate(profile.id);
   const guard = useAuthGuard();
   // `null` = untouched → follow the viewer's saved rating as it changes.
-  const [touched, setDraft] = useState<number | null>(null);
-  const draft = touched ?? profile.myRating?.value ?? 70;
-  const tier = auraTier(draft);
+  // Typed 0–100 rating. Empty until the viewer types; prefilled with their saved rating.
+  const [text, setText] = useState<string | null>(null);
+  const shown = text ?? (profile.myRating ? String(profile.myRating.value) : "");
+  const parsed = /^\d{1,3}$/.test(shown) ? Number(shown) : NaN;
+  const valid = Number.isInteger(parsed) && parsed >= 0 && parsed <= 100;
+  const draft = valid ? parsed : 0;
+  const setDraft = (v: null) => setText(v);
 
   const cast = (value: number, label: string) => {
     if (!guard(`Create an account to rate ${profile.displayName}.`)) return;
@@ -76,27 +79,25 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
       <div className="border-ink bg-surface space-y-2 rounded-xl border-2 p-3">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-extrabold tracking-wider uppercase">Your rating</span>
-          <span
-            className="border-ink rounded-lg border-2 px-2 py-0.5 text-sm font-black tabular-nums"
-            style={{ background: AURA_COLORS[tier] }}
-          >
-            {draft} · {tierLabel(tier)}
-          </span>
         </div>
-        <Slider.Root
-          value={[draft]}
-          onValueChange={([v]) => setDraft(v)}
-          min={0}
-          max={100}
-          step={1}
-          aria-label="Aura rating"
-          className="relative flex h-6 w-full touch-none items-center select-none"
-        >
-          <Slider.Track className="border-ink relative h-3 grow overflow-hidden rounded-full border-2 bg-[linear-gradient(90deg,#EF4444_0%,#EF4444_33.9%,#FACC15_34%,#FACC15_66.9%,#22C55E_67%,#22C55E_100%)]">
-            <Slider.Range className="bg-ink/15 absolute h-full" />
-          </Slider.Track>
-          <Slider.Thumb className="border-ink shadow-hard-sm block h-6 w-6 rounded-full border-[3px] bg-white transition-transform focus:outline-none focus-visible:scale-110" />
-        </Slider.Root>
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          maxLength={3}
+          value={shown}
+          onChange={(e) => setText(e.target.value.replace(/\D/g, "").slice(0, 3))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && valid && profile.myRating?.value !== draft) cast(draft, `Rated ${draft}`);
+          }}
+          placeholder="0–100"
+          aria-label="Your rating from 0 to 100"
+          aria-invalid={shown !== "" && !valid}
+          className="border-ink aria-[invalid=true]:border-aura-low h-14 w-full rounded-xl border-2 bg-white text-center text-3xl font-black tabular-nums focus:outline-none"
+        />
+        {shown !== "" && !valid && (
+          <p className="text-aura-low text-xs font-bold">Enter a whole number from 0 to 100.</p>
+        )}
         <div className="flex items-center justify-between gap-2">
           <p className="text-muted text-[11px] font-semibold">
             {profile.myRating ? (
@@ -109,10 +110,10 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
           </p>
           <Button
             size="sm"
-            onClick={() => cast(draft, `Aura ${draft} submitted`)}
-            disabled={rate.isPending || profile.myRating?.value === draft}
+            onClick={() => cast(draft, `Rated ${draft}`)}
+            disabled={rate.isPending || !valid || profile.myRating?.value === draft}
           >
-            {rate.isPending && <Spinner />} {profile.myRating ? "Update" : "Submit"} {draft}
+            {rate.isPending && <Spinner />} {profile.myRating ? "Update" : "Submit"} {valid ? draft : ""}
           </Button>
         </div>
       </div>
@@ -231,7 +232,7 @@ export function BoostWidget({ profile }: { profile: ProfileDetail }) {
           left today
         </span>
       </div>
-      {!hasRating && me && <p className="text-[11px] font-bold">Cast your Aura rating above to unlock boosts.</p>}
+      {!hasRating && me && <p className="text-[11px] font-bold">Rate them above to unlock boosts.</p>}
       {me && (me.creditBalance ?? 0) < 10 && (
         <button
           onClick={() => setCreditsOpen(true)}

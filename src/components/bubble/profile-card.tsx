@@ -22,7 +22,7 @@ export function ProfileCard({ p, rank, priority }: { p: Card; rank?: number; pri
       <Link
         href={`/p/${p.id}`}
         className="group shadow-hard hover:shadow-hard-lg block rounded-[var(--radius-card)] transition-[transform,box-shadow] duration-200 hover:-translate-y-1 focus-visible:-translate-y-1"
-        aria-label={`${p.displayName}, Aura ${p.auraScore ?? "unrated"}`}
+        aria-label={`${p.displayName}, rating ${p.auraScore ?? "unrated"}`}
       >
         <AuraFrame score={p.auraScore} thickness="md">
           <div className="border-ink bg-surface-2 [container-type:inline-size] relative aspect-[2/3] w-full overflow-hidden rounded-xl border-2">

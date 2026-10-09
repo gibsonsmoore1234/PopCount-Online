@@ -116,7 +116,7 @@ export async function boostProfile(user: SessionUser, profileId: string, clicks:
       .from(ratings)
       .where(and(eq(ratings.profileId, profileId), eq(ratings.raterId, user.id)))
       .limit(1);
-    if (!rating) throw badRequest("Cast your Aura rating first — boosts amplify your rating.");
+    if (!rating) throw badRequest("Rate them first — boosts amplify your rating.");
 
     const used = await boostsInLastDay(tx, user.id, profileId);
     const remaining = BOOST_DAILY_CAP - used;

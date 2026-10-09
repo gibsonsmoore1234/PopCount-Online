@@ -8,7 +8,6 @@ import { MapPinPlus, Plus, X, Crosshair, Users, Vote, Globe2 } from "lucide-reac
 import { useBubbles, useMe } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
 import { Button } from "@/components/ui/button";
-import { AuraLegend } from "@/components/aura/aura";
 import { formatCount } from "@/lib/aura";
 import type { BubbleSummary } from "@/types/api";
 import { CreateBubbleDialog } from "./create-bubble-dialog";
@@ -109,9 +108,8 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
             <h1 className="text-xs font-black tracking-tight uppercase">Interactive Campus Map</h1>
           </div>
           <p className="text-ink-2 mt-1 hidden text-[11px] leading-snug font-semibold sm:block">
-            Tap any bubble to open its full campus feed. Bubble size = members · ring colour = average Aura.
+            Tap any bubble to open its full campus feed. Bubble size = members · ring colour = average rating.
           </p>
-          <AuraLegend className="mt-2" />
         </motion.div>
 
         <div className="pointer-events-auto flex flex-col items-end gap-2">

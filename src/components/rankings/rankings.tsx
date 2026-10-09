@@ -98,8 +98,8 @@ export function ProfileBoards({
         {byVolume
           ? "Ranked by total vote volume (boosts included)."
           : board === "bottom_overall"
-            ? "Lowest Aura first · min. 3 votes to qualify."
-            : "Highest Aura first · min. 3 votes to qualify."}
+            ? "Lowest rating first · min. 3 votes to qualify."
+            : "Highest rating first · min. 3 votes to qualify."}
       </p>
       {isPending ? (
         <ListSkeleton />

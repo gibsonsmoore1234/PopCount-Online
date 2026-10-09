@@ -9,24 +9,24 @@
 @theme {
   --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  --color-canvas: #000000;
-  --color-surface: #0c0c0e;
-  --color-surface-2: #1b1b1f;
-  --color-ink: #ffffff;
-  --color-ink-2: #d4d4d8;
-  --color-muted: #9b9ba5;
-  --color-line: #26262b;
+  --color-canvas: #ffffff;
+  --color-surface: #f6f6f7;
+  --color-surface-2: #ececef;
+  --color-ink: #0a0a0c;
+  --color-ink-2: #3f3f46;
+  --color-muted: #6b7280;
+  --color-line: #e5e5e7;
   --color-aura-high: #22c55e;
   --color-aura-mid: #facc15;
   --color-aura-low: #ef4444;
-  --color-aura-none: #3a3a40;
+  --color-aura-none: #d4d4d8;
   --color-ocean: #0a0f14;
-  --color-white: #131316;
+  --color-white: #ffffff;
 
-  --shadow-hard-xs: 0 1px 2px rgb(0 0 0 / 0.6);
-  --shadow-hard-sm: 0 2px 8px rgb(0 0 0 / 0.55);
-  --shadow-hard: 0 8px 24px rgb(0 0 0 / 0.6);
-  --shadow-hard-lg: 0 16px 48px rgb(0 0 0 / 0.75);
+  --shadow-hard-xs: 0 1px 2px rgb(0 0 0 / 0.08);
+  --shadow-hard-sm: 0 2px 8px rgb(0 0 0 / 0.08);
+  --shadow-hard: 0 8px 24px rgb(0 0 0 / 0.08);
+  --shadow-hard-lg: 0 16px 48px rgb(0 0 0 / 0.14);
 
   --radius-card: 1.125rem;
 
@@ -125,12 +125,12 @@
     display: none;
   }
   .pc-skeleton {
-    background: linear-gradient(90deg, #16161a 25%, #222228 50%, #16161a 75%);
+    background: linear-gradient(90deg, #eef0f3 25%, #f8fafc 50%, #eef0f3 75%);
     background-size: 200% 100%;
     @apply animate-shimmer;
   }
   .pc-dotgrid {
-    background-image: radial-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(rgb(10 10 12 / 0.05) 1px, transparent 1px);
     background-size: 18px 18px;
   }
 }
@@ -238,20 +238,11 @@
 
 /* ── Dark glass theme: soften the line-art into hairlines, add gloss to accents ── */
 .border-ink {
-  border-color: rgb(255 255 255 / 0.12) !important;
+  border-color: rgb(10 10 12 / 0.12) !important;
 }
 .border-2,
 .border-\[3px\] {
   border-width: 1px !important;
-}
-.bg-white {
-  background-color: #131316;
-}
-.bg-ink {
-  background-color: #ffffff;
-}
-.text-white {
-  color: #0b0b0d;
 }
 .bg-aura-high,
 .bg-aura-mid,
@@ -264,12 +255,12 @@
   color: #0b0b0d;
 }
 .leaflet-tooltip.pc-tooltip {
-  background: #131316;
-  color: #fff;
+  background: #ffffff;
+  color: #0a0a0c;
 }
 .leaflet-control-zoom a {
-  background: #131316 !important;
-  color: #fff !important;
+  background: #ffffff !important;
+  color: #0a0a0c !important;
 }
 .leaflet-control-attribution {
   background: rgb(0 0 0 / 0.6) !important;

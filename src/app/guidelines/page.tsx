@@ -31,7 +31,7 @@ export default function GuidelinesPage() {
         </li>
         <li>No nudity or sexual content, and nothing involving anyone under 18.</li>
       </ul>
-      <h2>Aura advice</h2>
+      <h2>Advice</h2>
       <p>
         The advice thread is for constructive, kind suggestions — vibe, bio, photo quality, getting involved. Not for
         criticism of how someone looks.
