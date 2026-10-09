@@ -27,8 +27,8 @@ export function AppHeader() {
           </span>
           <span className="hidden leading-none sm:block">
             <span className="block text-[17px] font-black tracking-tight">Pop Count</span>
-            <span className="text-muted mt-0.5 flex items-center gap-1 text-[10px] font-extrabold tracking-wider uppercase">
-              <span className="animate-pulse-ring bg-aura-high h-1.5 w-1.5 rounded-full" /> Live map
+            <span className="text-aura-low mt-0.5 block text-[10px] font-extrabold tracking-wider uppercase">
+              What&apos;s your rating?
             </span>
           </span>
         </Link>
