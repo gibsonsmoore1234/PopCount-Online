@@ -181,7 +181,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
 }
 
 function StickerBadge({ s, i }: { s: Sticker; i: number }) {
-  const bg = { high: AURA_COLORS.high, mid: AURA_COLORS.mid, low: AURA_COLORS.low, ink: "#0A0A0C" }[s.tone];
+  const bg = { high: AURA_COLORS.high, mid: AURA_COLORS.mid, low: AURA_COLORS.low, ink: "#000000" }[s.tone];
   return (
     <motion.span
       initial={{ scale: 0, rotate: -12 }}

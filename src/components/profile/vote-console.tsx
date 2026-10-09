@@ -123,7 +123,7 @@ export function VoteConsole({ profile }: { profile: ProfileDetail }) {
           aria-label="Aura rating"
           className="relative flex h-6 w-full touch-none items-center select-none"
         >
-          <Slider.Track className="border-ink relative h-3 grow overflow-hidden rounded-full border-2 bg-[linear-gradient(90deg,#C86363_0%,#C86363_33.9%,#FFF699_34%,#FFF699_66.9%,#A8F093_67%,#A8F093_100%)]">
+          <Slider.Track className="border-ink relative h-3 grow overflow-hidden rounded-full border-2 bg-[linear-gradient(90deg,#EF4444_0%,#EF4444_33.9%,#FACC15_34%,#FACC15_66.9%,#22C55E_67%,#22C55E_100%)]">
             <Slider.Range className="bg-ink/15 absolute h-full" />
           </Slider.Track>
           <Slider.Thumb className="border-ink shadow-hard-sm block h-6 w-6 rounded-full border-[3px] bg-white transition-transform focus:outline-none focus-visible:scale-110" />
@@ -258,7 +258,7 @@ export function BoostWidget({ profile }: { profile: ProfileDetail }) {
             className="border-ink h-4 flex-1 rounded-md border-2"
             initial={false}
             animate={{
-              backgroundColor: i < used ? "#0A0A0C" : "#FFFFFF",
+              backgroundColor: i < used ? "#22C55E" : "#1B1B1F",
               scale: i === used - 1 && pending ? [1, 1.25, 1] : 1,
             }}
             transition={{ duration: 0.25 }}

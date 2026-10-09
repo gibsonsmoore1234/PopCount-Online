@@ -8,10 +8,10 @@
  */
 
 export const AURA_COLORS = {
-  high: "#A8F093",
-  mid: "#FFF699",
-  low: "#C86363",
-  none: "#E4E4E7",
+  high: "#22C55E",
+  mid: "#FACC15",
+  low: "#EF4444",
+  none: "#3A3A40",
 } as const;
 
 export type AuraTier = keyof typeof AURA_COLORS;

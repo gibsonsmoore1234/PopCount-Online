@@ -40,7 +40,7 @@ export function ProfileCard({ p, rank, priority }: { p: Card; rank?: number; pri
               <AuraBadge score={p.auraScore} size="md" className="shadow-hard-xs" />
             </div>
 
-            <div className="bg-ink/80 absolute inset-x-1.5 bottom-1.5 rounded-xl border border-white/20 p-2 text-white backdrop-blur-md sm:inset-x-2 sm:bottom-2">
+            <div className="absolute inset-x-1.5 bottom-1.5 rounded-xl border border-white/20 bg-black/70 p-2 text-white backdrop-blur-md sm:inset-x-2 sm:bottom-2">
               <p className="truncate text-xs leading-tight font-black sm:text-sm">{p.displayName}</p>
               <p className="truncate text-[10px] font-semibold text-white/70 sm:text-[11px]">
                 {p.affiliation ?? genderLabel(p.gender)}
