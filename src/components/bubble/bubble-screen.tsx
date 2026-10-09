@@ -14,6 +14,7 @@ import { auraColor, formatAura, formatCount } from "@/lib/aura";
 import type { FeedSort } from "@/lib/validation";
 import type { BubbleSummary, Page, ProfileCard as Card } from "@/types/api";
 import { ProfileCard, ProfileCardSkeleton } from "./profile-card";
+import { AdminDeleteButton } from "@/components/admin/admin-delete-button";
 import { ReportDialog } from "@/components/profile/report-dialog";
 
 const SORTS: { value: FeedSort; label: string }[] = [
@@ -84,6 +85,7 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
                 <Flag className="h-4 w-4" strokeWidth={2.5} />
               </Button>
             }
+            <AdminDeleteButton kind="bubble" slug={bubble.slug} name={bubble.name} />
           </div>
         </div>
 

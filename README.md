@@ -44,7 +44,7 @@ The app needs **Node 20+** and **PostgreSQL 14+**. In production `DATABASE_URL` 
 1. Create a Postgres database and copy its connection string.
 2. Import the repo in Vercel. Set environment variables `DATABASE_URL`, `DATABASE_SSL=true` and `APP_URL=https://your-domain`.
 3. Set the build command to `npm run db:migrate && npm run build`.
-4. Deploy, then create your admin account: sign up at `/signup`, and in the database run `update users set role = 'ADMIN' where email = 'you@example.com';`.
+4. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` (8+ characters) in Vercel, deploy, then log in at `/login` with them. Admins get a red **Admin: delete** button on every bubble and profile, plus the `/admin` report queue.
 5. Upload your first ad in `/admin → Ads`.
 
 **Any server / Docker**

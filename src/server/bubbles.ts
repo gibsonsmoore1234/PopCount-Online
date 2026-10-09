@@ -190,3 +190,10 @@ export async function isMember(userId: string, bubbleId: string) {
     .limit(1);
   return Boolean(row);
 }
+
+/** Admin: remove a bubble and everything in it (profiles, ratings and comments cascade). */
+export async function deleteBubble(slug: string) {
+  const bubble = await requireBubble(slug);
+  await db.delete(bubbles).where(eq(bubbles.id, bubble.id));
+  return { ok: true };
+}
