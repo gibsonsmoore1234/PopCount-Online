@@ -30,14 +30,17 @@ const escapeHtml = (s: string) =>
  * Bubble diameter: area grows with membership (√members), and the whole layer shrinks when zoomed
  * out to the national view so neighbouring campuses don't pile on top of each other.
  */
-export function bubbleDiameter(members: number, zoom: number) {
-  const base = Math.max(58, Math.min(150, 46 + 11 * Math.sqrt(members)));
-  const scale = Math.max(0.42, Math.min(1, 0.42 + 0.16 * (zoom - 3)));
-  return Math.round(Math.max(48, base * scale));
+export function bubbleDiameter(members: number, zoom: number, maxMembers = members) {
+  // Area ∝ members, relative to the biggest bubble: the largest is 150px, a near-empty one 56px.
+  const share = Math.sqrt(Math.max(0, members) / Math.max(1, maxMembers));
+  const base = 56 + (150 - 56) * share;
+  const scale = Math.max(0.5, Math.min(1, 0.5 + 0.14 * (zoom - 3)));
+  // Never smaller than a comfortable 44px tap/click target.
+  return Math.round(Math.max(44, base * scale));
 }
 
-function bubbleIcon(b: BubbleSummary, zoom: number) {
-  const d = bubbleDiameter(b.memberCount, zoom);
+function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number) {
+  const d = bubbleDiameter(b.memberCount, zoom, maxMembers);
   const members = `• ${b.memberCount.toLocaleString("en-US")} Members`;
   // Fit both lines inside the circle's inner chord (≈80% of the diameter).
   const avail = d * 0.8 - 8;
@@ -202,6 +205,7 @@ export default function CampusMap({
   }, [onOpenBubble]);
 
   // Larger bubbles render first so smaller neighbours stay clickable on top.
+  const maxMembers = useMemo(() => Math.max(1, ...bubbles.map((b) => b.memberCount)), [bubbles]);
   const sorted = useMemo(() => [...bubbles].sort((a, b) => b.memberCount - a.memberCount), [bubbles]);
 
   return (
@@ -239,7 +243,7 @@ export default function CampusMap({
         <Marker
           key={b.id}
           position={[b.lat, b.lng]}
-          icon={bubbleIcon(b, zoom)}
+          icon={bubbleIcon(b, zoom, maxMembers)}
           riseOnHover
           keyboard
           eventHandlers={{
@@ -252,7 +256,7 @@ export default function CampusMap({
         >
           <Tooltip
             direction="top"
-            offset={[0, -bubbleDiameter(b.memberCount, zoom) / 2]}
+            offset={[0, -bubbleDiameter(b.memberCount, zoom, maxMembers) / 2]}
             className="pc-tooltip"
             opacity={1}
           >
