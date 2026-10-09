@@ -19,7 +19,6 @@ import {
 import { toast } from "sonner";
 import { useLogout, useMe } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
-import { formatCents } from "@/lib/aura";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/aura/photo";
 import { SearchBox } from "./search-box";
@@ -73,16 +72,15 @@ export function AppHeader() {
             </Button>
           ) : null}
 
-          {me && (
-            <button
-              onClick={() => setCreditsOpen(true)}
-              className="border-ink bg-aura-high shadow-hard-sm flex h-8 items-center gap-1 rounded-xl border-2 px-2 text-xs font-black tabular-nums transition hover:brightness-95"
-              aria-label={`Boost credit ${formatCents(me.creditBalance)} — buy more`}
-            >
-              <Zap className="fill-ink h-3.5 w-3.5" strokeWidth={2.5} />
-              {formatCents(me.creditBalance)}
-            </button>
-          )}
+          <button
+            onClick={() => setCreditsOpen(true)}
+            className="border-ink bg-aura-high shadow-hard-sm flex h-8 items-center gap-1.5 rounded-xl border-2 px-2.5 text-xs font-black tabular-nums transition hover:brightness-95"
+            aria-label="Get more clicks — watch an ad"
+          >
+            <Zap className="fill-ink h-3.5 w-3.5" strokeWidth={2.5} />
+            {me ? <span>{me.creditBalance}</span> : null}
+            <span className="hidden sm:inline">Get more clicks</span>
+          </button>
 
           {me && <AccountMenu />}
         </nav>
@@ -143,7 +141,7 @@ function AccountMenu() {
             </DropdownMenu.Item>
           )}
           <DropdownMenu.Item className={item} onSelect={() => setCreditsOpen(true)}>
-            <Zap className="h-4 w-4" /> Boost credit · {formatCents(me.creditBalance)}
+            <Zap className="h-4 w-4" /> Get more clicks · {me.creditBalance}
           </DropdownMenu.Item>
           {me.role === "ADMIN" && (
             <DropdownMenu.Item className={item} onSelect={() => router.push("/admin")}>

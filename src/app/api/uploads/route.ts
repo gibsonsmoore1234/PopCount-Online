@@ -10,5 +10,5 @@ export const POST = api(async (req) => {
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) throw badRequest("Attach an image file as `file`.");
-  return saveImage(user.id, file);
+  return saveImage(user.id, file, { allowVideo: user.role === "ADMIN" && form?.get("purpose") === "ad" });
 });

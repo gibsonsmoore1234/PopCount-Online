@@ -29,13 +29,6 @@ export const BOOST_COST_CENTS = 1;
 export const BOOST_DAILY_CAP = 10;
 export const SIGNUP_GRANT_CENTS = 250;
 
-export const CREDIT_PACKS = [
-  { id: "starter", label: "Starter", clicks: 100, priceCents: 99, blurb: "100 boost clicks" },
-  { id: "plus", label: "Plus", clicks: 550, priceCents: 499, blurb: "550 clicks · 10% bonus" },
-  { id: "pro", label: "Pro", clicks: 1200, priceCents: 999, blurb: "1,200 clicks · 20% bonus" },
-] as const;
-export type CreditPackId = (typeof CREDIT_PACKS)[number]["id"];
-
 export function roundTenth(n: number): number {
   return Math.round(n * 10) / 10;
 }

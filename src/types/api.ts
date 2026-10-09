@@ -145,9 +145,3 @@ export interface ReportDto {
   reportCount: number;
   target: { title: string; body: string; href: string | null; hidden: boolean; ownerHandle: string | null } | null;
 }
-
-export interface CheckoutResult {
-  mode: "stripe" | "demo";
-  url?: string;
-  creditBalance?: number;
-}

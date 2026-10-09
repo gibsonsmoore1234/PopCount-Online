@@ -392,7 +392,7 @@ async function main() {
     if (args.has("--reset")) {
       await db.execute(sql`truncate table
         ${s.voteEvents}, ${s.ratings}, ${s.comments}, ${s.groupMessages}, ${s.groups}, ${s.reports},
-        ${s.creditTransactions}, ${s.images}, ${s.bubbleMembers}, ${s.profiles}, ${s.sessions},
+        ${s.creditTransactions}, ${s.images}, ${s.adViews}, ${s.ads}, ${s.bubbleMembers}, ${s.profiles}, ${s.sessions},
         ${s.bubbles}, ${s.users} cascade`);
       console.log("• Database wiped");
     } else {
@@ -653,6 +653,9 @@ async function seed(db: Db) {
       await db.insert(s.groupMessages).values(msgs.map((m) => ({ ...m, groupId: g.id })));
     }
   }
+
+  // A house ad so "Get more clicks" works out of the box.
+  await db.insert(s.ads).values({ title: "Advertise on Pop Count", advertiser: "Pop Count", mediaUrl: "/ads/sample.svg", mediaType: "image" });
 
   // One open report so the admin moderation queue has something to show.
   const target = insertedComments[0];

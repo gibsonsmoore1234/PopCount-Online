@@ -1,104 +1,131 @@
 "use client";
 
-import { Zap, Check, CreditCard } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Zap, Play, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/misc";
-import { useCheckout, useMe } from "@/hooks/api";
+import { useClaimAd, useMe, useStartAd, type AdDto } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
-import { BOOST_COST_CENTS, BOOST_DAILY_CAP, CREDIT_PACKS, formatCents } from "@/lib/aura";
 import { errorMessage } from "@/lib/api/client";
-import { cn } from "@/lib/utils";
 
+/** "Get more clicks": watch a 10-second ad → +10 boost clicks. No payments anywhere. */
 export function BuyCreditsDialog() {
   const open = useUi((s) => s.creditsOpen);
   const setOpen = useUi((s) => s.setCreditsOpen);
-  const { data: me } = useMe();
-  const checkout = useCheckout();
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent title="Get more clicks" description="Watch a short ad to earn free boost clicks." size="md">
+        {open && <AdPlayer onDone={() => setOpen(false)} />}
+      </DialogContent>
+    </Dialog>
+  );
+}
 
-  const buy = (packId: string) =>
-    checkout.mutate(packId, {
-      onSuccess: (res) => {
-        if (res.mode === "demo") {
-          toast.success("Credits added", {
-            description: `Demo mode — no card was charged. New balance ${formatCents(res.creditBalance ?? 0)}.`,
+function AdPlayer({ onDone }: { onDone: () => void }) {
+  const { data: me } = useMe();
+  const start = useStartAd();
+  const claim = useClaimAd();
+  const [view, setView] = useState<{ viewId: string; ad: AdDto } | null>(null);
+  const [left, setLeft] = useState(0);
+  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearInterval(timer.current);
+    },
+    [],
+  );
+
+  const watch = () =>
+    start.mutate(undefined, {
+      onSuccess: (v) => {
+        setView(v);
+        setLeft(v.ad.durationSeconds);
+        if (timer.current) clearInterval(timer.current);
+        timer.current = setInterval(() => {
+          setLeft((s) => {
+            if (s <= 1 && timer.current) clearInterval(timer.current);
+            return Math.max(0, s - 1);
           });
-          setOpen(false);
-        }
+        }, 1000);
       },
       onError: (e) => toast.error(errorMessage(e)),
     });
 
+  const collect = () =>
+    view &&
+    claim.mutate(view.viewId, {
+      onSuccess: (r) => {
+        toast.success(`+${r.granted} clicks!`, { description: `You now have ${r.creditBalance} clicks.` });
+        setView(null);
+      },
+      onError: (e) => toast.error(errorMessage(e)),
+    });
+
+  const balance = me?.creditBalance ?? 0;
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent
-        title="Boost credit"
-        description={`Each boost click costs ${formatCents(BOOST_COST_CENTS)} and adds +1 weight to your rating.`}
-        size="md"
-      >
-        <div className="space-y-4 p-5">
-          <div className="border-ink bg-aura-high shadow-hard-sm flex items-center justify-between rounded-xl border-2 px-4 py-3">
-            <div>
-              <p className="text-[10px] font-extrabold tracking-wider uppercase">Your balance</p>
-              <p className="text-2xl font-black tabular-nums">{formatCents(me?.creditBalance ?? 0)}</p>
-            </div>
-            <div className="text-right text-xs font-extrabold">
-              <Zap className="fill-ink ml-auto h-6 w-6" strokeWidth={2} />
-              {(me?.creditBalance ?? 0).toLocaleString()} clicks
+    <div className="space-y-4 p-5">
+      <div className="border-ink bg-aura-high flex items-center justify-between rounded-xl border-2 px-4 py-3">
+        <div>
+          <p className="text-[10px] font-extrabold tracking-wider uppercase">Your clicks</p>
+          <p className="text-2xl font-black tabular-nums">{balance.toLocaleString()}</p>
+        </div>
+        <Zap className="fill-ink h-7 w-7" strokeWidth={2} />
+      </div>
+
+      {view ? (
+        <div className="space-y-3">
+          <div className="border-ink relative aspect-video overflow-hidden rounded-xl border-2 bg-black">
+            {view.ad.mediaType === "video" ? (
+              <video src={view.ad.mediaUrl} autoPlay muted playsInline loop className="h-full w-full object-contain" />
+            ) : (
+              <img src={view.ad.mediaUrl} alt={view.ad.title} className="h-full w-full object-contain" />
+            )}
+            <span className="absolute top-2 left-2 rounded-full bg-black/75 px-2 py-0.5 text-[10px] font-black text-white uppercase">
+              Ad{view.ad.advertiser ? ` · ${view.ad.advertiser}` : ""}
+            </span>
+            <span className="absolute top-2 right-2 grid h-8 min-w-8 place-items-center rounded-full bg-black/75 px-2 text-sm font-black text-white tabular-nums">
+              {left > 0 ? left : "✓"}
+            </span>
+            <div className="absolute inset-x-0 bottom-0 h-1.5 bg-white/20">
+              <div
+                className="bg-aura-high h-full transition-[width] duration-1000 ease-linear"
+                style={{ width: `${100 - (left / view.ad.durationSeconds) * 100}%` }}
+              />
             </div>
           </div>
-
-          <div className="grid gap-3 sm:grid-cols-3">
-            {CREDIT_PACKS.map((p, i) => (
-              <button
-                key={p.id}
-                disabled={checkout.isPending}
-                onClick={() => buy(p.id)}
-                className={cn(
-                  "group border-ink shadow-hard-sm hover:shadow-hard relative flex flex-col items-start gap-1 rounded-xl border-2 bg-white p-3 text-left transition hover:-translate-y-0.5 disabled:opacity-60",
-                  i === 1 && "bg-aura-mid",
-                )}
-              >
-                {i === 1 && (
-                  <span className="border-ink bg-ink absolute -top-2.5 right-2 rounded-full border-2 px-2 py-0.5 text-[9px] font-black text-white uppercase">
-                    Popular
-                  </span>
-                )}
-                <span className="text-muted text-[11px] font-extrabold tracking-wider uppercase">{p.label}</span>
-                <span className="text-xl font-black tabular-nums">{formatCents(p.priceCents)}</span>
-                <span className="text-xs font-bold">{p.blurb}</span>
-                <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-extrabold underline-offset-2 group-hover:underline">
-                  {checkout.isPending && checkout.variables === p.id ? (
-                    <Spinner className="h-3 w-3" />
-                  ) : (
-                    <CreditCard className="h-3 w-3" />
-                  )}
-                  Buy
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <ul className="text-ink-2 space-y-1.5 text-xs font-semibold">
-            <li className="flex gap-2">
-              <Check className="h-4 w-4 shrink-0" strokeWidth={3} /> Boosts amplify the rating you already cast — up or
-              down.
-            </li>
-            <li className="flex gap-2">
-              <Check className="h-4 w-4 shrink-0" strokeWidth={3} /> Max {BOOST_DAILY_CAP} boost clicks per profile
-              every 24 hours keeps rankings fair.
-            </li>
-            <li className="flex gap-2">
-              <Check className="h-4 w-4 shrink-0" strokeWidth={3} /> Secure checkout by Stripe. Credits have no cash
-              value.
-            </li>
-          </ul>
-          <Button variant="ghost" size="sm" className="w-full" onClick={() => setOpen(false)}>
-            Maybe later
+          <p className="text-center text-sm font-bold">{view.ad.title}</p>
+          {view.ad.clickUrl && (
+            <a
+              href={view.ad.clickUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="block text-center text-xs font-bold underline"
+            >
+              Learn more
+            </a>
+          )}
+          <Button className="w-full" size="lg" disabled={left > 0 || claim.isPending} onClick={collect}>
+            {claim.isPending ? <Spinner /> : <Gift className="h-5 w-5" />}
+            {left > 0 ? `Watch ${left}s more…` : `Collect +${view.ad.rewardClicks} clicks`}
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      ) : (
+        <div className="space-y-3">
+          <Button className="w-full" size="lg" onClick={watch} disabled={start.isPending}>
+            {start.isPending ? <Spinner /> : <Play className="h-5 w-5" />} Watch a 10-second ad · +10 clicks
+          </Button>
+          <p className="text-muted text-center text-xs font-semibold">
+            Clicks boost your ratings. Free — no payment, ever. Up to 30 ads a day.
+          </p>
+          <Button variant="ghost" size="sm" className="w-full" onClick={onDone}>
+            Close
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

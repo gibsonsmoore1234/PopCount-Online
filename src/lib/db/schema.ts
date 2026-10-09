@@ -393,3 +393,45 @@ export type Gender = (typeof gender.enumValues)[number];
 export type BubbleKind = (typeof bubbleKind.enumValues)[number];
 export type CommentKind = (typeof commentKind.enumValues)[number];
 export type ReportTarget = (typeof reportTarget.enumValues)[number];
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Rewarded ads (watch 10 s → +10 boost clicks)                               */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+export const ads = pgTable(
+  "ads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    advertiser: text("advertiser").notNull().default(""),
+    /** Served from /api/images/:id (uploaded media) or any https URL. */
+    mediaUrl: text("media_url").notNull(),
+    mediaType: text("media_type").notNull().default("image"), // "image" | "video"
+    clickUrl: text("click_url"),
+    durationSeconds: integer("duration_seconds").notNull().default(10),
+    rewardClicks: integer("reward_clicks").notNull().default(10),
+    isActive: boolean("is_active").notNull().default(true),
+    impressions: integer("impressions").notNull().default(0),
+    completions: integer("completions").notNull().default(0),
+    ...timestamps,
+  },
+  (t) => [index("ads_active_idx").on(t.isActive)],
+);
+
+export const adViews = pgTable(
+  "ad_views",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    adId: uuid("ad_id")
+      .notNull()
+      .references(() => ads.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    startedAt: timestamp("started_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    claimedAt: timestamp("claimed_at", { withTimezone: true, mode: "date" }),
+  },
+  (t) => [index("ad_views_user_idx").on(t.userId, t.startedAt)],
+);
+
+export type Ad = typeof ads.$inferSelect;

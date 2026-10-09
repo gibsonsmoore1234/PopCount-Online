@@ -14,7 +14,8 @@ import { createProfile, getProfileDetail, leaderboard } from "@/server/profiles"
 import { boostProfile, rateProfile } from "@/server/ratings";
 import { addComment } from "@/server/comments";
 import { createReport } from "@/server/reports";
-import { grantPurchase, getBalance } from "@/server/credits";
+import { getBalance } from "@/server/credits";
+import { claimAdView, createAd, startAdView } from "@/server/ads";
 import { ApiError } from "@/lib/errors";
 
 let db: Db;
@@ -158,11 +159,25 @@ describe("boost micro-economy", () => {
     expect(await getBalance(broke.id)).toBe(1);
   });
 
-  it("grants each purchase exactly once (idempotent webhooks)", async () => {
-    const buyer = await makeUser({ credits: 0 });
-    expect(await grantPurchase(buyer.id, 550, "cs_test_123")).toBe(true);
-    expect(await grantPurchase(buyer.id, 550, "cs_test_123")).toBe(false);
-    expect(await getBalance(buyer.id)).toBe(550);
+  it("grants ad clicks only after the full 10 seconds, once per view", async () => {
+    await createAd({
+      title: "Test ad",
+      advertiser: "",
+      mediaUrl: "https://example.com/a.jpg",
+      mediaType: "image",
+      durationSeconds: 10,
+      rewardClicks: 10,
+    });
+    const viewer = await makeUser({ credits: 0 });
+    const { viewId } = await startAdView(viewer);
+    await expectApiError(claimAdView(viewer, viewId), 425);
+    await db
+      .update(s.adViews)
+      .set({ startedAt: new Date(Date.now() - 11_000) })
+      .where(eq(s.adViews.id, viewId));
+    expect((await claimAdView(viewer, viewId)).creditBalance).toBe(10);
+    await expectApiError(claimAdView(viewer, viewId), 400);
+    expect(await getBalance(viewer.id)).toBe(10);
   });
 });
 

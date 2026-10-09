@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 const SESSION_COOKIE = "pc_session";
-const PROTECTED = ["/admin", "/credits/success"];
+const PROTECTED = ["/admin"];
 
 /**
  * Edge-of-app route protection: bounce signed-out visitors away from account-only pages.
@@ -19,5 +19,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/credits/success"],
+  matcher: ["/admin/:path*"],
 };

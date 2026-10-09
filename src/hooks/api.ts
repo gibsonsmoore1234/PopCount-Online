@@ -14,7 +14,6 @@ import type { BubbleSort, FeedSort, LeaderboardId } from "@/lib/validation";
 import type {
   BubbleRankingEntry,
   BubbleSummary,
-  CheckoutResult,
   CommentDto,
   CommentKind,
   GroupDto,
@@ -488,24 +487,43 @@ export function useResolveReport() {
   });
 }
 
-export function useCheckout() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (packId: string) =>
-      apiFetch<CheckoutResult>("/api/credits/checkout", { method: "POST", json: { packId } }),
-    onSuccess: (res) => {
-      if (res.mode === "stripe" && res.url) window.location.assign(res.url);
-      else if (typeof res.creditBalance === "number") setBalance(qc, res.creditBalance);
-    },
-  });
-}
-
 export function useUpload() {
   return useMutation({
     mutationFn: (file: Blob) => {
       const form = new FormData();
       form.append("file", file, "photo.jpg");
       return apiFetch<{ id: string; url: string }>("/api/uploads", { method: "POST", form });
+    },
+  });
+}
+
+/* ── Rewarded ads ──────────────────────────────────────────────────────── */
+export type AdDto = {
+  id: string;
+  title: string;
+  advertiser: string;
+  mediaUrl: string;
+  mediaType: "image" | "video";
+  clickUrl: string | null;
+  durationSeconds: number;
+  rewardClicks: number;
+};
+
+export function useStartAd() {
+  return useMutation({
+    mutationFn: () => apiFetch<{ viewId: string; ad: AdDto }>("/api/ads/start", { method: "POST", json: {} }),
+  });
+}
+
+export function useClaimAd() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (viewId: string) =>
+      apiFetch<{ creditBalance: number; granted: number }>("/api/ads/claim", { method: "POST", json: { viewId } }),
+    onSuccess: (r) => {
+      setBalance(qc, r.creditBalance);
+      // A first-time visitor's anonymous identity was just created — load it.
+      void qc.invalidateQueries({ queryKey: qk.me });
     },
   });
 }

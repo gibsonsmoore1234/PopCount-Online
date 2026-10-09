@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { CREDIT_PACKS } from "./aura";
 
 const trimmed = (min: number, max: number, label: string) =>
   z
@@ -144,10 +143,6 @@ export const resolveReportSchema = z.object({
   action: z.enum(["dismiss", "hide", "restore", "delete", "ban"]),
 });
 
-export const checkoutSchema = z.object({
-  packId: z.enum(CREDIT_PACKS.map((p) => p.id) as [string, ...string[]]),
-});
-
 export const FEED_SORTS = ["best", "males", "females", "lowest", "most_votes", "least_votes"] as const;
 export type FeedSort = (typeof FEED_SORTS)[number];
 
@@ -179,3 +174,15 @@ export const searchQuerySchema = z.object({
 });
 
 export const termsSchema = z.object({ accepted: z.literal(true) });
+
+export const adSchema = z.object({
+  title: trimmed(2, 80, "Title"),
+  advertiser: z.string().trim().max(80).default(""),
+  mediaUrl: imageUrlSchema,
+  mediaType: z.enum(["image", "video"]),
+  clickUrl: z
+    .union([z.literal(""), z.url().refine((u) => u.startsWith("https://"), "Use an https:// link.")])
+    .optional(),
+  durationSeconds: z.number().int().min(5).max(60).default(10),
+  rewardClicks: z.number().int().min(1).max(100).default(10),
+});

@@ -15,6 +15,13 @@
       "when": 1791511849233,
       "tag": "0001_anonymous_and_ads",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791516730757,
+      "tag": "0002_rewarded_ads",
+      "breakpoints": true
     }
   ]
 }

@@ -1,9 +1,7 @@
-import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { lookupCounty } from "@/lib/geo/county";
 import { censorText, containsBlockedLanguage } from "@/lib/moderation";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
-import { verifyStripeSignature } from "@/server/credits";
 import { sniffImageType } from "@/server/images";
 
 describe("county lookup (bubble placement + 100-per-county cap)", () => {
@@ -33,24 +31,6 @@ describe("passwords", () => {
     expect(hash.startsWith("scrypt$")).toBe(true);
     expect(await verifyPassword("correct horse", hash)).toBe(true);
     expect(await verifyPassword("wrong", hash)).toBe(false);
-  });
-});
-
-describe("Stripe webhook signatures", () => {
-  const secret = "whsec_test";
-  const payload = JSON.stringify({ type: "checkout.session.completed" });
-  const sign = (t: number, body = payload) => createHmac("sha256", secret).update(`${t}.${body}`).digest("hex");
-
-  it("accepts a valid, fresh signature", () => {
-    const t = Math.floor(Date.now() / 1000);
-    expect(verifyStripeSignature(payload, `t=${t},v1=${sign(t)}`, secret)).toBe(true);
-  });
-  it("rejects tampered payloads, stale timestamps and missing headers", () => {
-    const t = Math.floor(Date.now() / 1000);
-    expect(verifyStripeSignature(payload + " ", `t=${t},v1=${sign(t)}`, secret)).toBe(false);
-    const old = t - 3600;
-    expect(verifyStripeSignature(payload, `t=${old},v1=${sign(old)}`, secret)).toBe(false);
-    expect(verifyStripeSignature(payload, null, secret)).toBe(false);
   });
 });
 
