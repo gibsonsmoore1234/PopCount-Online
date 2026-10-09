@@ -655,7 +655,14 @@ async function seed(db: Db) {
   }
 
   // A house ad so "Get more clicks" works out of the box.
-  await db.insert(s.ads).values({ title: "Advertise on Pop Count", advertiser: "Pop Count", mediaUrl: "/ads/sample.svg", mediaType: "image" });
+  await db
+    .insert(s.ads)
+    .values({
+      title: "Advertise on Pop Count",
+      advertiser: "Pop Count",
+      mediaUrl: "/ads/sample.svg",
+      mediaType: "image",
+    });
 
   // One open report so the admin moderation queue has something to show.
   const target = insertedComments[0];
