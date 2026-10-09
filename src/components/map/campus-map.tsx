@@ -30,17 +30,19 @@ const escapeHtml = (s: string) =>
  * Bubble diameter: area grows with membership (√members), and the whole layer shrinks when zoomed
  * out to the national view so neighbouring campuses don't pile on top of each other.
  */
-export function bubbleDiameter(members: number, zoom: number, maxMembers = members) {
+export function bubbleDiameter(members: number, zoom: number, maxMembers = members, bubbleCount = 1) {
   // Area ∝ members, relative to the biggest bubble: the largest is 150px, a near-empty one 56px.
   const share = Math.sqrt(Math.max(0, members) / Math.max(1, maxMembers));
   const base = 56 + (150 - 56) * share;
   const scale = Math.max(0.5, Math.min(1, 0.5 + 0.14 * (zoom - 3)));
-  // Never smaller than a comfortable 44px tap/click target.
-  return Math.round(Math.max(44, base * scale));
+  // The more bubbles on the map, the smaller each one gets (full size up to 6 bubbles).
+  const crowd = Math.max(0.35, Math.min(1, Math.sqrt(6 / Math.max(1, bubbleCount))));
+  // Never smaller than a 30px tap target.
+  return Math.round(Math.max(30, base * scale * crowd));
 }
 
-function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number) {
-  const d = bubbleDiameter(b.profileCount, zoom, maxMembers);
+function bubbleIcon(b: BubbleSummary, zoom: number, maxMembers: number, count: number) {
+  const d = bubbleDiameter(b.profileCount, zoom, maxMembers, count);
   const members = `• ${b.profileCount.toLocaleString("en-US")} ${b.profileCount === 1 ? "Person" : "People"}`;
   // Fit both lines inside the circle's inner chord (≈80% of the diameter).
   const avail = d * 0.8 - 8;
@@ -243,7 +245,7 @@ export default function CampusMap({
         <Marker
           key={b.id}
           position={[b.lat, b.lng]}
-          icon={bubbleIcon(b, zoom, maxMembers)}
+          icon={bubbleIcon(b, zoom, maxMembers, sorted.length)}
           riseOnHover
           keyboard
           eventHandlers={{
@@ -256,7 +258,7 @@ export default function CampusMap({
         >
           <Tooltip
             direction="top"
-            offset={[0, -bubbleDiameter(b.profileCount, zoom, maxMembers) / 2]}
+            offset={[0, -bubbleDiameter(b.profileCount, zoom, maxMembers, sorted.length) / 2]}
             className="pc-tooltip"
             opacity={1}
           >

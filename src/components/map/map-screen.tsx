@@ -35,7 +35,7 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
   const openProfileForm = useUi((s) => s.openProfileForm);
   const [pinning, setPinning] = useState(false);
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null);
-  const [resetNonce, setResetNonce] = useState(0);
+  const resetNonce = 0;
 
   // Deep links: /?create=1 opens the profile form.
   useEffect(() => {
@@ -92,21 +92,7 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
       />
 
       {/* Info card */}
-      <div className="pointer-events-none absolute inset-x-3 top-3 z-[500] flex items-start justify-between gap-2">
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border-ink shadow-hard pointer-events-auto max-w-[min(22rem,calc(100vw-9rem))] rounded-2xl border-2 bg-white p-3 backdrop-blur"
-        >
-          <div className="flex items-center gap-2">
-            <span className="animate-pulse-ring bg-aura-high h-2.5 w-2.5 rounded-full" />
-            <h1 className="text-xs font-black tracking-tight uppercase">Interactive Map</h1>
-          </div>
-          <p className="text-ink-2 mt-1 hidden text-[11px] leading-snug font-semibold sm:block">
-            Tap any bubble to open its feed. Bubble size = people · ring colour = average rating.
-          </p>
-        </motion.div>
-
+      <div className="pointer-events-none absolute inset-x-3 top-3 z-[500] flex items-start justify-end gap-2">
         <div className="pointer-events-auto flex flex-col items-end gap-2">
           <Button
             size="sm"
@@ -117,15 +103,6 @@ export function MapScreen({ initialBubbles }: { initialBubbles: BubbleSummary[] 
           >
             {pinning ? <X className="h-4 w-4" strokeWidth={3} /> : <MapPinPlus className="h-4 w-4" strokeWidth={2.5} />}
             <span>{pinning ? "Cancel" : "Add Bubble"}</span>
-          </Button>
-          <Button
-            size="icon-sm"
-            variant="secondary"
-            className="shadow-hard"
-            aria-label="Reset view to the whole U.S."
-            onClick={() => setResetNonce(Date.now())}
-          >
-            <Globe2 className="h-4 w-4" strokeWidth={2.5} />
           </Button>
         </div>
       </div>
