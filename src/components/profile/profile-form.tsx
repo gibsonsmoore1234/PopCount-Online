@@ -2,13 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ImageUp, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/misc";
-import { AuraFrame } from "@/components/aura/aura";
 import { Photo } from "@/components/aura/photo";
 import { useBubbles, useCreateProfile, useMe, useUpdateProfile, useUpload } from "@/hooks/api";
 import { useUi } from "@/stores/ui-store";
@@ -89,7 +88,7 @@ function ProfileFormBody({
   const onFile = async (file: File | undefined) => {
     if (!file) return;
     try {
-      const blob = await prepareImage(file, { aspect: 2 / 3, maxWidth: 900 });
+      const blob = await prepareImage(file, { aspect: 1, maxWidth: 900 });
       const res = await upload.mutateAsync(blob);
       setPhotos((p) => [...p, res.url].slice(0, 3));
       setErrors((e) => ({ ...e, photoUrl: undefined }));
@@ -157,64 +156,37 @@ function ProfileFormBody({
   return (
     <form onSubmit={submit} className="space-y-5 p-5" noValidate>
       <div className="grid gap-5 sm:grid-cols-[180px_1fr]">
-        <div className="mx-auto w-40 sm:w-full">
-          <AuraFrame score={null} thickness="sm">
-            <div className="border-ink bg-surface-2 relative aspect-[2/3] overflow-hidden rounded-xl border-2">
-              {photoUrl ? (
-                <Photo src={photoUrl} alt={displayName || "Your photo"} />
-              ) : (
-                <div className="pc-dotgrid text-muted grid h-full place-items-center p-3 text-center text-[11px] font-extrabold uppercase">
-                  2:3 portrait photo
-                </div>
-              )}
-              {upload.isPending && (
-                <div className="absolute inset-0 grid place-items-center bg-white/70">
-                  <Spinner className="h-6 w-6" />
-                </div>
-              )}
-            </div>
-          </AuraFrame>
+        <div className="mx-auto w-48 space-y-2 sm:w-full">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => onFile(e.target.files?.[0])}
+          />
+          <PhotoSlot
+            url={photos[0]}
+            big
+            pending={upload.isPending && photos.length === 0}
+            onAdd={() => fileRef.current?.click()}
+            onRemove={() => setPhotos((p) => p.filter((_, j) => j !== 0))}
+          />
+          <div className="grid grid-cols-2 gap-2">
+            {[1, 2].map((i) => (
+              <PhotoSlot
+                key={i}
+                url={photos[i]}
+                disabled={photos.length < i}
+                pending={upload.isPending && photos.length === i}
+                onAdd={() => fileRef.current?.click()}
+                onRemove={() => setPhotos((p) => p.filter((_, j) => j !== i))}
+              />
+            ))}
+          </div>
+          {errors.photoUrl && <p className="text-xs font-bold text-[#9b2c2c]">{errors.photoUrl}</p>}
         </div>
 
         <div className="space-y-3">
-          <Field label="Photo *" error={errors.photoUrl}>
-            <div className="flex flex-wrap gap-2">
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={(e) => onFile(e.target.files?.[0])}
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => fileRef.current?.click()}
-                disabled={upload.isPending || photos.length >= 3}
-              >
-                <ImageUp className="h-4 w-4" strokeWidth={2.5} /> Upload photo ({photos.length}/3)
-              </Button>
-            </div>
-            {photos.length > 0 && (
-              <div className="flex gap-2">
-                {photos.map((url, i) => (
-                  <div key={url} className="border-ink relative h-20 w-14 overflow-hidden rounded-lg border-2">
-                    <Photo src={url} alt={`Photo ${i + 1}`} />
-                    <button
-                      type="button"
-                      aria-label={`Remove photo ${i + 1}`}
-                      onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))}
-                      className="absolute top-0.5 right-0.5 grid h-5 w-5 place-items-center rounded-full bg-black/75 text-xs font-black text-white"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Field>
-
           <Field label="Display name *" htmlFor={`${uid}-name`} error={errors.displayName}>
             <Input
               id={`${uid}-name`}
@@ -307,5 +279,49 @@ export function GlobalProfileForm() {
 
   return (
     <ProfileFormDialog open={open && !me?.profile} onOpenChange={(o) => !o && close()} defaultBubbleId={bubbleId} />
+  );
+}
+
+/** One square photo slot: tap an empty slot to upload, × to remove. */
+function PhotoSlot({
+  url,
+  big,
+  disabled,
+  pending,
+  onAdd,
+  onRemove,
+}: {
+  url?: string;
+  big?: boolean;
+  disabled?: boolean;
+  pending?: boolean;
+  onAdd: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="border-ink bg-surface-2 relative aspect-square overflow-hidden rounded-xl border-2">
+      {url ? (
+        <>
+          <Photo src={url} alt="Photo" />
+          <button
+            type="button"
+            aria-label="Remove photo"
+            onClick={onRemove}
+            className="absolute top-1 right-1 grid h-6 w-6 place-items-center rounded-full bg-black/75 text-sm font-black text-white"
+          >
+            ×
+          </button>
+        </>
+      ) : (
+        <button
+          type="button"
+          onClick={onAdd}
+          disabled={disabled || pending}
+          className={`pc-dotgrid text-muted grid h-full w-full place-items-center font-extrabold uppercase disabled:opacity-50 ${big ? "text-xs" : "text-[10px]"}`}
+        >
+          {pending ? <Spinner className="h-5 w-5" /> : "Photo"}
+        </button>
+      )}
+    </div>
   );
 }
