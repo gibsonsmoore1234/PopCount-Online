@@ -104,7 +104,8 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
               </div>
             </AuraFrame>
             <p className="text-center text-sm font-black tabular-nums">
-              {formatCount(profile.voteCount)} {profile.voteCount === 1 ? "vote" : "votes"}
+              {formatCount(profile.voteCount)} {profile.voteCount === 1 ? "vote" : "votes"} ·{" "}
+              {formatCount(profile.generalCount)} {profile.generalCount === 1 ? "comment" : "comments"}
             </p>
           </motion.div>
 
@@ -122,7 +123,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
             </div>
 
             {profile.isOwner ? (
-              <OwnerPanel profile={profile} onEdit={() => setEditing(true)} onDelete={() => setDeleting(true)} />
+              <OwnerPanel onEdit={() => setEditing(true)} onDelete={() => setDeleting(true)} />
             ) : (
               <VoteConsole profile={profile} />
             )}
@@ -147,48 +148,15 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: string }) {
+function OwnerPanel({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
   return (
-    <div className="border-ink shadow-hard-xs rounded-xl border-2 bg-white px-2 py-1.5">
-      <div className="text-base font-black tabular-nums">{value}</div>
-      <div className="text-muted text-[9px] font-extrabold tracking-wider uppercase">{label}</div>
-    </div>
-  );
-}
-
-function OwnerPanel({
-  profile,
-  onEdit,
-  onDelete,
-}: {
-  profile: ProfileDetail;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <div className="border-ink shadow-hard space-y-3 rounded-2xl border-2 bg-white p-4">
-      <div className="flex items-center gap-2">
-        <span className="border-ink bg-aura-high rounded-lg border-2 px-2 py-0.5 text-[10px] font-black uppercase">
-          This is you
-        </span>
-        <p className="text-muted text-xs font-semibold">
-          You can&apos;t rate yourself — share your link to collect votes.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <MiniStat label="Upvotes" value={formatCount(profile.upCount)} />
-        <MiniStat label="Downvotes" value={formatCount(profile.downCount)} />
-        <MiniStat label="Comments" value={formatCount(profile.generalCount)} />
-        <MiniStat label="Advice" value={formatCount(profile.adviceCount)} />
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <Button variant="secondary" size="sm" onClick={onEdit}>
-          <Pencil className="h-4 w-4" strokeWidth={2.5} /> Edit profile
-        </Button>
-        <Button variant="danger" size="sm" onClick={onDelete}>
-          <Trash2 className="h-4 w-4" strokeWidth={2.5} /> Delete profile
-        </Button>
-      </div>
+    <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+      <Button variant="secondary" size="sm" onClick={onEdit}>
+        <Pencil className="h-4 w-4" strokeWidth={2.5} /> Edit profile
+      </Button>
+      <Button variant="danger" size="sm" onClick={onDelete}>
+        <Trash2 className="h-4 w-4" strokeWidth={2.5} /> Delete profile
+      </Button>
     </div>
   );
 }
