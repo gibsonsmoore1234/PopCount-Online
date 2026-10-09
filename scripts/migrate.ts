@@ -8,6 +8,8 @@ import { createDb } from "../src/lib/db";
 loadEnvFile();
 
 async function main() {
+  // `npm run build` migrates only when a real database is configured (e.g. on Vercel).
+  if (process.argv.includes("--if-configured") && !process.env.DATABASE_URL) return;
   const { db, close, driver } = createDb();
   const migrationsFolder = path.join(process.cwd(), "drizzle");
   if (driver === "pglite") {

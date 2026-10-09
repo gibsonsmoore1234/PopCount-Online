@@ -23,10 +23,19 @@ type DbHandle = { db: Db; close: () => Promise<void>; driver: "postgres" | "pgli
 export function createDb(options: { url?: string; pgliteDir?: string } = {}): DbHandle {
   const url = options.url ?? process.env.DATABASE_URL;
   if (url) {
+    // Hosted Postgres (Supabase, Neon) needs TLS. An `sslmode` in the URL would override the `ssl` option
+    // below and reject the provider's certificate chain, so strip it and configure TLS here instead.
+    const parsed = new URL(url);
+    const urlWantsSsl = ["require", "verify-ca", "verify-full", "prefer"].includes(
+      parsed.searchParams.get("sslmode") ?? "",
+    );
+    parsed.searchParams.delete("sslmode");
+    const useSsl =
+      process.env.DATABASE_SSL === "true" || urlWantsSsl || /supabase\.(co|com)|neon\.tech/.test(parsed.hostname);
     const pool = new Pool({
-      connectionString: url,
-      max: Number(process.env.DATABASE_POOL_MAX ?? 10),
-      ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : undefined,
+      connectionString: parsed.toString(),
+      max: Number(process.env.DATABASE_POOL_MAX ?? (process.env.VERCEL ? 3 : 10)),
+      ssl: useSsl ? { rejectUnauthorized: false } : undefined,
     });
     return { db: drizzleNodePg(pool, { schema }), close: () => pool.end(), driver: "postgres" };
   }
