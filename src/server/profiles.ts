@@ -71,7 +71,10 @@ export async function updateProfile(user: SessionUser, profileId: string, input:
   if (input.displayName && containsBlockedLanguage(input.displayName)) {
     throw badRequest("Pick a display name without profanity.");
   }
-  for (const url of [input.photoUrl, ...(input.extraPhotos ?? [])]) if (url) await assertOwnImage(existing.userId, url);
+  // Admins may swap in photos they uploaded themselves.
+  if (user.role !== "ADMIN")
+    for (const url of [input.photoUrl, ...(input.extraPhotos ?? [])])
+      if (url) await assertOwnImage(existing.userId, url);
   if (input.bubbleId && input.bubbleId !== existing.bubbleId) {
     const [b] = await db
       .select({ id: bubbles.id })

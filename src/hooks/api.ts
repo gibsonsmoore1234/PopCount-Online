@@ -273,6 +273,15 @@ export function useDeleteProfile(id: string) {
   });
 }
 
+export function useUpdateBubble(slug: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { name?: string; logoUrl?: string | null }) =>
+      apiFetch(`/api/bubbles/${slug}`, { method: "PATCH", json: input }),
+    onSuccess: () => qc.invalidateQueries(),
+  });
+}
+
 export function useDeleteBubble(slug: string) {
   const qc = useQueryClient();
   return useMutation({

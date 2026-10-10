@@ -15,6 +15,7 @@ import { AnimatedNumber, VoteConsole } from "./vote-console";
 import { CommentsPanel } from "./comments-panel";
 import { ReportDialog } from "./report-dialog";
 import { AdminDeleteButton } from "@/components/admin/admin-delete-button";
+import { AdminEditButton } from "@/components/admin/admin-edit-button";
 
 /** Layer 3 — full-screen "Tea-app" style profile takeover. */
 export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
@@ -61,6 +62,7 @@ export function ProfileScreen({ initial }: { initial: ProfileDetail }) {
               <Flag className="h-4 w-4" strokeWidth={2.5} />
             </Button>
           }
+          <AdminEditButton kind="profile" profile={profile} />
           <AdminDeleteButton
             kind="profile"
             id={profile.id}

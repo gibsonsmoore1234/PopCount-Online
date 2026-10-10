@@ -197,3 +197,17 @@ export async function deleteBubble(slug: string) {
   await db.delete(bubbles).where(eq(bubbles.id, bubble.id));
   return { ok: true };
 }
+
+/** Admin: rename a bubble and/or change its logo. */
+export async function updateBubble(slug: string, input: { name?: string; logoUrl?: string | null }) {
+  const bubble = await requireBubble(slug);
+  const set: Partial<typeof bubbles.$inferInsert> = {};
+  if (input.name !== undefined) {
+    const name = cleanUserText(input.name).trim();
+    if (name.length < 2 || name.length > 48) throw badRequest("Bubble names must be 2–48 characters.");
+    set.name = name;
+  }
+  if (input.logoUrl !== undefined) set.logoUrl = input.logoUrl || null;
+  if (Object.keys(set).length) await db.update(bubbles).set(set).where(eq(bubbles.id, bubble.id));
+  return { bubble: await requireBubble(slug) };
+}

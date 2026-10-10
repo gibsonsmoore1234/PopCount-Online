@@ -216,20 +216,17 @@ function SpreadBubbles({
   useEffect(() => {
     const z = map.getZoom();
     const pts = bubbles.map((b) => ({ b, p: map.project([b.lat, b.lng], z) }));
-    // Never bigger than the bubble's state — or its county when the state has more than one bubble.
-    const perState = new Map<string, number>();
-    for (const b of bubbles) perState.set(b.countyFips.slice(0, 2), (perState.get(b.countyFips.slice(0, 2)) ?? 0) + 1);
     const cap = new Map<string, number>();
     const area = new Map<string, { x0: number; y0: number; x1: number; y1: number }>();
     for (const b of bubbles) {
-      const st = b.countyFips.slice(0, 2);
-      const box = boxes && ((perState.get(st) ?? 0) > 1 ? boxes.county.get(b.countyFips) : boxes.state.get(st));
+      // Always stay inside the bubble's own county (falls back to the state if the county shape is missing).
+      const box = boxes && (boxes.county.get(b.countyFips) ?? boxes.state.get(b.countyFips.slice(0, 2)));
       if (!box) continue;
       const a = map.project([box[1], box[0]], z); // south-west
       const c = map.project([box[3], box[2]], z); // north-east
       const r = { x0: Math.min(a.x, c.x), y0: Math.min(a.y, c.y), x1: Math.max(a.x, c.x), y1: Math.max(a.y, c.y) };
       area.set(b.id, r);
-      cap.set(b.id, Math.max(10, Math.min(r.x1 - r.x0, r.y1 - r.y0) * 0.9));
+      cap.set(b.id, Math.max(8, Math.min(r.x1 - r.x0, r.y1 - r.y0) * 0.9));
     }
     // Keep a circle of radius `rad` entirely inside its region box.
     const keepInside = (id: string, x: number, y: number, rad: number) => {
