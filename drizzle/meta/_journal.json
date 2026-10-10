@@ -64,6 +64,13 @@
       "when": 1791599917106,
       "tag": "0008_more_colleges",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791600469861,
+      "tag": "0009_hundred_colleges",
+      "breakpoints": true
     }
   ]
 }
