@@ -57,6 +57,13 @@
       "when": 1791595480360,
       "tag": "0007_comment_tones",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791599917106,
+      "tag": "0008_more_colleges",
+      "breakpoints": true
     }
   ]
 }
