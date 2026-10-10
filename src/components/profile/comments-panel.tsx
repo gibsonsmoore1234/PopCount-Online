@@ -109,7 +109,7 @@ function Thread({ profile, kind, placeholder }: { profile: ProfileDetail; kind: 
           body="Be the first — keep it kind."
         />
       ) : (
-        <ul className="space-y-2.5">
+        <ul className="max-h-[420px] space-y-2.5 overflow-y-auto overscroll-contain pr-1">
           <AnimatePresence initial={false}>
             {items.map((c) => (
               <motion.li
