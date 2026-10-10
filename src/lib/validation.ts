@@ -63,7 +63,7 @@ export const imageUrlSchema = z
 
 export const genderSchema = z.enum(["MALE", "FEMALE"]);
 export const bubbleKindSchema = z.enum(["CAMPUS", "TOWN"]);
-export const commentKindSchema = z.enum(["COMMENT", "ADVICE"]);
+export const commentKindSchema = z.enum(["COMMENT", "ADVICE", "GOOD", "BAD"]);
 
 export const createProfileSchema = z.object({
   bubbleId: z.uuid("Choose a campus or town bubble."),

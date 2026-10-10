@@ -25,7 +25,7 @@ import {
 export const userRole = pgEnum("user_role", ["USER", "ADMIN"]);
 export const gender = pgEnum("gender", ["MALE", "FEMALE", "NON_BINARY"]);
 export const bubbleKind = pgEnum("bubble_kind", ["CAMPUS", "TOWN"]);
-export const commentKind = pgEnum("comment_kind", ["COMMENT", "ADVICE"]);
+export const commentKind = pgEnum("comment_kind", ["COMMENT", "ADVICE", "GOOD", "BAD"]);
 export const voteEventKind = pgEnum("vote_event_kind", ["RATE", "BOOST"]);
 export const reportTarget = pgEnum("report_target", ["PROFILE", "COMMENT", "MESSAGE", "BUBBLE"]);
 export const reportStatus = pgEnum("report_status", ["OPEN", "ACTIONED", "DISMISSED"]);

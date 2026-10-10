@@ -2,7 +2,7 @@
 
 export type Gender = "MALE" | "FEMALE" | "NON_BINARY";
 export type BubbleKind = "CAMPUS" | "TOWN";
-export type CommentKind = "COMMENT" | "ADVICE";
+export type CommentKind = "COMMENT" | "ADVICE" | "GOOD" | "BAD";
 export type Role = "USER" | "ADMIN";
 
 export interface Me {

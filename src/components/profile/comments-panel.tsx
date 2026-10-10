@@ -14,7 +14,13 @@ import type { CommentDto, CommentKind, ProfileDetail } from "@/types/api";
 import { timeAgo } from "@/lib/utils";
 import { ReportDialog } from "./report-dialog";
 
-/** The profile's single public comment thread. */
+/** Three side-by-side threads: good (green), neutral (yellow), bad (red). */
+const COLUMNS: { kind: CommentKind; title: string; placeholder: string; bg: string; border: string; text: string }[] = [
+  { kind: "GOOD", title: "Good", placeholder: "Good…", bg: "#dcfce7", border: "#22c55e", text: "#15803d" },
+  { kind: "COMMENT", title: "Neutral", placeholder: "Say it…", bg: "#fef9c3", border: "#eab308", text: "#a16207" },
+  { kind: "BAD", title: "Bad", placeholder: "Bad…", bg: "#fee2e2", border: "#ef4444", text: "#b91c1c" },
+];
+
 export function CommentsPanel({ profile }: { profile: ProfileDetail }) {
   return (
     <section
@@ -27,12 +33,25 @@ export function CommentsPanel({ profile }: { profile: ProfileDetail }) {
           {profile.generalCount}
         </span>
       </h2>
-      <Thread profile={profile} kind="COMMENT" />
+      <div className="grid gap-3 xl:grid-cols-3">
+        {COLUMNS.map((col) => (
+          <div
+            key={col.kind}
+            className="space-y-3 rounded-xl border-2 p-3"
+            style={{ background: col.bg, borderColor: col.border }}
+          >
+            <h3 className="text-xs font-black tracking-wider uppercase" style={{ color: col.text }}>
+              {col.title}
+            </h3>
+            <Thread profile={profile} kind={col.kind} placeholder={col.placeholder} />
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
 
-function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }) {
+function Thread({ profile, kind, placeholder }: { profile: ProfileDetail; kind: CommentKind; placeholder?: string }) {
   const comments = useComments(profile.id, kind);
   const add = useAddComment(profile.id, kind);
   const del = useDeleteComment(profile.id, kind);
@@ -50,7 +69,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
     add.mutate(text, {
       onSuccess: () => {
         setBody("");
-        toast.success(kind === "ADVICE" ? "Advice posted" : "Comment posted");
+        toast.success("Comment posted");
       },
       onError: (err) => toast.error(errorMessage(err)),
     });
@@ -68,7 +87,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
           value={body}
           onChange={(e) => setBody(e.target.value)}
           maxLength={500}
-          placeholder={kind === "ADVICE" ? "Share constructive advice…" : "Write a public comment..."}
+          placeholder={placeholder ?? "Write a public comment..."}
           aria-label={kind === "ADVICE" ? "Write advice" : "Write a comment"}
           onFocus={() => !me && guard("Create an account to join the conversation.")}
         />
