@@ -104,6 +104,9 @@ export const bubbles = pgTable(
     kind: bubbleKind("kind").notNull().default("CAMPUS"),
     badge: text("badge"),
     logoUrl: text("logo_url"),
+    /** School colours (hex) shown when there is no logo. */
+    colorPrimary: text("color_primary"),
+    colorSecondary: text("color_secondary"),
     lat: doublePrecision("lat").notNull(),
     lng: doublePrecision("lng").notNull(),
     countyFips: text("county_fips").notNull(),

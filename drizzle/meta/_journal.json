@@ -71,6 +71,20 @@
       "when": 1791600469861,
       "tag": "0009_hundred_colleges",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791601175229,
+      "tag": "0010_bubble_colors",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791601259142,
+      "tag": "0011_more_colleges_colors",
+      "breakpoints": true
     }
   ]
 }

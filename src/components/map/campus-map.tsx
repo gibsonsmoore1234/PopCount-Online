@@ -26,6 +26,8 @@ const CONTINENTAL = L.latLngBounds([24.4, -124.8], [49.4, -66.9]);
 // CARTO basemap key (public: it is sent with every tile request). Override with NEXT_PUBLIC_CARTO_KEY.
 const CARTO_KEY = process.env.NEXT_PUBLIC_CARTO_KEY || "cb1_4fk0_1_7e48971c6d955168286f5af9";
 
+const safeColor = (c: string) => (/^#[0-9a-f]{3,8}$/i.test(c) ? c : "#000");
+
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
@@ -48,11 +50,11 @@ function bubbleIcon(b: BubbleSummary, d: number) {
   const nameSize = Math.max(9, Math.min(13, d / 6));
   // Just the picture filling the circle, the ring in the score colour, and the name underneath.
   const html = `
-    <div class="pc-bubble" style="--pc-ring:${auraColor(b.avgAura)}" role="button" tabindex="0" aria-label="${escapeHtml(b.name)}">
+    <div class="pc-bubble" style="--pc-ring:${auraColor(b.avgAura)}${b.colors ? `;background:${safeColor(b.colors[0])}` : ""}" role="button" tabindex="0" aria-label="${escapeHtml(b.name)}">
       ${
         b.logoUrl
           ? `<img class="pc-bubble__logo" src="${escapeHtml(b.logoUrl)}" alt="" referrerpolicy="no-referrer"/>`
-          : `<span class="pc-bubble__initials" style="font-size:${Math.round(d / 3)}px">${escapeHtml(b.name.slice(0, 2))}</span>`
+          : `<span class="pc-bubble__initials" style="font-size:${Math.round(d / 3)}px${b.colors ? `;color:${safeColor(b.colors[1])}` : ""}">${escapeHtml(b.name.slice(0, 2))}</span>`
       }
       ${d >= 24 ? `<span class="pc-bubble__name" style="font-size:${nameSize}px">${escapeHtml(b.name)}</span>` : ""}
     </div>`;

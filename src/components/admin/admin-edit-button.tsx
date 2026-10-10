@@ -73,7 +73,13 @@ function EditBubble({ bubble, onDone }: { bubble: BubbleSummary; onDone: () => v
   return (
     <div className="space-y-4 p-5">
       <div className="flex items-end gap-3">
-        <BubbleLogo name={name || bubble.name} logoUrl={logoUrl} avgAura={bubble.avgAura} size={56} />
+        <BubbleLogo
+          name={name || bubble.name}
+          logoUrl={logoUrl}
+          avgAura={bubble.avgAura}
+          colors={bubble.colors}
+          size={56}
+        />
         <Field label="Name" className="flex-1">
           <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={48} />
         </Field>

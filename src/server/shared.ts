@@ -119,6 +119,7 @@ export function toBubbleSummary(row: BubbleSummaryRow): BubbleSummary {
     kind: b.kind,
     badge: b.badge,
     logoUrl: b.logoUrl,
+    colors: b.colorPrimary ? [b.colorPrimary, b.colorSecondary ?? "#ffffff"] : null,
     lat: b.lat,
     lng: b.lng,
     countyFips: b.countyFips,

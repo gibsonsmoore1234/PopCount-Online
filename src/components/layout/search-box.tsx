@@ -166,7 +166,7 @@ export function SearchBox({
                       active === i && "bg-surface-2",
                     )}
                   >
-                    <BubbleLogo name={b.name} logoUrl={b.logoUrl} avgAura={b.avgAura} size={34} />
+                    <BubbleLogo name={b.name} logoUrl={b.logoUrl} avgAura={b.avgAura} colors={b.colors} size={34} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-extrabold">{b.name}</span>
                       <span className="text-muted flex items-center gap-1 truncate text-[11px] font-semibold">

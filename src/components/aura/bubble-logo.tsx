@@ -9,11 +9,13 @@ export function BubbleLogo({
   name,
   logoUrl,
   avgAura,
+  colors,
   size = 40,
   className,
 }: {
   name: string;
   logoUrl: string | null;
+  colors?: [string, string] | null;
   avgAura: number | null;
   size?: number;
   className?: string;
@@ -37,7 +39,8 @@ export function BubbleLogo({
       aria-hidden
       style={{
         ...style,
-        background: auraColor(avgAura),
+        background: colors ? colors[0] : auraColor(avgAura),
+        ...(colors && { color: colors[1] }),
         fontSize: Math.max(10, size * (monogram(name).length > 2 ? 0.27 : 0.36)),
       }}
       className={cn(

@@ -93,6 +93,7 @@ function BubbleHeader({ bubble }: { bubble: BubbleSummary }) {
               name={bubble.name}
               logoUrl={bubble.logoUrl}
               avgAura={bubble.avgAura}
+              colors={bubble.colors}
               size={64}
               className="shadow-hard-sm"
             />

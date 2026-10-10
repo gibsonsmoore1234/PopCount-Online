@@ -27,6 +27,8 @@ export interface BubbleSummary {
   kind: BubbleKind;
   badge: string | null;
   logoUrl: string | null;
+  /** [primary, secondary] school colours, if known. */
+  colors: [string, string] | null;
   lat: number;
   lng: number;
   countyFips: string;

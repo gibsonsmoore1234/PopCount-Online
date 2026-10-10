@@ -232,7 +232,7 @@ function BubbleCard({ b, sort, onClick }: { b: BubbleRankingEntry; sort: BubbleS
         className="border-ink shadow-hard-sm hover:shadow-hard flex w-full items-center gap-3 rounded-xl border-2 bg-white p-3 text-left transition hover:-translate-y-0.5"
       >
         <span className="w-6 shrink-0 text-center text-base font-black tabular-nums">{b.rank}</span>
-        <BubbleLogo name={b.name} logoUrl={b.logoUrl} avgAura={b.avgAura} size={44} />
+        <BubbleLogo name={b.name} logoUrl={b.logoUrl} avgAura={b.avgAura} colors={b.colors} size={44} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-black tracking-tight uppercase">{b.name}</p>
           <p className="text-muted truncate text-[11px] font-semibold">
