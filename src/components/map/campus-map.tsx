@@ -220,14 +220,28 @@ function SpreadBubbles({
     const perState = new Map<string, number>();
     for (const b of bubbles) perState.set(b.countyFips.slice(0, 2), (perState.get(b.countyFips.slice(0, 2)) ?? 0) + 1);
     const cap = new Map<string, number>();
+    const area = new Map<string, { x0: number; y0: number; x1: number; y1: number }>();
     for (const b of bubbles) {
       const st = b.countyFips.slice(0, 2);
       const box = boxes && ((perState.get(st) ?? 0) > 1 ? boxes.county.get(b.countyFips) : boxes.state.get(st));
       if (!box) continue;
-      const a = map.project([box[1], box[0]], z);
-      const c = map.project([box[3], box[2]], z);
-      cap.set(b.id, Math.max(10, Math.min(Math.abs(c.x - a.x), Math.abs(c.y - a.y))));
+      const a = map.project([box[1], box[0]], z); // south-west
+      const c = map.project([box[3], box[2]], z); // north-east
+      const r = { x0: Math.min(a.x, c.x), y0: Math.min(a.y, c.y), x1: Math.max(a.x, c.x), y1: Math.max(a.y, c.y) };
+      area.set(b.id, r);
+      cap.set(b.id, Math.max(10, Math.min(r.x1 - r.x0, r.y1 - r.y0) * 0.9));
     }
+    // Keep a circle of radius `rad` entirely inside its region box.
+    const keepInside = (id: string, x: number, y: number, rad: number) => {
+      const r = area.get(id);
+      if (!r) return { x, y };
+      const cx = (r.x0 + r.x1) / 2;
+      const cy = (r.y0 + r.y1) / 2;
+      return {
+        x: r.x1 - r.x0 > 2 * rad ? Math.min(r.x1 - rad, Math.max(r.x0 + rad, x)) : cx,
+        y: r.y1 - r.y0 > 2 * rad ? Math.min(r.y1 - rad, Math.max(r.y0 + rad, y)) : cy,
+      };
+    };
     const sizeOf = (b: BubbleSummary, f: number) =>
       Math.min(bubbleDiameter(b.profileCount, zoom, maxMembers, bubbles.length, f), cap.get(b.id) ?? Infinity);
     const radius = (b: BubbleSummary, f: number) => sizeOf(b, f) / 2;
@@ -242,12 +256,11 @@ function SpreadBubbles({
     }
     fit = Math.max(0.4, fit);
     // 2) Anything still touching (e.g. same spot) gets nudged apart. Radius includes the name label.
-    const nodes = pts.map(({ b, p }) => ({
-      id: b.id,
-      x: p.x,
-      y: p.y,
-      r: radius(b, fit) + (radius(b, fit) < 18 ? 4 : 14),
-    }));
+    const nodes = pts.map(({ b, p }) => {
+      const rad = radius(b, fit);
+      const at = keepInside(b.id, p.x, p.y, rad);
+      return { id: b.id, x: at.x, y: at.y, rad, r: rad + (rad < 18 ? 4 : 14) };
+    });
     for (let iter = 0; iter < 120; iter++) {
       let moved = false;
       for (let i = 0; i < nodes.length; i++) {
@@ -272,6 +285,9 @@ function SpreadBubbles({
           a.y -= uy * push;
           b.x += ux * push;
           b.y += uy * push;
+          // Nudging never pushes a bubble out of its state/county.
+          Object.assign(a, keepInside(a.id, a.x, a.y, a.rad));
+          Object.assign(b, keepInside(b.id, b.x, b.y, b.rad));
           moved = true;
         }
       }
