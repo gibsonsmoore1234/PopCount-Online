@@ -33,30 +33,23 @@ export async function createProfile(user: SessionUser, input: CreateProfileInput
   if (!bubble) throw badRequest("Choose an existing campus or town bubble.");
   for (const url of [input.photoUrl, ...(input.extraPhotos ?? [])]) await assertOwnImage(user.id, url);
 
-  try {
-    return await db.transaction(async (tx) => {
-      const [profile] = await tx
-        .insert(profiles)
-        .values({
-          userId: user.id,
-          bubbleId: bubble.id,
-          displayName: input.displayName,
-          gender: input.gender,
-          affiliation: input.affiliation ? cleanUserText(input.affiliation) : null,
-          bio: cleanUserText(input.bio ?? ""),
-          photoUrl: input.photoUrl,
-          extraPhotos: input.extraPhotos ?? [],
-        })
-        .returning({ id: profiles.id });
-      await addMember(tx, bubble.id, user.id);
-      return { id: profile.id, bubbleSlug: bubble.slug };
-    });
-  } catch (err) {
-    if (isUniqueViolation(err, "profiles_user_bubble_key")) {
-      throw conflict("You already have a profile in this bubble.");
-    }
-    throw err;
-  }
+  return await db.transaction(async (tx) => {
+    const [profile] = await tx
+      .insert(profiles)
+      .values({
+        userId: user.id,
+        bubbleId: bubble.id,
+        displayName: input.displayName,
+        gender: input.gender,
+        affiliation: input.affiliation ? cleanUserText(input.affiliation) : null,
+        bio: cleanUserText(input.bio ?? ""),
+        photoUrl: input.photoUrl,
+        extraPhotos: input.extraPhotos ?? [],
+      })
+      .returning({ id: profiles.id });
+    await addMember(tx, bubble.id, user.id);
+    return { id: profile.id, bubbleSlug: bubble.slug };
+  });
 }
 
 async function loadOwned(user: SessionUser, profileId: string) {
