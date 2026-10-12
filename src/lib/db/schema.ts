@@ -19,7 +19,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Enums                                                                     */
+/* Enums                                                                      */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const userRole = pgEnum("user_role", ["USER", "ADMIN"]);
@@ -49,7 +49,7 @@ const timestamps = {
 };
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Identity                                                                   */
+/* Identity                                                                  */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const users = pgTable(
@@ -91,7 +91,7 @@ export const sessions = pgTable(
 );
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Bubbles (campuses & towns on the map)                                      */
+/* Bubbles (campuses & towns on the map)                                     */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const bubbles = pgTable(
@@ -142,14 +142,13 @@ export const bubbleMembers = pgTable(
 );
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Profiles & Aura                                                            */
+/* Profiles & Aura                                                           */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const profiles = pgTable(
   "profiles",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    /** Profiles are opt-in: each account owns at most one profile — its own. */
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -182,7 +181,6 @@ export const profiles = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (t) => [
-    uniqueIndex("profiles_user_bubble_key").on(t.userId, t.bubbleId),
     index("profiles_bubble_aura_idx").on(t.bubbleId, t.auraScore),
     index("profiles_bubble_votes_idx").on(t.bubbleId, t.voteCount),
     index("profiles_aura_idx").on(t.auraScore),
@@ -240,7 +238,7 @@ export const voteEvents = pgTable(
 );
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Discussion                                                                 */
+/* Discussion                                                                */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const comments = pgTable(
@@ -319,7 +317,7 @@ export const groupMessages = pgTable(
 );
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Trust & safety                                                             */
+/* Trust & safety                                                            */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const reports = pgTable(
@@ -346,7 +344,7 @@ export const reports = pgTable(
 );
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Micro-economy                                                              */
+/* Micro-economy                                                             */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const creditTransactions = pgTable(
@@ -372,7 +370,7 @@ export const creditTransactions = pgTable(
 );
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Media                                                                      */
+/* Media                                                                     */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const images = pgTable(
@@ -391,7 +389,7 @@ export const images = pgTable(
 );
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Relations                                                                  */
+/* Relations                                                                 */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export const usersRelations = relations(users, ({ one, many }) => ({
