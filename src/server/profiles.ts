@@ -369,3 +369,22 @@ export async function profileIdForUser(userId: string) {
   const [row] = await db.select({ id: profiles.id }).from(profiles).where(eq(profiles.userId, userId)).limit(1);
   return row?.id ?? null;
 }
+
+/** Get all profiles sorted by newest first (admin only). */
+export async function getAllProfiles(): Promise<(ProfileCard & { createdAt: string; bubbleName: string })[]> {
+  const rows = await db
+    .select({
+      ...profileCardColumns,
+      createdAt: profiles.createdAt,
+    })
+    .from(profiles)
+    .innerJoin(users, eq(users.id, profiles.userId))
+    .innerJoin(bubbles, eq(bubbles.id, profiles.bubbleId))
+    .orderBy(desc(profiles.createdAt), asc(profiles.id))
+    .limit(500);
+  return rows.map((row) => ({
+    ...toCard(row),
+    createdAt: row.createdAt.toISOString(),
+    bubbleName: row.bubbleName,
+  }));
+}
