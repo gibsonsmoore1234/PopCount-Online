@@ -44,6 +44,7 @@ function Thread({ profile, kind }: { profile: ProfileDetail; kind: CommentKind }
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (add.isPending) return;
     if (!guard("Create an account to join the conversation.")) return;
     const text = body.trim();
     if (text.length < 2) return;
